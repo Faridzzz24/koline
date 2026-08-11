@@ -26,56 +26,76 @@ html, body {
     will-change: transform, opacity;
 }
 .chat-timestamp { font-size: 0.65rem; color: var(--txt-muted); }
+.consultation-meta-item {
+    background: var(--bg-surface);
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--r-md);
+    border: 1px solid var(--bdr-subtle);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+    font-size: 0.775rem;
+    color: var(--txt-muted);
+}
 @media (max-width: 1024px) {
     html, body, .main-content { overflow: auto !important; height: auto; }
     .consultation-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 768px) {
+    .consultation-header-bar {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.75rem !important;
+    }
+    .consultation-meta-wrapper {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        gap: 0.4rem !important;
+    }
+    .ai-chatbot-trigger {
+        display: none !important;
+    }
 }
 </style>
 @endpush
 
 @section('content')
 {{-- Main Header Bar --}}
-<div class="main-header" style="margin-bottom: 1rem; padding-bottom: 0.75rem; flex-shrink: 0;">
+<div class="consultation-header-bar" style="display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--bdr-subtle); flex-shrink: 0; flex-wrap: wrap;">
     <div>
-        <a href="{{ route('consultations.index') }}" class="btn btn-ghost btn-sm mb-2" style="color: var(--clr-brand-light); font-weight: 600; padding-left: 0;">
+        <a href="{{ route('consultations.index') }}" class="btn btn-ghost btn-sm mb-2" style="color: var(--clr-brand-light); font-weight: 600; padding-left: 0; display: inline-flex; width: auto;">
             ← Kembali ke Daftar Sesi
         </a>
-        <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--txt-heading); margin: 0 0 0.15rem; letter-spacing: -0.01em;">
+        <h1 style="font-size: clamp(1.35rem, 3.5vw, 1.65rem); font-weight: 800; color: var(--txt-heading); margin: 0 0 0.15rem; letter-spacing: -0.01em;">
             Detail Sesi Telekonsultasi
         </h1>
         <div style="font-size: 0.8rem; color: var(--txt-muted);">
             ID Sesi: <strong style="color: var(--clr-brand-light); font-family: monospace;">#KOL-{{ str_pad($consultation->id, 5, '0', STR_PAD_LEFT) }}</strong>
         </div>
-    </div>    {{-- Right Side: Inline Session Metadata & Status Badge --}}
-    <div style="display: flex; align-items: center; gap: 0.875rem; flex-wrap: wrap; justify-content: flex-end;">
-        <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; color: var(--txt-muted); background: var(--bg-surface); padding: 0.45rem 0.875rem; border-radius: var(--r-lg); border: 1px solid var(--bdr-subtle);" x-data="{ currentClock: '' }" x-init="setInterval(() => { const d = new Date(); currentClock = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+' WIB'; }, 1000); const d = new Date(); currentClock = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+' WIB';">
-            <span style="display: flex; align-items: center; gap: 0.35rem; color: #38BDF8; font-weight: 700;">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <span x-text="currentClock">--:--:-- WIB</span>
-            </span>
-            <span style="color: var(--bdr-subtle);">•</span>
-            <span style="display: flex; align-items: center; gap: 0.35rem;">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <strong style="color: var(--txt-heading);">{{ $consultation->consultation_date->format('d M Y') }}</strong>
-            </span>
-            <span style="color: var(--bdr-subtle);">•</span>
-            <span style="display: flex; align-items: center; gap: 0.35rem;">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <strong style="color: var(--txt-heading);">{{ substr($consultation->consultation_time, 0, 5) }} WIB</strong>
-            </span>
-            <span style="color: var(--bdr-subtle);">•</span>
-            <span style="display: flex; align-items: center; gap: 0.35rem;">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <strong style="color: var(--clr-brand-light);">⏱️ {{ $consultation->duration_hours ?? 1 }} Jam</strong>
-            </span>
-            <span style="color: var(--bdr-subtle);">•</span>
-            <span style="display: flex; align-items: center; gap: 0.35rem;">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                <strong style="color: var(--clr-brand-light);">Rp {{ number_format($consultation->fee, 0, ',', '.') }}</strong>
-            </span>
-        </div>
+    </div>
 
-        <span class="badge badge-{{ $consultation->status_color }}" style="font-size: 0.825rem; padding: 0.45rem 1rem; border-radius: var(--r-full); font-weight: 700;">
+    {{-- Right Side: Inline Session Metadata & Status Badge --}}
+    <div class="consultation-meta-wrapper" style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end;" x-data="{ currentClock: '' }" x-init="setInterval(() => { const d = new Date(); currentClock = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+' WIB'; }, 1000); const d = new Date(); currentClock = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+' WIB';">
+        <div class="consultation-meta-item">
+            <svg width="13" height="13" fill="none" stroke="#38BDF8" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 16 14"/></svg>
+            <span x-text="currentClock" style="color: #38BDF8; font-weight: 700;">--:--:-- WIB</span>
+        </div>
+        <div class="consultation-meta-item">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <strong style="color: var(--txt-heading);">{{ $consultation->consultation_date->format('d M Y') }}</strong>
+        </div>
+        <div class="consultation-meta-item">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 16 14"/></svg>
+            <strong style="color: var(--txt-heading);">{{ substr($consultation->consultation_time, 0, 5) }} WIB</strong>
+        </div>
+        <div class="consultation-meta-item">
+            <strong style="color: var(--clr-brand-light);">⏱️ {{ $consultation->duration_hours ?? 1 }} Jam</strong>
+        </div>
+        <div class="consultation-meta-item">
+            <strong style="color: var(--clr-brand-light);">Rp {{ number_format($consultation->fee, 0, ',', '.') }}</strong>
+        </div>
+        <span class="badge badge-{{ $consultation->status_color }}" style="font-size: 0.8rem; padding: 0.4rem 0.875rem; border-radius: var(--r-full); font-weight: 700; white-space: nowrap;">
             ● {{ $consultation->status_label }}
         </span>
     </div>
@@ -93,26 +113,26 @@ html, body {
         <div class="card" style="padding: 0; overflow: hidden; border-radius: var(--r-xl); box-shadow: 0 10px 30px rgba(0,0,0,0.25); height: 100%; min-height: 480px; display: flex; flex-direction: column;" x-data="liveChatApp({{ $consultation->id }}, {{ auth()->id() }})" x-init="initChat()">
             
             {{-- Chat Room Top Header --}}
-            <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--bdr-subtle); display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: var(--bg-surface); flex-shrink: 0;">
+            <div style="padding: 0.875rem 1.25rem; border-bottom: 1px solid var(--bdr-subtle); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; background: var(--bg-surface); flex-shrink: 0; flex-wrap: wrap;">
                 @php
                     $targetUser = auth()->user()->isPatient() ? $consultation->doctor->user : $consultation->patient;
                     $cleanName = preg_replace('/^(drg\.|dr\.|Prof\.|Sp\.[A-Z]+)\s*/i', '', $targetUser->name);
                     $words = explode(' ', trim($cleanName));
                     $initials = strtoupper(substr($words[0] ?? 'D', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
                 @endphp
-                <div style="display: flex; align-items: center; gap: 0.875rem;">
-                    <div class="initial-avatar initial-avatar-sm" style="width: 40px; height: 40px; font-size: 0.95rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0;">
+                    <div class="initial-avatar initial-avatar-sm" style="width: 42px; height: 42px; min-width: 42px; font-size: 0.95rem; flex-shrink: 0;">
                         {{ $initials }}
                     </div>
-                    <div>
-                        <div style="font-weight: 700; color: var(--txt-heading); font-size: 1rem; line-height: 1.2;">
+                    <div style="min-width: 0;">
+                        <div style="font-weight: 700; color: var(--txt-heading); font-size: 0.975rem; line-height: 1.3; word-break: break-word;">
                             @if(auth()->user()->isPatient())
                                 {{ $consultation->doctor->user->name }}
                             @else
                                 {{ $consultation->patient->name }}
                             @endif
                         </div>
-                        <div style="font-size: 0.775rem; color: var(--clr-brand-light); font-weight: 600; margin-top: 0.1rem;">
+                        <div style="font-size: 0.775rem; color: var(--clr-teal-light); font-weight: 600; margin-top: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             @if(auth()->user()->isPatient()){{ $consultation->doctor->specialization->name }}@else Akun Pasien Terverifikasi @endif
                         </div>
                     </div>
