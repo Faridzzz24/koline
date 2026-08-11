@@ -76,6 +76,11 @@ $_SERVER['SCRIPT_FILENAME'] = __DIR__ . '/../public/index.php';
 $_SERVER['SCRIPT_NAME'] = '/index.php';
 $_SERVER['PHP_SELF'] = '/index.php';
 
+// Force HTTPS protocol behind Vercel reverse proxy
+$_SERVER['HTTPS'] = 'on';
+$_SERVER['SERVER_PORT'] = 443;
+$_SERVER['REQUEST_SCHEME'] = 'https';
+
 // 4. Bootstrap Laravel Application
 require __DIR__ . '/../vendor/autoload.php';
 $app = require_once __DIR__ . '/../bootstrap/app.php';
