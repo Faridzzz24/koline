@@ -78,7 +78,9 @@ html, body {
     }
     .consultation-meta-wrapper {
         width: 100% !important;
-        justify-content: flex-start !important;
+        justify-content: center !important;
+        margin: 0 auto !important;
+        text-align: center !important;
         gap: 0.35rem !important;
     }
     .consultation-meta-item {
@@ -510,15 +512,16 @@ function liveChatApp(consultationId, currentUserId) {
                 if (res.ok) {
                     const data = await res.json();
                     
-                    const serverStatus = data.status || this.consultationStatus;
-                    const serverMessages = data.messages || data;
+                    const serverStatus = data.consultation_status || data.status;
+                    const validStatuses = ['pending', 'confirmed', 'active', 'completed', 'cancelled'];
+                    const serverMessages = data.messages || (Array.isArray(data) ? data : []);
 
                     if (data.end_timestamp_ms) {
                         this.endTimestampMs = data.end_timestamp_ms;
                     }
 
                     // Real-time Status Synchronization (< 1.5s delay, 0 page refresh needed!)
-                    if (serverStatus && serverStatus !== this.consultationStatus) {
+                    if (serverStatus && validStatuses.includes(serverStatus) && serverStatus !== this.consultationStatus) {
                         this.consultationStatus = serverStatus;
                         this.syncTimers();
                     }
@@ -551,9 +554,10 @@ function liveChatApp(consultationId, currentUserId) {
         },
 
         async sendMessage() {
-            if (!this.newMessage.trim() || !this.activeStarted || this.activeExpired) return;
+            if (!this.newMessage.trim() || !this.activeStarted || this.activeExpired || this.isSubmitting) return;
             const text = this.newMessage.trim();
             this.newMessage = '';
+            this.isSubmitting = true;
             
             // 1. Optimistic Instant UI Insertion (0ms delay!)
             const tempId = 'temp_' + Date.now();
@@ -588,8 +592,12 @@ function liveChatApp(consultationId, currentUserId) {
 
                 if (res.ok) {
                     const result = await res.json();
+                    if (result.consultation_status && result.consultation_status !== this.consultationStatus) {
+                        this.consultationStatus = result.consultation_status;
+                        this.syncTimers();
+                    }
                     if (result.data) {
-                        const tempIdx = this.messages.findIndex(m => m.id === tempId);
+                        const tempIdx = this.messages.findIndex(m => m.id === tempId || (m.is_pending && m.message === text));
                         if (tempIdx !== -1) {
                             this.messages.splice(tempIdx, 1, result.data);
                         } else if (!this.messages.some(m => m.id === result.data.id)) {
@@ -600,6 +608,9 @@ function liveChatApp(consultationId, currentUserId) {
                 }
             } catch (e) {
                 console.error(e);
+            } finally {
+                this.isSubmitting = false;
+                this.fetchMessages();
             }
         },
 

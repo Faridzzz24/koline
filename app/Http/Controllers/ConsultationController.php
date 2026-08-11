@@ -92,6 +92,7 @@ class ConsultationController extends Controller
             $message->load('sender');
             return response()->json([
                 'status' => 'success',
+                'consultation_status' => $consultation->status,
                 'data' => [
                     'id' => $message->id,
                     'sender_id' => $message->sender_id,
@@ -208,6 +209,7 @@ class ConsultationController extends Controller
         });
 
         return response()->json([
+            'consultation_status' => $consultation->status,
             'status' => $consultation->status,
             'end_timestamp_ms' => $consultation->end_date_time->timestamp * 1000,
             'diagnosis' => $consultation->diagnosis,

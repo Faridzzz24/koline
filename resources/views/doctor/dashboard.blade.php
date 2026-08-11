@@ -1,6 +1,94 @@
 @extends('layouts.app')
 @section('title', 'Dashboard Dokter | KoLine')
 
+@push('styles')
+<script>
+window.doctorDashboardApp = function() {
+    return {
+        pendingCount: {{ $stats['pending'] }},
+        activeCount: {{ $stats['active'] }},
+        completedCount: {{ $stats['completed'] }},
+        pendingList: @json($pendingList),
+        activeList: @json($activeList),
+        isActionPending: false,
+        csrfToken: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+
+        initDashboard() {
+            this.pollConsultations();
+            setInterval(() => {
+                this.pollConsultations();
+            }, 1000);
+        },
+
+        isListSame(listA, listB) {
+            if (!listA || !listB) return false;
+            if (listA.length !== listB.length) return false;
+            for (let i = 0; i < listA.length; i++) {
+                if (listA[i].id !== listB[i].id || listA[i].patient_name !== listB[i].patient_name) {
+                    return false;
+                }
+            }
+            return true;
+        },
+
+        async confirmConsultation(item) {
+            this.isActionPending = true;
+            try {
+                const res = await fetch(item.confirm_url, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    }
+                });
+                if (res.ok) {
+                    this.pendingList = this.pendingList.filter(p => p.id !== item.id);
+                    this.pendingCount = Math.max(0, this.pendingCount - 1);
+                    this.activeCount += 1;
+                    window.location.href = item.show_url;
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    alert('Gagal konfirmasi: ' + (data.message || 'Silakan coba lagi.'));
+                    this.isActionPending = false;
+                }
+            } catch (e) {
+                console.error(e);
+                this.isActionPending = false;
+            }
+        },
+
+        async pollConsultations() {
+            if (this.isActionPending) return;
+            try {
+                const res = await fetch('{{ route('doctor.consultations.poll') }}', {
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (this.isActionPending) return;
+                    if (data.pending_count !== undefined) {
+                        if (this.pendingCount !== data.pending_count) this.pendingCount = data.pending_count;
+                        if (this.activeCount !== data.active_count) this.activeCount = data.active_count;
+                        if (this.completedCount !== data.completed_count) this.completedCount = data.completed_count;
+
+                        if (data.pending_consultations && !this.isListSame(this.pendingList, data.pending_consultations)) {
+                            this.pendingList = data.pending_consultations;
+                        }
+                        if (data.active_consultations && !this.isListSame(this.activeList, data.active_consultations)) {
+                            this.activeList = data.active_consultations;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    };
+};
+</script>
+@endpush
+
 @section('content')
 <div style="max-width: 100%;" x-data="doctorDashboardApp()" x-init="initDashboard()">
 
@@ -238,74 +326,4 @@
 
 </div>
 
-@push('scripts')
-<script>
-function doctorDashboardApp() {
-    return {
-        pendingCount: {{ $stats['pending'] }},
-        activeCount: {{ $stats['active'] }},
-        completedCount: {{ $stats['completed'] }},
-        pendingList: @json($pendingList),
-        activeList: @json($activeList),
-        csrfToken: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-
-        initDashboard() {
-            // Run immediate poll on mount
-            this.pollConsultations();
-
-            // Start real-time polling every 1 second (1000ms)
-            setInterval(() => {
-                this.pollConsultations();
-            }, 1000);
-        },
-
-        async confirmConsultation(item) {
-            try {
-                const res = await fetch(item.confirm_url, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-                    }
-                });
-                if (res.ok) {
-                    // Immediately move item from pending to active for 0ms glitch-free UI response
-                    this.pendingList = this.pendingList.filter(p => p.id !== item.id);
-                    this.pendingCount = Math.max(0, this.pendingCount - 1);
-                    this.activeCount += 1;
-                    // Redirect to consultation room
-                    window.location.href = item.show_url;
-                } else {
-                    const data = await res.json().catch(() => ({}));
-                    alert('Gagal konfirmasi: ' + (data.message || 'Silakan coba lagi.'));
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        },
-
-        async pollConsultations() {
-            try {
-                const res = await fetch('{{ route('doctor.consultations.poll') }}', {
-                    headers: { 'Accept': 'application/json' }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.pending_count !== undefined) {
-                        this.pendingCount = data.pending_count;
-                        this.activeCount = data.active_count;
-                        this.completedCount = data.completed_count;
-                        if (data.pending_consultations) this.pendingList = data.pending_consultations;
-                        if (data.active_consultations) this.activeList = data.active_consultations;
-                    }
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        }
-    };
-}
-</script>
-@endpush
 @endsection
