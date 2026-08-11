@@ -120,6 +120,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ─── Doctor Routes ─────────────────────────────────────────────────────
     Route::middleware('role:doctor')->prefix('dashboard/dokter')->name('doctor.')->group(function () {
         Route::get('/', [DoctorDashboard::class, 'index'])->name('dashboard');
+        Route::get('/poll', [DoctorDashboard::class, 'poll'])->name('consultations.poll');
         Route::get('/konsultasi', [DoctorConsultationController::class, 'index'])->name('consultations');
     });
 

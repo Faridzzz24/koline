@@ -143,7 +143,10 @@ class ConsultationController extends Controller
         if (!$user->isDoctor() || !$doctor || $doctor->id !== $consultation->doctor_id) {
             abort(403);
         }
-        $consultation->update(['status' => 'confirmed']);
+        $consultation->status = 'confirmed';
+        $consultation->updated_at = \Carbon\Carbon::now();
+        $consultation->save();
+
         return back()->with('success', 'Konsultasi berhasil disetujui & dikonfirmasi! Ruang chat medis telah terbuka.');
     }
 

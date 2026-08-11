@@ -2,7 +2,7 @@
 @section('title', 'Dashboard Dokter | KoLine')
 
 @section('content')
-<div style="max-width: 100%;">
+<div style="max-width: 100%;" x-data="doctorDashboardApp()" x-init="initDashboard()">
 
     @php
         $cleanName = preg_replace('/^(drg\.|dr\.|Prof\.|Sp\.[A-Z]+)\s*/i', '', auth()->user()->name);
@@ -90,7 +90,7 @@
                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
             </div>
-            <div style="font-size: 1.75rem; font-weight: 800; color: #F59E0B; line-height: 1.1; margin-bottom: 0.25rem;">
+            <div style="font-size: 1.75rem; font-weight: 800; color: #F59E0B; line-height: 1.1; margin-bottom: 0.25rem;" x-text="pendingCount">
                 {{ $stats['pending'] }}
             </div>
             <div style="font-size: 0.775rem; color: var(--txt-muted);">Permintaan janji konsultasi</div>
@@ -104,7 +104,7 @@
                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                 </div>
             </div>
-            <div style="font-size: 1.75rem; font-weight: 800; color: #10B981; line-height: 1.1; margin-bottom: 0.25rem;">
+            <div style="font-size: 1.75rem; font-weight: 800; color: #10B981; line-height: 1.1; margin-bottom: 0.25rem;" x-text="activeCount">
                 {{ $stats['active'] }}
             </div>
             <div style="font-size: 0.775rem; color: var(--txt-muted);">Sesi percakapan berlangsung</div>
@@ -118,7 +118,7 @@
                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
             </div>
-            <div style="font-size: 1.75rem; font-weight: 800; color: #8B5CF6; line-height: 1.1; margin-bottom: 0.25rem;">
+            <div style="font-size: 1.75rem; font-weight: 800; color: #8B5CF6; line-height: 1.1; margin-bottom: 0.25rem;" x-text="completedCount">
                 {{ $stats['completed'] }}
             </div>
             <div style="font-size: 0.775rem; color: var(--txt-muted);">Riwayat konsultasi tuntas</div>
@@ -138,51 +138,47 @@
                         <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--txt-heading); margin: 0;">Antrean Menunggu Konfirmasi</h3>
                     </div>
                     <span style="font-size: 0.775rem; font-weight: 600; color: var(--txt-muted); background: var(--bg-surface); padding: 0.25rem 0.625rem; border-radius: var(--r-sm); border: 1px solid var(--bdr-subtle);">
-                        {{ count($pendingConsultations) }} Pasien
+                        <span x-text="pendingList.length"></span> Pasien
                     </span>
                 </div>
 
-                @if($pendingConsultations->isEmpty())
-                    <div style="text-align: center; padding: 2.75rem 1rem; color: var(--txt-muted);">
-                        <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin: 0 auto 0.75rem; opacity: 0.4;"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <div style="font-weight: 600; color: var(--txt-body); font-size: 0.9rem; margin-bottom: 0.25rem;">Tidak Ada Antrean Baru</div>
-                        <div style="font-size: 0.8rem;">Semua janji konsultasi telah disetujui.</div>
-                    </div>
-                @else
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
-                        @foreach($pendingConsultations as $c)
-                            <div style="padding: 1rem; background: var(--bg-surface); border: 1px solid var(--bdr-subtle); border-radius: var(--r-md);">
-                                <div class="flex-between items-center mb-2">
-                                    <div class="flex items-center gap-3">
-                                        <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(2, 132, 199, 0.15); color: var(--clr-brand-light); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem;">
-                                            {{ substr($c->patient->name, 0, 1) }}
-                                        </div>
-                                        <div>
-                                            <div style="font-weight: 700; font-size: 0.925rem; color: var(--txt-heading);">{{ $c->patient->name }}</div>
-                                            <div style="font-size: 0.775rem; color: var(--txt-muted);">
-                                                {{ $c->consultation_date->format('d M Y') }} · {{ substr($c->consultation_time, 0, 5) }} WIB
-                                            </div>
-                                        </div>
+                <div x-show="pendingList.length === 0" style="text-align: center; padding: 2.75rem 1rem; color: var(--txt-muted);">
+                    <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin: 0 auto 0.75rem; opacity: 0.4;"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div style="font-weight: 600; color: var(--txt-body); font-size: 0.9rem; margin-bottom: 0.25rem;">Tidak Ada Antrean Baru</div>
+                    <div style="font-size: 0.8rem;">Semua janji konsultasi telah disetujui.</div>
+                </div>
+
+                <div x-show="pendingList.length > 0" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <template x-for="item in pendingList" :key="item.id">
+                        <div style="padding: 1rem; background: var(--bg-surface); border: 1px solid var(--bdr-subtle); border-radius: var(--r-md);">
+                            <div class="flex-between items-center mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(2, 132, 199, 0.15); color: var(--clr-brand-light); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem;" x-text="item.patient_initial">
                                     </div>
-                                    <div class="flex items-center gap-2">
-                                        <form action="{{ route('consultations.confirm', $c) }}" method="POST" style="margin:0;">
-                                            @csrf
-                                            <button type="submit" class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;">
-                                                Konfirmasi
-                                            </button>
-                                        </form>
-                                        <a href="{{ route('consultations.show', $c) }}" class="btn btn-outline btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.625rem;">
-                                            Detail →
-                                        </a>
+                                    <div>
+                                        <div style="font-weight: 700; font-size: 0.925rem; color: var(--txt-heading);" x-text="item.patient_name"></div>
+                                        <div style="font-size: 0.775rem; color: var(--txt-muted);" x-text="item.date + ' · ' + item.time">
+                                        </div>
                                     </div>
                                 </div>
-                                <div style="font-size: 0.825rem; color: var(--txt-body); background: var(--bg-card); padding: 0.625rem; border-radius: var(--r-sm); border: 1px solid var(--bdr-subtle);">
-                                    <strong>Keluhan:</strong> {{ Str::limit($c->complaint, 80) }}
+                                <div class="flex items-center gap-2">
+                                    <form :action="item.confirm_url" method="POST" style="margin:0;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;">
+                                            Konfirmasi
+                                        </button>
+                                    </form>
+                                    <a :href="item.show_url" class="btn btn-outline btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.625rem;">
+                                        Detail →
+                                    </a>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
-                @endif
+                            <div style="font-size: 0.825rem; color: var(--txt-body); background: var(--bg-card); padding: 0.625rem; border-radius: var(--r-sm); border: 1px solid var(--bdr-subtle);">
+                                <strong>Keluhan:</strong> <span x-text="item.complaint"></span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
             </div>
 
             <div style="margin-top: 1.5rem; border-top: 1px solid var(--bdr-subtle); padding-top: 1rem;">
@@ -247,4 +243,53 @@
     </div>
 
 </div>
+
+@push('scripts')
+<script>
+function doctorDashboardApp() {
+    return {
+        pendingCount: {{ $stats['pending'] }},
+        activeCount: {{ $stats['active'] }},
+        completedCount: {{ $stats['completed'] }},
+        pendingList: @json($pendingConsultations->map(function($c) {
+            return [
+                'id' => $c->id,
+                'patient_name' => $c->patient->name,
+                'patient_initial' => strtoupper(substr($c->patient->name, 0, 1)),
+                'date' => $c->consultation_date->format('d M Y'),
+                'time' => substr($c->consultation_time, 0, 5) . ' WIB',
+                'complaint' => \Illuminate\Support\Str::limit($c->complaint, 80),
+                'confirm_url' => route('consultations.confirm', $c),
+                'show_url' => route('consultations.show', $c),
+            ];
+        })),
+
+        initDashboard() {
+            setInterval(() => {
+                this.pollConsultations();
+            }, 2000);
+        },
+
+        async pollConsultations() {
+            try {
+                const res = await fetch('{{ route('doctor.consultations.poll') }}', {
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.pending_count !== undefined) {
+                        this.pendingCount = data.pending_count;
+                        this.activeCount = data.active_count;
+                        this.completedCount = data.completed_count;
+                        this.pendingList = data.pending_consultations;
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    };
+}
+</script>
+@endpush
 @endsection

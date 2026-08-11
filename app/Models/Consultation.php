@@ -35,12 +35,8 @@ class Consultation extends Model
     {
         $start = $this->start_date_time;
         if (in_array($this->status, ['confirmed', 'active'])) {
-            $confirmTime = $this->updated_at ?? $start;
-            if ($confirmTime->gt($start)) {
-                $extendedEnd = $confirmTime->copy()->addHours($this->duration_hours ?? 1);
-                $scheduledEnd = $start->copy()->addHours($this->duration_hours ?? 1);
-                return $extendedEnd->gt($scheduledEnd) ? $extendedEnd : $scheduledEnd;
-            }
+            $confirmTime = $this->updated_at ?? \Carbon\Carbon::now();
+            return $confirmTime->copy()->addHours($this->duration_hours ?? 1);
         }
         return $start->copy()->addHours($this->duration_hours ?? 1);
     }
