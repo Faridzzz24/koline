@@ -339,6 +339,36 @@ p:last-child { margin-bottom: 0; }
 .nav-link.active { color: var(--clr-brand-light); background: rgba(2, 132, 199, 0.12); border-color: rgba(2, 132, 199, 0.25); font-weight: 600; }
 
 .navbar-actions { justify-self: end; display: flex; align-items: center; gap: 1.25rem; flex-shrink: 0; }
+.user-avatar-btn {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--r-md);
+  transition: background 0.2s;
+}
+.user-avatar-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.user-name-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--txt-heading);
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--clr-brand);
+  flex-shrink: 0;
+}
+
 
 /* â”€â”€ Mega Dropdown Popover (Cek Kesehatan Halodoc-style) â”€â”€ */
 .mega-dropdown-wrapper {
@@ -2030,8 +2060,7 @@ html, body {
 }
 
 /* ─────────────────────────────────────────────
-   MOBILE BOTTOM NAVIGATION BAR
-   (app-like bottom tab bar, desktop = hidden)
+   EXECUTIVE MOBILE DESIGN SYSTEM (Pixel-Perfect)
 ───────────────────────────────────────────── */
 .mobile-bottom-nav {
   display: none; /* hidden on desktop */
@@ -2039,144 +2068,216 @@ html, body {
 
 @media (max-width: 768px) {
 
-  /* ── Navbar: clean, no hamburger ── */
+  /* ── 1. Navbar Alignment & Containment ── */
   .navbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100vw !important;
     height: 60px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: rgba(7, 11, 20, 0.98) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    z-index: 1100 !important;
+    box-sizing: border-box !important;
   }
+
   .navbar .container {
+    width: 100% !important;
+    max-width: 100% !important;
     height: 60px !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    margin: 0 auto !important;
     display: flex !important;
     align-items: center !important;
-    padding: 0 1.125rem !important;
+    box-sizing: border-box !important;
   }
+
   .navbar-inner {
+    width: 100% !important;
+    height: 60px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    width: 100% !important;
-    height: 60px !important;
-    gap: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
   }
+
   .navbar-brand {
     display: flex !important;
     align-items: center !important;
     height: 60px !important;
     gap: 0.5rem !important;
+    font-size: 1.2rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
+
   .navbar-nav {
     display: none !important;
   }
+
   .navbar-actions {
     display: flex !important;
     align-items: center !important;
+    justify-content: flex-end !important;
     gap: 0.5rem !important;
     height: 60px !important;
+    margin: 0 !important;
+    padding: 0 !important;
     flex-shrink: 0 !important;
   }
-  /* Hide hamburger (already removed from HTML, but just in case) */
-  .nav-toggle {
+
+  .nav-toggle, .mobile-hide-register, .mobile-hide-chevron, .user-name-text {
     display: none !important;
   }
-  /* Hide "Daftar" button on mobile to save space */
-  .mobile-hide-register {
-    display: none !important;
+
+  .user-avatar-btn {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: none !important;
+    border: none !important;
+    gap: 0 !important;
+    display: flex !important;
+    align-items: center !important;
   }
-  /* Hide chevron arrow in avatar dropdown on mobile */
-  .mobile-hide-chevron {
-    display: none !important;
+
+  .avatar {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid var(--clr-brand-light) !important;
   }
-  /* Guest: only show "Masuk" button */
+
   .navbar-actions .btn-outline.btn-sm {
     font-size: 0.825rem !important;
-    padding: 0.4rem 0.875rem !important;
-    height: 36px !important;
+    padding: 0.35rem 0.85rem !important;
+    height: 34px !important;
     border-radius: 10px !important;
   }
 
-  /* ── Mobile Bottom Nav Bar ── */
+  /* ── 2. Top Page Padding (Generous Breathing Room Below Navbar) ── */
+  .hero-section {
+    padding-top: 6.5rem !important; /* 104px (60px nav + 44px gap) */
+    padding-bottom: 3.5rem !important;
+  }
+
+  .page-wrapper {
+    padding-top: 6.5rem !important;
+    padding-bottom: 3rem !important;
+  }
+
+  /* ── 3. Section Headers & Container Spacing ── */
+  .section-center-header {
+    margin-bottom: 3.25rem !important; /* 52px gap above feature cards */
+    text-align: center !important;
+    padding: 0 0.5rem !important;
+  }
+
+  .section-center-header .badge {
+    margin-bottom: 1.25rem !important;
+    padding: 0.45rem 1.125rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  .section-center-header h2 {
+    font-size: 1.5rem !important;
+    line-height: 1.35 !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 1rem !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .section-center-header p {
+    font-size: 0.925rem !important;
+    line-height: 1.7 !important;
+    max-width: 100% !important;
+    margin-bottom: 0 !important;
+  }
+
+  .section, .section-surface {
+    padding-top: 4.5rem !important;
+    padding-bottom: 4.5rem !important;
+  }
+
+  /* ── 4. Card Grids & Card Cushions ── */
+  .grid-3, .grid-4, .grid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  .card, .feature-card, .doctor-card, .med-card {
+    padding: 1.75rem 1.5rem !important;
+    border-radius: 20px !important;
+  }
+
+  /* ── 5. Mobile Bottom Tab Bar ── */
   .mobile-bottom-nav {
     display: flex !important;
     position: fixed !important;
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
-    height: 64px !important;
-    background: rgba(7, 12, 30, 0.97) !important;
+    height: 60px !important;
+    background: rgba(7, 11, 20, 0.98) !important;
     backdrop-filter: blur(20px) !important;
     -webkit-backdrop-filter: blur(20px) !important;
-    border-top: 1px solid rgba(255,255,255,0.08) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
     z-index: 1050 !important;
-    padding: 0 0.5rem !important;
+    padding: 0 0.25rem !important;
     padding-bottom: env(safe-area-inset-bottom, 0) !important;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.4) !important;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.5) !important;
   }
+
   .mobile-nav-item {
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 0.2rem !important;
+    gap: 0.15rem !important;
     color: var(--txt-muted) !important;
     text-decoration: none !important;
-    font-size: 0.65rem !important;
+    font-size: 0.625rem !important;
     font-weight: 600 !important;
-    letter-spacing: 0.02em !important;
-    transition: color 0.2s ease !important;
-    padding: 0.5rem 0.25rem !important;
-    border-radius: 12px !important;
+    padding: 0.35rem 0 !important;
   }
+
   .mobile-nav-item svg {
-    width: 22px !important;
-    height: 22px !important;
-    stroke-width: 1.75 !important;
+    width: 20px !important;
+    height: 20px !important;
   }
-  .mobile-nav-item.active,
-  .mobile-nav-item:hover {
+
+  .mobile-nav-item.active {
     color: var(--clr-brand-light) !important;
   }
+
   .mobile-nav-item.active svg {
     stroke: var(--clr-brand-light) !important;
   }
 
-  /* ── Page: add bottom padding for bottom nav ── */
   body {
-    padding-bottom: 64px !important;
-  }
-  .page-wrapper {
-    padding-top: 4.75rem !important;
-    padding-bottom: 2.5rem !important;
+    padding-bottom: 60px !important;
   }
 
-  /* ── Hero: center badge on mobile ── */
-  .hero-badge {
-    display: flex !important;
-    justify-content: center !important;
-    text-align: center !important;
-    width: auto !important;
-    max-width: calc(100% - 0rem) !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-
-  /* ── Section spacing: more breathing room ── */
-  .section {
-    padding-top: 3.5rem !important;
-    padding-bottom: 3.5rem !important;
-  }
-  .section-surface {
-    padding-top: 3.5rem !important;
-    padding-bottom: 3.5rem !important;
-  }
-
-  /* ── Hero section bottom padding ── */
-  .hero-section {
-    padding-top: 5rem !important;
-    padding-bottom: 3.5rem !important;
-  }
-
-  /* ── Doctors section: more top padding ── */
-  section.section[style*="bg-dark"] {
-    padding-top: 4rem !important;
+  /* ── 6. AI Chatbot Trigger (Positioned safely above bottom tab bar) ── */
+  .ai-chatbot-trigger {
+    bottom: 74px !important;
+    right: 1.25rem !important;
+    width: 48px !important;
+    height: 48px !important;
+    z-index: 1040 !important;
   }
 }
+
