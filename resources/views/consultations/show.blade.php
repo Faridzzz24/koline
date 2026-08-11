@@ -122,11 +122,15 @@ html, body {
 @endphp
 
 {{-- Workstation Grid --}}
-<div class="consultation-grid" style="display: grid; grid-template-columns: {{ $hasRightSidebar ? '1fr 360px' : '1fr' }}; gap: 1.5rem; align-items: stretch; flex: 1; min-height: 0; height: 100%;">
+<div class="consultation-grid" 
+     style="display: grid; grid-template-columns: {{ $hasRightSidebar ? '1fr 360px' : '1fr' }}; gap: 1.5rem; align-items: stretch; flex: 1; min-height: 0; height: 100%;"
+     :style="hasRightSidebar ? 'display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; align-items: stretch; flex: 1; min-height: 0; height: 100%;' : 'display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: stretch; flex: 1; min-height: 0; height: 100%;'"
+     x-data="liveChatApp({{ $consultation->id }}, {{ auth()->id() }})" 
+     x-init="initChat()">
 
     {{-- Left Area: Live Teleconsultation Chat Room --}}
     <div style="height: 100%; min-height: 0;">
-        <div class="card chat-card-container" style="padding: 0; overflow: hidden; border-radius: var(--r-xl); box-shadow: 0 10px 30px rgba(0,0,0,0.25); height: 100%; min-height: 480px; display: flex; flex-direction: column;" x-data="liveChatApp({{ $consultation->id }}, {{ auth()->id() }})" x-init="initChat()">
+        <div class="card chat-card-container" style="padding: 0; overflow: hidden; border-radius: var(--r-xl); box-shadow: 0 10px 30px rgba(0,0,0,0.25); height: 100%; min-height: 480px; display: flex; flex-direction: column;">
             
             {{-- Chat Room Top Header --}}
             <div style="padding: 0.875rem 1.25rem; border-bottom: 1px solid var(--bdr-subtle); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; background: var(--bg-surface); flex-shrink: 0; flex-wrap: wrap;">
@@ -272,13 +276,12 @@ html, body {
         </div>
     </div>
 
-    {{-- Right Sidebar: Medical Action Workstation (Shown only when action is needed) --}}
-    @if($hasRightSidebar)
-    <div style="display: flex; flex-direction: column; gap: 1.5rem; height: 100%;">
+    {{-- Right Sidebar: Medical Action Workstation (Shown when action or medical record is needed) --}}
+    <div x-show="hasRightSidebar" x-transition style="display: flex; flex-direction: column; gap: 1.5rem; height: 100%;">
 
         {{-- Doctor Workstation Action: Confirm --}}
-        @if(auth()->user()->isDoctor() && $consultation->status === 'pending')
-            <div class="card card-sm" style="border: 1px solid rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.05); height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+        @if(auth()->user()->isDoctor())
+            <div x-show="consultationStatus === 'pending'" class="card card-sm" style="border: 1px solid rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.05); height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <h4 style="margin-bottom: 0.75rem; color: #FBBF24;">Konfirmasi Antrean Janji</h4>
                     <p style="font-size: 0.85rem; color: var(--txt-body); line-height: 1.6; margin-bottom: 1.25rem;">
@@ -295,8 +298,8 @@ html, body {
         @endif
 
         {{-- Doctor Workstation Action: Complete & Fill Medical Record --}}
-        @if(auth()->user()->isDoctor() && in_array($consultation->status, ['confirmed', 'active']))
-            <div class="card card-sm" style="height: 100%; display: flex; flex-direction: column;">
+        @if(auth()->user()->isDoctor())
+            <div x-show="['confirmed', 'active'].includes(consultationStatus) && !diagnosis" class="card card-sm" style="height: 100%; display: flex; flex-direction: column;">
                 <h3 style="margin-bottom: 1rem; font-size: 1.05rem; font-weight: 700; color: var(--txt-heading); border-bottom: 1px solid var(--bdr-subtle); padding-bottom: 0.75rem;">
                     Diagnosis & Selesaikan Sesi
                 </h3>
@@ -323,7 +326,7 @@ html, body {
             </div>
         @endif
 
-        {{-- Completed Medical Record Display (Reactive Real-Time) --}}
+        {{-- Completed Medical Record Display (Reactive Real-Time FOR BOTH DOCTOR AND PATIENT) --}}
         <div x-show="diagnosis" x-transition class="card card-sm" style="border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.04);">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
                 <svg width="18" height="18" fill="none" stroke="#34D399" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -348,8 +351,8 @@ html, body {
         </div>
 
         {{-- Patient Action: Cancel --}}
-        @if($consultation->status === 'pending' && auth()->user()->isPatient())
-            <form action="{{ route('consultations.cancel', $consultation) }}" method="POST" onsubmit="return confirmDelete(event, 'Apakah Anda yakin ingin membatalkan sesi konsultasi ini?')">
+        @if(auth()->user()->isPatient())
+            <form x-show="consultationStatus === 'pending'" action="{{ route('consultations.cancel', $consultation) }}" method="POST" onsubmit="return confirmDelete(event, 'Apakah Anda yakin ingin membatalkan sesi konsultasi ini?')">
                 @csrf
                 <button type="submit" class="btn btn-outline btn-block btn-sm" style="color: var(--clr-danger); border-color: rgba(239, 68, 68, 0.3);">
                     Batalkan Janji Konsultasi
@@ -358,7 +361,6 @@ html, body {
         @endif
 
     </div>
-    @endif
 </div>
 
 @push('scripts')
@@ -372,6 +374,10 @@ function liveChatApp(consultationId, currentUserId) {
         diagnosis: @json($consultation->diagnosis),
         prescription: @json($consultation->prescription),
         notes: @json($consultation->notes),
+
+        get hasRightSidebar() {
+            return {{ auth()->user()->isDoctor() ? 'true' : 'false' }} || !!this.diagnosis || (this.consultationStatus === 'pending' && {{ auth()->user()->isPatient() ? 'true' : 'false' }});
+        },
 
         startTimestampMs: {{ $consultation->start_date_time->timestamp * 1000 }},
         endTimestampMs: {{ $consultation->end_date_time->timestamp * 1000 }},
