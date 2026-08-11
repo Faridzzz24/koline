@@ -196,10 +196,12 @@
                     <h3 style="margin-bottom: 1.25rem; font-size: 1.1rem; font-weight: 700; color: var(--txt-heading);">Jadwal Praktik Sesi</h3>
                     <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                         @foreach($doctor->schedules as $schedule)
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.875rem 1.25rem; background: var(--bg-surface); border-radius: var(--r-md); border: 1px solid var(--bdr-subtle); flex-wrap: wrap; gap: 0.5rem;">
-                                <span style="font-weight: 600; color: var(--txt-heading);">{{ $schedule->day_label }}</span>
-                                <span style="color: var(--txt-body); font-size: 0.9rem;">{{ substr($schedule->start_time, 0, 5) }} - {{ substr($schedule->end_time, 0, 5) }} WIB</span>
-                                <span class="badge badge-success">Sesi Aktif</span>
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0.875rem; background: var(--bg-surface); border-radius: var(--r-md); border: 1px solid var(--bdr-subtle); gap: 0.35rem; width: 100%; box-sizing: border-box;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 0;">
+                                    <span style="font-weight: 700; color: var(--txt-heading); font-size: 0.875rem; min-width: 52px; flex-shrink: 0;">{{ $schedule->day_label }}</span>
+                                    <span style="color: var(--txt-muted); font-size: 0.8rem; font-weight: 500; white-space: nowrap;">{{ substr($schedule->start_time, 0, 5) }} - {{ substr($schedule->end_time, 0, 5) }} WIB</span>
+                                </div>
+                                <span class="badge badge-success" style="flex-shrink: 0; white-space: nowrap; padding: 0.3rem 0.65rem; font-size: 0.725rem;">Sesi Aktif</span>
                             </div>
                         @endforeach
                     </div>
