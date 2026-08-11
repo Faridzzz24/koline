@@ -3,13 +3,29 @@
     "buildCommand": "echo 'Build complete'",
     "functions": {
         "api/index.php": {
-            "runtime": "vercel-php@0.7.3",
-            "includeFiles": "{database/**,public/**}"
+            "runtime": "vercel-php@0.7.3"
         }
     },
     "routes": [
         {
-            "handle": "filesystem"
+            "src": "/css/(.*)",
+            "dest": "/public/css/$1"
+        },
+        {
+            "src": "/js/(.*)",
+            "dest": "/public/js/$1"
+        },
+        {
+            "src": "/images/(.*)",
+            "dest": "/public/images/$1"
+        },
+        {
+            "src": "/favicon.ico",
+            "dest": "/public/favicon.ico"
+        },
+        {
+            "src": "/favicon.svg",
+            "dest": "/public/favicon.svg"
         },
         {
             "src": "/(.*)",
