@@ -386,25 +386,13 @@ function liveChatApp(consultationId, currentUserId) {
 
         syncTimers() {
             const now = Date.now();
-            const isConfirmedOrActive = {{ in_array($consultation->status, ['confirmed', 'active']) ? 'true' : 'false' }};
-            
-            // Check if session start time is reached or doctor has confirmed
-            if (!isConfirmedOrActive && now < this.startTimestampMs) {
-                this.activeStarted = false;
-                this.startTimer = Math.max(0, Math.floor((this.startTimestampMs - now) / 1000));
-            } else {
-                this.activeStarted = true;
-            }
+            this.activeStarted = true;
+            this.activeExpired = false;
 
-            // Calculate remaining seconds to end time
-            if (this.activeStarted) {
-                if (now >= this.endTimestampMs) {
-                    this.activeExpired = true;
-                    this.sessionTimer = 0;
-                } else {
-                    this.activeExpired = false;
-                    this.sessionTimer = Math.max(0, Math.floor((this.endTimestampMs - now) / 1000));
-                }
+            if (this.endTimestampMs > now) {
+                this.sessionTimer = Math.max(0, Math.floor((this.endTimestampMs - now) / 1000));
+            } else {
+                this.sessionTimer = (this.durationHours || 1) * 3600;
             }
         },
 

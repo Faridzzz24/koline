@@ -19,7 +19,8 @@ class ConsultationController extends Controller
                 ->orderByDesc('created_at')
                 ->paginate(10);
         } elseif ($user->isDoctor()) {
-            $doctorId = $user->doctor ? $user->doctor->id : 0;
+            $doctor = $user->doctor ?: \App\Models\Doctor::where('user_id', $user->id)->first();
+            $doctorId = $doctor ? $doctor->id : 0;
             $consultations = Consultation::with(['patient'])
                 ->where('doctor_id', $doctorId)
                 ->orderByDesc('created_at')
@@ -175,7 +176,13 @@ class ConsultationController extends Controller
     private function authorizeConsultation(Consultation $consultation): void
     {
         $user = Auth::user();
+        if ($user->isAdmin()) return;
         if ($user->isPatient() && $user->id !== $consultation->patient_id) abort(403);
-        if ($user->isDoctor() && $user->doctor?->id !== $consultation->doctor_id) abort(403);
+        if ($user->isDoctor()) {
+            $doctor = $user->doctor ?: \App\Models\Doctor::where('user_id', $user->id)->first();
+            if (!$doctor || $doctor->id !== $consultation->doctor_id) {
+                abort(403);
+            }
+        }
     }
 }
