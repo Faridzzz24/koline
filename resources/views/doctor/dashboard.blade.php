@@ -162,12 +162,9 @@
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <form :action="item.confirm_url" method="POST" style="margin:0;">
-                                        @csrf
-                                        <button type="submit" class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;">
-                                            Konfirmasi
-                                        </button>
-                                    </form>
+                                    <button @click="confirmConsultation(item)" class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;">
+                                        ✓ Konfirmasi
+                                    </button>
                                     <a :href="item.show_url" class="btn btn-outline btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.625rem;">
                                         Detail →
                                     </a>
@@ -250,11 +247,41 @@ function doctorDashboardApp() {
         completedCount: {{ $stats['completed'] }},
         pendingList: @json($pendingList),
         activeList: @json($activeList),
+        csrfToken: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
 
         initDashboard() {
+            // Start polling every 2 seconds
             setInterval(() => {
                 this.pollConsultations();
             }, 2000);
+        },
+
+        async confirmConsultation(item) {
+            if (!confirm('Konfirmasi konsultasi dari ' + item.patient_name + '?')) return;
+            try {
+                const res = await fetch(item.confirm_url, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    }
+                });
+                if (res.ok) {
+                    // Immediately remove from pending and redirect to consultation
+                    this.pendingList = this.pendingList.filter(p => p.id !== item.id);
+                    this.pendingCount = Math.max(0, this.pendingCount - 1);
+                    this.activeCount += 1;
+                    // Redirect to consultation room
+                    window.location.href = item.show_url;
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    alert('Gagal konfirmasi: ' + (data.message || 'Silakan coba lagi.'));
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
+            }
         },
 
         async pollConsultations() {

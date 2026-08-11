@@ -60,8 +60,13 @@ class ConsultationController extends Controller
         return view('consultations.show', compact('consultation', 'initialMessages'));
     }
 
-    public function sendMessage(Request $request, Consultation $consultation)
+    public function sendMessage(Request $request, $consultationId)
     {
+        $consultation = Consultation::find($consultationId);
+        if (!$consultation) {
+            return response()->json(['error' => 'Konsultasi tidak ditemukan.'], 404);
+        }
+
         $this->authorizeConsultation($consultation);
         $request->validate(['message' => 'required|string|max:2000']);
 
@@ -70,21 +75,6 @@ class ConsultationController extends Controller
                 return response()->json(['error' => 'Konsultasi ini tidak aktif.'], 422);
             }
             return back()->with('error', 'Konsultasi ini tidak aktif.');
-        }
-
-        if (!$consultation->is_started) {
-            $startTime = substr($consultation->consultation_time, 0, 5);
-            if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
-                return response()->json(['error' => "Sesi belum dimulai. Sesi dijadwalkan pukul {$startTime} WIB."], 422);
-            }
-            return back()->with('error', "Sesi belum dimulai. Sesi dijadwalkan pukul {$startTime} WIB.");
-        }
-
-        if ($consultation->is_expired) {
-            if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
-                return response()->json(['error' => 'Waktu sesi konsultasi telah berakhir.'], 422);
-            }
-            return back()->with('error', 'Waktu sesi konsultasi telah berakhir.');
         }
 
         if ($consultation->status === 'confirmed') {
@@ -98,9 +88,6 @@ class ConsultationController extends Controller
             'type' => 'text',
         ]);
 
-        // Broadcast event for real-time (Reverb)
-        // broadcast(new NewConsultationMessage($message))->toOthers();
-
         if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
             $message->load('sender');
             return response()->json([
@@ -108,7 +95,7 @@ class ConsultationController extends Controller
                 'data' => [
                     'id' => $message->id,
                     'sender_id' => $message->sender_id,
-                    'sender_name' => $message->sender->name,
+                    'sender_name' => $message->sender ? $message->sender->name : 'Pengguna',
                     'message' => $message->message,
                     'created_at' => $message->created_at->format('H:i'),
                     'is_sent' => true,
@@ -119,10 +106,16 @@ class ConsultationController extends Controller
         return back();
     }
 
-    public function complete(Consultation $consultation, Request $request)
+    public function complete($consultationId, Request $request)
     {
+        $consultation = Consultation::find($consultationId);
+        if (!$consultation) {
+            return redirect()->route('doctor.dashboard')->with('error', 'Konsultasi tidak ditemukan.');
+        }
+
         $user = Auth::user();
-        if (!$user->isDoctor() || !$user->doctor || $user->doctor->id !== $consultation->doctor_id) {
+        $doctor = $user->doctor ?: \App\Models\Doctor::where('user_id', $user->id)->first();
+        if (!$user->isDoctor() || !$doctor || $doctor->id !== $consultation->doctor_id) {
             abort(403);
         }
 
@@ -142,32 +135,65 @@ class ConsultationController extends Controller
         return back()->with('success', 'Konsultasi berhasil diselesaikan.');
     }
 
-    public function confirm(Consultation $consultation)
+    public function confirm(Request $request, $consultationId)
     {
+        $consultation = Consultation::find($consultationId);
+        if (!$consultation) {
+            if ($request->expectsJson() || $request->wantsJson()) {
+                return response()->json(['error' => 'Konsultasi tidak ditemukan.'], 404);
+            }
+            return redirect()->route('doctor.dashboard')->with('error', 'Konsultasi tidak ditemukan.');
+        }
+
         $user = Auth::user();
         $doctor = $user->doctor ?: \App\Models\Doctor::where('user_id', $user->id)->first();
         if (!$user->isDoctor() || !$doctor || $doctor->id !== $consultation->doctor_id) {
+            if ($request->expectsJson() || $request->wantsJson()) {
+                return response()->json(['error' => 'Forbidden'], 403);
+            }
             abort(403);
         }
+
         $consultation->status = 'confirmed';
         $consultation->updated_at = \Carbon\Carbon::now();
         $consultation->save();
 
-        return back()->with('success', 'Konsultasi berhasil disetujui & dikonfirmasi! Ruang chat medis telah terbuka.');
+        if ($request->expectsJson() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Konsultasi berhasil dikonfirmasi!',
+                'show_url' => route('consultations.show', $consultation),
+            ]);
+        }
+
+        return redirect()->route('consultations.show', $consultation)
+            ->with('success', 'Konsultasi berhasil disetujui & dikonfirmasi! Ruang chat medis telah terbuka.');
     }
 
-    public function cancel(Consultation $consultation)
+    public function cancel($consultationId)
     {
+        $consultation = Consultation::find($consultationId);
+        if (!$consultation) {
+            return redirect()->route('consultations.index')->with('error', 'Konsultasi tidak ditemukan.');
+        }
+
         $user = Auth::user();
-        if ($user->id !== $consultation->patient_id && !$user->isAdmin() && !($user->isDoctor() && $user->doctor?->id === $consultation->doctor_id)) {
+        $doctor = $user->doctor ?: \App\Models\Doctor::where('user_id', $user->id)->first();
+        if ($user->id !== $consultation->patient_id && !$user->isAdmin() && !($user->isDoctor() && $doctor && $doctor->id === $consultation->doctor_id)) {
             abort(403);
         }
+
         $consultation->update(['status' => 'cancelled']);
         return back()->with('success', 'Konsultasi berhasil dibatalkan.');
     }
 
-    public function messages(Consultation $consultation)
+    public function messages($consultationId)
     {
+        $consultation = Consultation::find($consultationId);
+        if (!$consultation) {
+            return response()->json(['error' => 'Konsultasi tidak ditemukan.'], 404);
+        }
+
         $this->authorizeConsultation($consultation);
         $currentUserId = Auth::id();
         $messages = $consultation->messages()->with('sender')->get()->map(function ($msg) use ($currentUserId) {
