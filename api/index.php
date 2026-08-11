@@ -1,8 +1,15 @@
 <?php
 
-$tmpDir = '/tmp';
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
-// Setup storage directories inside /tmp
+$tmpDir = '/tmp';
+$tmpDb = $tmpDir . '/database.sqlite';
+
+// 1. Setup storage directories inside /tmp
 $storageDirs = [
     $tmpDir . '/storage/framework/views',
     $tmpDir . '/storage/framework/sessions',
@@ -16,23 +23,21 @@ foreach ($storageDirs as $dir) {
     }
 }
 
-// Copy seeded SQLite database to /tmp if target is missing or smaller than source
+// 2. Prepare SQLite database in /tmp (ALWAYS target /tmp/database.sqlite)
 $dbSource = __DIR__ . '/../database/database.sqlite';
-$dbTarget = $tmpDir . '/database.sqlite';
 
-if (file_exists($dbSource) && filesize($dbSource) > 1000) {
-    if (!file_exists($dbTarget) || filesize($dbTarget) < 1000) {
-        @unlink($dbTarget);
-        @copy($dbSource, $dbTarget);
+if (!file_exists($tmpDb) || filesize($tmpDb) < 1000) {
+    if (file_exists($dbSource) && filesize($dbSource) > 1000) {
+        @copy($dbSource, $tmpDb);
+    } else {
+        @file_put_contents($tmpDb, '');
     }
 }
 
-$activeDb = file_exists($dbTarget) && filesize($dbTarget) > 1000 ? $dbTarget : $dbSource;
-
-// Set Environment variables before Laravel boots
-putenv("DB_DATABASE={$activeDb}");
-$_ENV['DB_DATABASE'] = $activeDb;
-$_SERVER['DB_DATABASE'] = $activeDb;
+// 3. Force environment variables to ALWAYS point to /tmp/database.sqlite
+putenv("DB_DATABASE={$tmpDb}");
+$_ENV['DB_DATABASE'] = $tmpDb;
+$_SERVER['DB_DATABASE'] = $tmpDb;
 
 $_ENV['APP_CONFIG_CACHE'] = $tmpDir . '/config.php';
 $_ENV['APP_EVENTS_CACHE'] = $tmpDir . '/events.php';
@@ -46,5 +51,37 @@ $_SERVER['SCRIPT_FILENAME'] = __DIR__ . '/../public/index.php';
 $_SERVER['SCRIPT_NAME'] = '/index.php';
 $_SERVER['PHP_SELF'] = '/index.php';
 
-// Forward request to Laravel public entrypoint
-require __DIR__ . '/../public/index.php';
+// 4. Bootstrap Laravel Application
+require __DIR__ . '/../vendor/autoload.php';
+$app = require_once __DIR__ . '/../bootstrap/app.php';
+
+// 5. Register booted hook to override database config in memory before any query executes
+$app->booted(function ($app) use ($tmpDb) {
+    config(['database.connections.sqlite.database' => $tmpDb]);
+    DB::purge('sqlite');
+
+    // Auto-migrate and seed if tables are missing or empty
+    try {
+        if (!Schema::hasTable('specializations') || !Schema::hasTable('users')) {
+            Artisan::call('migrate:fresh', [
+                '--seed' => true,
+                '--force' => true,
+            ]);
+        }
+    } catch (\Throwable $e) {
+        try {
+            Artisan::call('migrate:fresh', [
+                '--seed' => true,
+                '--force' => true,
+            ]);
+        } catch (\Throwable $ex) {}
+    }
+});
+
+// 6. Handle HTTP Request
+$kernel = $app->make(Kernel::class);
+$response = $kernel->handle(
+    $request = Request::capture()
+)->send();
+
+$kernel->terminate($request, $response);
