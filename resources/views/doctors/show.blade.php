@@ -2,11 +2,112 @@
 @section('title', $doctor->user->name)
 
 @section('content')
-<div class="page-wrapper">
+<style>
+.doctor-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2.5rem;
+    align-items: start;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.doctor-hero-header {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.doctor-avatar-box {
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+    min-height: 72px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--clr-brand), var(--clr-teal));
+    color: white;
+    font-size: 1.6rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.3);
+}
+
+.doctor-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--bdr-subtle);
+    border-bottom: 1px solid var(--bdr-subtle);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.doctor-booking-sidebar {
+    position: sticky;
+    top: 115px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+    .doctor-detail-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .doctor-booking-sidebar {
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .doctor-hero-header {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 1rem !important;
+    }
+
+    .doctor-hero-header-info {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .doctor-badges-group {
+        justify-content: center !important;
+    }
+
+    .doctor-stats-row {
+        gap: 0.5rem !important;
+        padding: 1rem 0 !important;
+    }
+
+    .doctor-stat-val {
+        font-size: 1.25rem !important;
+    }
+
+    .doctor-stat-lbl {
+        font-size: 0.65rem !important;
+    }
+}
+</style>
+
+<div class="page-wrapper" style="padding-top: 120px;">
     <div class="container">
 
         {{-- Back Navigation --}}
-        <a href="{{ route('doctors.index') }}" class="btn btn-ghost btn-sm mb-6">
+        <a href="{{ route('doctors.index') }}" class="btn btn-ghost btn-sm mb-6" style="display: inline-flex; width: auto;">
             ← Kembali ke Daftar Dokter
         </a>
 
@@ -16,20 +117,20 @@
             $initials = strtoupper(substr($words[0] ?? 'D', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
         @endphp
 
-        <div style="display: grid; grid-template-columns: 1fr 380px; gap: 3rem; align-items: start;">
+        <div class="doctor-detail-grid">
 
             {{-- LEFT: Doctor Profile --}}
-            <div style="display: flex; flex-direction: column; gap: 2.25rem;">
+            <div style="display: flex; flex-direction: column; gap: 1.75rem; width: 100%; min-width: 0;">
 
                 {{-- Hero Profile Card --}}
                 <div class="card">
-                    <div class="flex gap-6 items-center mb-6 flex-wrap">
-                        <div class="initial-avatar initial-avatar-lg">
+                    <div class="doctor-hero-header">
+                        <div class="doctor-avatar-box">
                             {{ $initials }}
                         </div>
-                        <div style="flex: 1; min-width: 240px;">
-                            <div class="flex items-center gap-3 flex-wrap mb-2">
-                                <h1 style="font-size: 1.85rem; font-weight: 800; margin-bottom: 0;">{{ $doctor->user->name }}</h1>
+                        <div class="doctor-hero-header-info" style="flex: 1; min-width: 0;">
+                            <div class="doctor-badges-group flex items-center gap-2 flex-wrap mb-2">
+                                <h1 style="font-size: clamp(1.4rem, 3.5vw, 1.85rem); font-weight: 800; margin-bottom: 0; color: var(--txt-heading);">{{ $doctor->user->name }}</h1>
                                 @if($doctor->is_verified)
                                     <span class="badge badge-teal">✓ Terverifikasi STR</span>
                                 @endif
@@ -39,10 +140,10 @@
                                     <span class="badge badge-muted">○ Offline</span>
                                 @endif
                             </div>
-                            <div style="font-size: 1.15rem; color: var(--clr-teal-light); font-weight: 600; margin-bottom: 0.75rem;">
+                            <div style="font-size: 1.05rem; color: var(--clr-teal-light); font-weight: 600; margin-bottom: 0.5rem;">
                                 {{ $doctor->specialization->name }}
                             </div>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2" style="justify-content: inherit;">
                                 <span style="color: #F59E0B; font-weight: 700;">★ {{ $doctor->rating }}</span>
                                 <span style="font-size: 0.85rem; color: var(--txt-muted);">({{ $doctor->total_reviews }} ulasan pasien)</span>
                             </div>
@@ -50,28 +151,28 @@
                     </div>
 
                     {{-- Stats Bar --}}
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding: 1.75rem 0; border-top: 1px solid var(--bdr-subtle); border-bottom: 1px solid var(--bdr-subtle); margin-bottom: 1.75rem; text-align: center;">
+                    <div class="doctor-stats-row">
                         <div>
-                            <div style="font-size: 1.625rem; font-weight: 800; color: var(--txt-heading);">{{ $doctor->experience_years }} Thn</div>
-                            <div style="font-size: 0.775rem; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Pengalaman Medis</div>
+                            <div class="doctor-stat-val" style="font-size: 1.5rem; font-weight: 800; color: var(--txt-heading);">{{ $doctor->experience_years }} Thn</div>
+                            <div class="doctor-stat-lbl" style="font-size: 0.725rem; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.25rem;">Pengalaman Medis</div>
                         </div>
                         <div style="border-left: 1px solid var(--bdr-subtle); border-right: 1px solid var(--bdr-subtle);">
-                            <div style="font-size: 1.625rem; font-weight: 800; color: var(--txt-heading);">{{ number_format($doctor->total_patients) }}</div>
-                            <div style="font-size: 0.775rem; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Pasien Ditangani</div>
+                            <div class="doctor-stat-val" style="font-size: 1.5rem; font-weight: 800; color: var(--txt-heading);">{{ number_format($doctor->total_patients) }}</div>
+                            <div class="doctor-stat-lbl" style="font-size: 0.725rem; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.25rem;">Pasien Ditangani</div>
                         </div>
                         <div>
-                            <div style="font-size: 1.625rem; font-weight: 800; color: var(--txt-heading);">{{ $doctor->total_reviews }}</div>
-                            <div style="font-size: 0.775rem; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Ulasan Medis</div>
+                            <div class="doctor-stat-val" style="font-size: 1.5rem; font-weight: 800; color: var(--txt-heading);">{{ $doctor->total_reviews }}</div>
+                            <div class="doctor-stat-lbl" style="font-size: 0.725rem; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.25rem;">Ulasan Medis</div>
                         </div>
                     </div>
 
                     {{-- Bio --}}
-                    <h3 style="margin-bottom: 0.875rem; font-size: 1.15rem; font-weight: 700; color: var(--txt-heading);">Profil & Pengalaman Medis</h3>
-                    <p style="color: var(--txt-body); line-height: 1.85; font-size: 0.975rem;">{{ $doctor->bio }}</p>
+                    <h3 style="margin-bottom: 0.75rem; font-size: 1.1rem; font-weight: 700; color: var(--txt-heading);">Profil & Pengalaman Medis</h3>
+                    <p style="color: var(--txt-body); line-height: 1.8; font-size: 0.95rem;">{{ $doctor->bio }}</p>
                 </div>
 
                 {{-- Medical Info Grid --}}
-                <div class="grid grid-2">
+                <div class="grid grid-2" style="gap: 1.25rem;">
                     <div class="card card-sm">
                         <div style="font-size: 0.75rem; color: var(--txt-muted); margin-bottom: 0.375rem; text-transform: uppercase; letter-spacing: 0.05em;">Pendidikan</div>
                         <div style="font-weight: 600; color: var(--txt-heading);">{{ $doctor->education ?? 'Fakultas Kedokteran Unair' }}</div>
@@ -92,12 +193,12 @@
 
                 {{-- Schedule --}}
                 <div class="card">
-                    <h3 style="margin-bottom: 1.5rem; font-size: 1.15rem; font-weight: 700; color: var(--txt-heading);">Jadwal Praktik Sesi</h3>
-                    <div style="display: flex; flex-direction: column; gap: 0.875rem;">
+                    <h3 style="margin-bottom: 1.25rem; font-size: 1.1rem; font-weight: 700; color: var(--txt-heading);">Jadwal Praktik Sesi</h3>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                         @foreach($doctor->schedules as $schedule)
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; background: var(--bg-surface); border-radius: var(--r-md); border: 1px solid var(--bdr-subtle);">
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.875rem 1.25rem; background: var(--bg-surface); border-radius: var(--r-md); border: 1px solid var(--bdr-subtle); flex-wrap: wrap; gap: 0.5rem;">
                                 <span style="font-weight: 600; color: var(--txt-heading);">{{ $schedule->day_label }}</span>
-                                <span style="color: var(--txt-body); font-size: 0.925rem;">{{ substr($schedule->start_time, 0, 5) }} - {{ substr($schedule->end_time, 0, 5) }} WIB</span>
+                                <span style="color: var(--txt-body); font-size: 0.9rem;">{{ substr($schedule->start_time, 0, 5) }} - {{ substr($schedule->end_time, 0, 5) }} WIB</span>
                                 <span class="badge badge-success">Sesi Aktif</span>
                             </div>
                         @endforeach
@@ -107,9 +208,9 @@
             </div>
 
             {{-- RIGHT: Booking Form Card --}}
-            <div style="position: sticky; top: 115px;" x-data="{ durationHours: 1, baseFee: {{ $doctor->consultation_fee }}, selectedTime: '08:00' }">
-                <div class="card">
-                    <div style="font-size: 2.125rem; font-weight: 800; color: var(--txt-heading); margin-bottom: 0.25rem;">
+            <div class="doctor-booking-sidebar" x-data="{ durationHours: 1, baseFee: {{ $doctor->consultation_fee }}, selectedTime: '08:00' }">
+                <div class="card" style="border-color: rgba(2, 132, 199, 0.35); box-shadow: var(--shadow-lg);">
+                    <div style="font-size: 2rem; font-weight: 800; color: var(--txt-heading); margin-bottom: 0.25rem;">
                         Rp <span x-text="new Intl.NumberFormat('id-ID').format(baseFee * durationHours)">{{ number_format($doctor->consultation_fee, 0, ',', '.') }}</span>
                     </div>
                     <div style="color: var(--txt-muted); font-size: 0.875rem; margin-bottom: 1.5rem;">
@@ -183,7 +284,7 @@
                                     </div>
                                     @error('consultation_time')<div class="form-error">{{ $message }}</div>@enderror
                                 </div>
-                                <div class="form-group" style="margin-bottom: 1.75rem;">
+                                <div class="form-group" style="margin-bottom: 1.5rem;">
                                     <label class="form-label flex items-center gap-2" style="font-weight: 700; color: var(--txt-heading);">
                                         <svg width="16" height="16" fill="none" stroke="var(--clr-brand-light)" stroke-width="2" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         Keluhan Medis Utama
@@ -191,8 +292,8 @@
                                     <textarea name="complaint" class="form-input" rows="4" placeholder="Jelaskan secara rinci keluhan atau gejala yang Anda alami..." required minlength="10"></textarea>
                                     @error('complaint')<div class="form-error">{{ $message }}</div>@enderror
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-block btn-lg">
-                                    Booking Janji Konsultasi
+                                <button type="submit" class="btn btn-primary btn-block btn-lg" style="width: 100%;">
+                                    Mulai Konsultasi Daring →
                                 </button>
                             </form>
                         @else
@@ -200,16 +301,16 @@
                         @endif
                     @else
                         <div class="alert alert-info mb-4">Silakan masuk ke akun Anda untuk melakukan booking konsultasi.</div>
-                        <a href="{{ route('login') }}" class="btn btn-primary btn-block btn-lg">Masuk untuk Booking</a>
+                        <a href="{{ route('login') }}" class="btn btn-primary btn-block btn-lg" style="width: 100%;">Masuk untuk Booking</a>
                     @endauth
 
                     <div class="divider"></div>
-                    <div style="display: flex; flex-direction: column; gap: 0.875rem; font-size: 0.85rem; color: var(--txt-muted);">
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.825rem; color: var(--txt-muted);">
                         <div class="flex items-center gap-2">
-                            <span>✓</span> <span>Dokter terverifikasi Kementerian Kesehatan</span>
+                            <span style="color: var(--clr-teal-light);">✓</span> <span>Dokter terverifikasi Kementerian Kesehatan</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span>✓</span> <span>Privasi & rekam medis dijamin aman</span>
+                            <span style="color: var(--clr-teal-light);">✓</span> <span>Privasi & rekam medis dijamin aman</span>
                         </div>
                     </div>
                 </div>
@@ -218,10 +319,4 @@
         </div>
     </div>
 </div>
-
-@media (max-width: 1024px) {
-    div[style*="grid-template-columns: 1fr 380px"] {
-        grid-template-columns: 1fr !important;
-    }
-}
 @endsection
