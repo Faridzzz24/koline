@@ -18,6 +18,25 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AiChatController;
 use Illuminate\Support\Facades\Route;
 
+// Static Asset Delivery Fallbacks for Vercel
+Route::get('/css/app.css', function () {
+    $path = public_path('css/app.css');
+    if (file_exists($path)) {
+        return response(file_get_contents($path), 200)
+            ->header('Content-Type', 'text/css; charset=utf-8');
+    }
+    return response('', 404);
+});
+
+Route::get('/js/app.js', function () {
+    $path = public_path('js/app.js');
+    if (file_exists($path)) {
+        return response(file_get_contents($path), 200)
+            ->header('Content-Type', 'application/javascript; charset=utf-8');
+    }
+    return response('', 404);
+});
+
 // ─── Public Routes ─────────────────────────────────────────────────────────
 Route::get('/', [LandingController::class, 'index'])->name('home');
 
