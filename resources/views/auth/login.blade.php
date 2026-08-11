@@ -9,13 +9,27 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <style>
         {!! file_exists(public_path('css/app.css')) ? file_get_contents(public_path('css/app.css')) : '' !!}
+        @media (max-width: 1024px) {
+            .login-visual-panel {
+                display: none !important;
+            }
+            .login-form-panel {
+                max-width: 100% !important;
+                padding: 2rem 1.25rem !important;
+                width: 100% !important;
+            }
+            body.login-body {
+                justify-content: center !important;
+                align-items: center !important;
+            }
+        }
     </style>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body style="display: flex; min-height: 100vh; background: var(--bg-dark);">
+<body class="login-body" style="display: flex; min-height: 100vh; background: var(--bg-dark);">
 
     {{-- Left Visual Panel (Desktop) --}}
-    <div style="flex: 1; background: radial-gradient(circle at 30% 40%, rgba(2, 132, 199, 0.15) 0%, transparent 60%), var(--bg-surface); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; position: relative; border-right: 1px solid var(--bdr-subtle);">
+    <div class="login-visual-panel" style="flex: 1; background: radial-gradient(circle at 30% 40%, rgba(2, 132, 199, 0.15) 0%, transparent 60%), var(--bg-surface); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; position: relative; border-right: 1px solid var(--bdr-subtle);">
         <div style="text-align: center; max-width: 440px;">
             <div style="display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: var(--r-xl); background: rgba(2, 132, 199, 0.15); margin-bottom: 1.5rem;">
                 <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -45,7 +59,7 @@
     </div>
 
     {{-- Right Form Panel --}}
-    <div style="width: 100%; max-width: 520px; display: flex; align-items: center; justify-content: center; padding: 3rem; background: var(--bg-dark);">
+    <div class="login-form-panel" style="width: 100%; max-width: 520px; display: flex; align-items: center; justify-content: center; padding: 3rem; background: var(--bg-dark);">
         <div style="width: 100%;">
             <div style="margin-bottom: 2.5rem;">
                 <a href="{{ route('home') }}" class="navbar-brand mb-4">
