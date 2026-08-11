@@ -101,9 +101,9 @@
 <section class="section section-surface">
     <div class="container">
         <div class="section-center-header">
-            <div class="badge badge-primary mb-3">Layanan Terintegrasi</div>
-            <h2>Platform Medis Terlengkap di Indonesia</h2>
-            <p style="color: var(--txt-muted); font-size: 1rem; line-height: 1.7; margin: 0;">Tiga pilar utama layanan KoLine untuk memastikan kesehatan Anda terjaga secara komprehensif.</p>
+            <div class="badge badge-primary mb-2" style="display: inline-flex;">Layanan Terintegrasi</div>
+            <h2 style="margin-bottom: 0.5rem; font-size: clamp(1.375rem, 3vw, 2.25rem);">Platform Medis Terlengkap di Indonesia</h2>
+            <p style="color: var(--txt-muted); font-size: 0.95rem; line-height: 1.6; margin: 0;">Tiga pilar utama layanan KoLine untuk memastikan kesehatan Anda terjaga secara komprehensif.</p>
         </div>
         <div class="grid grid-3">
             <a href="{{ route('doctors.index') }}" class="card feature-card" style="text-decoration: none;">
@@ -154,14 +154,14 @@
                 @endphp
                 <div class="doctor-card landing-doctor-item">
                     <div>
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="initial-avatar" style="width: 50px; height: 50px; min-width: 50px;">{{ $initials }}</div>
+                        <div class="flex items-start gap-3.5 mb-4">
+                            <div class="initial-avatar" style="width: 48px; height: 48px; min-width: 48px; min-height: 48px; font-size: 1rem;">{{ $initials }}</div>
                             <div style="min-width: 0; flex: 1;">
-                                <div style="font-size: 0.95rem; font-weight: 700; color: var(--txt-heading); line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ $doctor->user->name }}</div>
-                                <div style="font-size: 0.8rem; color: var(--clr-teal-light); font-weight: 600; margin-top: 0.1rem;">{{ $doctor->specialization->name }}</div>
+                                <div style="font-size: 0.95rem; font-weight: 700; color: var(--txt-heading); line-height: 1.3; margin-bottom: 0.2rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ $doctor->user->name }}</div>
+                                <div style="font-size: 0.8rem; color: var(--clr-teal-light); font-weight: 600; margin-bottom: 0.35rem;">{{ $doctor->specialization->name }}</div>
+                                <div style="font-size: 0.775rem; color: var(--txt-muted); line-height: 1.4;">{{ Str::limit($doctor->hospital ?? 'RS Pusat Pertamina', 24) }} · {{ $doctor->experience_years }} Thn</div>
                             </div>
                         </div>
-                        <div style="font-size: 0.825rem; color: var(--txt-muted); margin-bottom: 1rem; line-height: 1.5;">{{ Str::limit($doctor->hospital ?? 'Klinik Utama Medika', 30) }} · {{ $doctor->experience_years }} Thn</div>
                     </div>
                     <div style="border-top: 1px solid var(--bdr-subtle); padding-top: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                         <div>
@@ -183,3 +183,4 @@
 </section>
 
 @endsection
+
