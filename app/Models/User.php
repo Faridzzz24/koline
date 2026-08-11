@@ -42,7 +42,9 @@ class User extends Authenticatable
         if ($this->avatar) {
             return asset('storage/' . $this->avatar);
         }
-        $initials = urlencode($this->name);
+        $cleanName = preg_replace('/^(drg\.|dr\.|Prof\.|Sp\.[A-Z]+)\s*/i', '', $this->name);
+        $cleanName = preg_replace('/,?\s*Sp\.[A-Z]+.*$/i', '', $cleanName);
+        $initials = urlencode(trim($cleanName));
         return "https://ui-avatars.com/api/?name={$initials}&background=0284C7&color=fff&bold=true&size=128";
     }
 

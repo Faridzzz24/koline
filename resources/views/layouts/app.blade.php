@@ -21,7 +21,7 @@
     {{-- ── Sidebar Navigation ───────────────────────── --}}
     <aside id="sidebar" class="sidebar" :class="{ 'collapsed': sidebarCollapsed }">
         <div class="sidebar-brand flex-between items-center">
-            <a href="{{ route('home') }}" class="navbar-brand sidebar-brand-logo-wrap">
+            <a href="{{ auth()->check() ? (auth()->user()->isAdmin() ? route('admin.dashboard') : (auth()->user()->isDoctor() ? route('doctor.dashboard') : route('home'))) : route('home') }}" class="navbar-brand sidebar-brand-logo-wrap">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                     <path d="M12 9v6M9 12h6"/>
@@ -117,10 +117,12 @@
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink: 0;"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 <span class="sidebar-link-text">Profil Saya</span>
             </a>
-            <a href="{{ route('home') }}" class="sidebar-link" title="Beranda Depan">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink: 0;"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                <span class="sidebar-link-text">Beranda Depan</span>
-            </a>
+            @if(auth()->user()->isPatient())
+                <a href="{{ route('home') }}" class="sidebar-link" title="Beranda Depan">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink: 0;"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    <span class="sidebar-link-text">Beranda Depan</span>
+                </a>
+            @endif
         </nav>
 
         <div style="padding: 1rem 1.25rem 1.5rem; border-top: 1px solid var(--bdr-subtle);">
