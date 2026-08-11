@@ -403,10 +403,10 @@ function liveChatApp(consultationId, currentUserId) {
                 this.syncTimers();
             }, 1000);
 
-            // Auto background polling for new messages & status sync every 1 second (1000ms)
+            // Auto background polling for new messages & status sync every 500ms for zero-delay realtime chat!
             setInterval(() => {
                 this.fetchMessages();
-            }, 1000);
+            }, 500);
         },
 
         syncTimers() {
