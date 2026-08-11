@@ -40,12 +40,11 @@ html, body {
 }
 @media (max-width: 1024px) {
     html, body { overflow: auto !important; height: auto; }
-    .main-content { overflow: visible !important; height: auto; padding-bottom: 5rem !important; }
+    .main-content { overflow: visible !important; height: auto; padding-bottom: 2rem !important; }
     .consultation-grid { grid-template-columns: 1fr !important; }
     .chat-card-container {
-        height: min(72vh, 600px) !important;
+        height: 75vh !important;
         min-height: 480px !important;
-        max-height: 650px !important;
         display: flex !important;
         flex-direction: column !important;
         overflow: hidden !important;
@@ -59,15 +58,57 @@ html, body {
     }
 }
 @media (max-width: 768px) {
+    html, body {
+        height: 100% !important;
+        overflow: auto !important;
+    }
+    .main-content {
+        padding: 0.5rem 0.5rem 1rem !important;
+        min-height: 100vh !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
     .consultation-header-bar {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 0.75rem !important;
+        padding-bottom: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+        gap: 0.5rem !important;
+    }
+    .consultation-header-bar h1 {
+        font-size: 1.2rem !important;
     }
     .consultation-meta-wrapper {
         width: 100% !important;
         justify-content: flex-start !important;
-        gap: 0.4rem !important;
+        gap: 0.35rem !important;
+    }
+    .consultation-meta-item {
+        padding: 0.25rem 0.5rem !important;
+        font-size: 0.725rem !important;
+    }
+    .chat-card-container {
+        height: calc(100dvh - 125px) !important;
+        min-height: 440px !important;
+        max-height: calc(100dvh - 105px) !important;
+        border-radius: var(--r-lg) !important;
+        border: 1px solid var(--bdr-subtle) !important;
+        margin: 0 !important;
+    }
+    .chat-messages {
+        padding: 0.875rem 1rem !important;
+    }
+    .chat-input-bar {
+        padding: 0.625rem 0.75rem !important;
+        gap: 0.5rem !important;
+    }
+    .chat-input {
+        padding: 0.625rem 1rem !important;
+        font-size: 0.875rem !important;
+    }
+    .chat-send-btn {
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
     }
     .ai-chatbot-trigger {
         display: none !important;
@@ -248,7 +289,7 @@ html, body {
                     <input type="text" 
                            x-model="newMessage" 
                            class="chat-input" 
-                           placeholder="Ketik pesan konsultasi medis di sini..." 
+                           placeholder="Ketik pesan..." 
                            :disabled="isSubmitting" 
                            autocomplete="off" 
                            required>
