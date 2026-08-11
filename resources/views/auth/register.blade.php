@@ -7,6 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <style>
+        {!! file_exists(public_path('css/app.css')) ? file_get_contents(public_path('css/app.css')) : '' !!}
+    </style>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body style="display: flex; min-height: 100vh; background: var(--bg-dark); align-items: center; justify-content: center; padding: 3rem 1.5rem;">
