@@ -68,7 +68,20 @@ class DashboardController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        return view('doctor.dashboard', compact('doctor', 'stats', 'pendingConsultations', 'activeConsultations', 'pendingList'));
+        $activeList = $activeConsultations->map(function ($c) {
+            $patientName = $c->patient ? $c->patient->name : 'Pasien';
+            $dateStr = $c->consultation_date ? $c->consultation_date->format('d M Y') : date('d M Y');
+            return [
+                'id' => $c->id,
+                'patient_name' => $patientName,
+                'patient_initial' => strtoupper(substr($patientName, 0, 1)),
+                'date' => $dateStr,
+                'time' => substr($c->consultation_time ?? '00:00', 0, 5) . ' WIB',
+                'show_url' => route('consultations.show', $c),
+            ];
+        });
+
+        return view('doctor.dashboard', compact('doctor', 'stats', 'pendingConsultations', 'activeConsultations', 'pendingList', 'activeList'));
     }
 
     public function poll()
