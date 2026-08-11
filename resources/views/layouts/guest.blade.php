@@ -34,7 +34,7 @@
                     <span>KoLine</span>
                 </a>
 
-                {{-- Center: Perfectly Centered Navigation Links --}}
+                {{-- Center: Nav Links (hidden on mobile) --}}
                 <ul id="nav-menu" class="navbar-nav">
                     <li>
                         <a href="{{ route('doctors.index') }}" class="nav-link {{ request()->routeIs('doctors.*') ? 'active' : '' }}">
@@ -145,12 +145,9 @@
 
                 {{-- Right: Action Buttons --}}
                 <div class="navbar-actions">
-                    <button id="nav-toggle" class="nav-toggle" aria-label="Toggle Navigation">
-                        <span></span><span></span><span></span>
-                    </button>
                     @guest
                         <a href="{{ route('login') }}" class="btn btn-outline btn-sm">Masuk</a>
-                        <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Daftar Akun</a>
+                        <a href="{{ route('register') }}" class="btn btn-primary btn-sm mobile-hide-register">Daftar</a>
                     @endguest
 
                     @auth
@@ -163,10 +160,10 @@
                         </a>
 
                         <div class="dropdown" x-data="{ userMenuOpen: false }" @click.outside="userMenuOpen = false">
-                            <button @click="userMenuOpen = !userMenuOpen" style="background:none;border:none;display:flex;align-items:center;gap:0.625rem;cursor:pointer;padding:0.25rem 0.5rem;border-radius:var(--r-md);transition:background 0.2s;">
+                            <button @click="userMenuOpen = !userMenuOpen" style="background:none;border:none;display:flex;align-items:center;gap:0.5rem;cursor:pointer;padding:0.25rem 0.375rem;border-radius:var(--r-md);transition:background 0.2s;">
                                 <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="avatar">
                                 <span class="user-name-text" style="font-size:0.875rem;font-weight:600;color:var(--txt-heading);">{{ explode(' ', auth()->user()->name)[0] }}</span>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;" :style="userMenuOpen ? 'transform: rotate(180deg)' : ''"><path d="m6 9 6 6 6-6"/></svg>
+                                <svg class="mobile-hide-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;" :style="userMenuOpen ? 'transform: rotate(180deg)' : ''"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
                             <div class="dropdown-menu" x-show="userMenuOpen"
                                  x-transition:enter="transition ease-out duration-150"
@@ -193,6 +190,26 @@
                 </div>
             </div>
         </div>
+    </nav>
+
+    {{-- ── Mobile Bottom Nav Bar ──────────────────────── --}}
+    <nav class="mobile-bottom-nav">
+        <a href="{{ route('home') }}" class="mobile-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Beranda</span>
+        </a>
+        <a href="{{ route('doctors.index') }}" class="mobile-nav-item {{ request()->routeIs('doctors.*') ? 'active' : '' }}">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <span>Dokter</span>
+        </a>
+        <a href="{{ route('health-check.index') }}" class="mobile-nav-item {{ request()->routeIs('health-check.*') ? 'active' : '' }}">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Cek Sehat</span>
+        </a>
+        <a href="{{ route('medicines.index') }}" class="mobile-nav-item {{ request()->routeIs('medicines.*') ? 'active' : '' }}">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+            <span>Apotek</span>
+        </a>
     </nav>
 
     {{-- Flash Notifications --}}

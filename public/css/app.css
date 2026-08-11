@@ -2028,3 +2028,155 @@ html, body {
     border-radius: 16px !important;
   }
 }
+
+/* ─────────────────────────────────────────────
+   MOBILE BOTTOM NAVIGATION BAR
+   (app-like bottom tab bar, desktop = hidden)
+───────────────────────────────────────────── */
+.mobile-bottom-nav {
+  display: none; /* hidden on desktop */
+}
+
+@media (max-width: 768px) {
+
+  /* ── Navbar: clean, no hamburger ── */
+  .navbar {
+    height: 60px !important;
+  }
+  .navbar .container {
+    height: 60px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 1.125rem !important;
+  }
+  .navbar-inner {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    height: 60px !important;
+    gap: 0 !important;
+  }
+  .navbar-brand {
+    display: flex !important;
+    align-items: center !important;
+    height: 60px !important;
+    gap: 0.5rem !important;
+  }
+  .navbar-nav {
+    display: none !important;
+  }
+  .navbar-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    height: 60px !important;
+    flex-shrink: 0 !important;
+  }
+  /* Hide hamburger (already removed from HTML, but just in case) */
+  .nav-toggle {
+    display: none !important;
+  }
+  /* Hide "Daftar" button on mobile to save space */
+  .mobile-hide-register {
+    display: none !important;
+  }
+  /* Hide chevron arrow in avatar dropdown on mobile */
+  .mobile-hide-chevron {
+    display: none !important;
+  }
+  /* Guest: only show "Masuk" button */
+  .navbar-actions .btn-outline.btn-sm {
+    font-size: 0.825rem !important;
+    padding: 0.4rem 0.875rem !important;
+    height: 36px !important;
+    border-radius: 10px !important;
+  }
+
+  /* ── Mobile Bottom Nav Bar ── */
+  .mobile-bottom-nav {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 64px !important;
+    background: rgba(7, 12, 30, 0.97) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-top: 1px solid rgba(255,255,255,0.08) !important;
+    z-index: 1050 !important;
+    padding: 0 0.5rem !important;
+    padding-bottom: env(safe-area-inset-bottom, 0) !important;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.4) !important;
+  }
+  .mobile-nav-item {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.2rem !important;
+    color: var(--txt-muted) !important;
+    text-decoration: none !important;
+    font-size: 0.65rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    transition: color 0.2s ease !important;
+    padding: 0.5rem 0.25rem !important;
+    border-radius: 12px !important;
+  }
+  .mobile-nav-item svg {
+    width: 22px !important;
+    height: 22px !important;
+    stroke-width: 1.75 !important;
+  }
+  .mobile-nav-item.active,
+  .mobile-nav-item:hover {
+    color: var(--clr-brand-light) !important;
+  }
+  .mobile-nav-item.active svg {
+    stroke: var(--clr-brand-light) !important;
+  }
+
+  /* ── Page: add bottom padding for bottom nav ── */
+  body {
+    padding-bottom: 64px !important;
+  }
+  .page-wrapper {
+    padding-top: 4.75rem !important;
+    padding-bottom: 2.5rem !important;
+  }
+
+  /* ── Hero: center badge on mobile ── */
+  .hero-badge {
+    display: flex !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: auto !important;
+    max-width: calc(100% - 0rem) !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* ── Section spacing: more breathing room ── */
+  .section {
+    padding-top: 3.5rem !important;
+    padding-bottom: 3.5rem !important;
+  }
+  .section-surface {
+    padding-top: 3.5rem !important;
+    padding-bottom: 3.5rem !important;
+  }
+
+  /* ── Hero section bottom padding ── */
+  .hero-section {
+    padding-top: 5rem !important;
+    padding-bottom: 3.5rem !important;
+  }
+
+  /* ── Doctors section: more top padding ── */
+  section.section[style*="bg-dark"] {
+    padding-top: 4rem !important;
+  }
+}
