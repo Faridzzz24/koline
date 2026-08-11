@@ -1,7 +1,7 @@
-/* ─────────────────────────────────────────────────
+﻿/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    KoLine (Konsultasi Online) - Enterprise Design System
    High-Precision Layout, Mega Dropdown & Absolute Centering
-   ───────────────────────────────────────────────── */
+   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -88,7 +88,7 @@ body {
   position: relative;
 }
 
-/* ── High Contrast Datepicker Calendar Icon ───────── */
+/* â”€â”€ High Contrast Datepicker Calendar Icon â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1) !important;
   -webkit-filter: invert(1) !important;
@@ -107,7 +107,7 @@ a { color: inherit; text-decoration: none; }
 button { cursor: pointer; font-family: inherit; }
 input, textarea, select { font-family: inherit; }
 
-/* ── Typography Rules ───────────────────────────── */
+/* â”€â”€ Typography Rules â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 h1, h2, h3, h4, h5, h6 {
   color: var(--txt-heading);
   font-weight: 700;
@@ -264,7 +264,7 @@ p:last-child { margin-bottom: 0; }
   border-radius: var(--r-md);
 }
 
-/* ── Absolute Centered Navbar Header ─────────────────── */
+/* â”€â”€ Absolute Centered Navbar Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .navbar {
   position: fixed; top: 0; left: 0; right: 0;
   z-index: 1000;
@@ -340,7 +340,7 @@ p:last-child { margin-bottom: 0; }
 
 .navbar-actions { justify-self: end; display: flex; align-items: center; gap: 1.25rem; flex-shrink: 0; }
 
-/* ── Mega Dropdown Popover (Cek Kesehatan Halodoc-style) ── */
+/* â”€â”€ Mega Dropdown Popover (Cek Kesehatan Halodoc-style) â”€â”€ */
 .mega-dropdown-wrapper {
   position: relative;
 }
@@ -733,7 +733,7 @@ input[type=date]::-webkit-calendar-picker-indicator {
   margin: 0 auto;
 }
 
-/* ── Modern Executive Data Table Architecture ── */
+/* â”€â”€ Modern Executive Data Table Architecture â”€â”€ */
 .table-wrapper {
   background: var(--bg-card);
   border: 1px solid var(--bdr-subtle);
@@ -890,7 +890,7 @@ input[type=date]::-webkit-calendar-picker-indicator {
 ::-webkit-scrollbar-thumb { background: var(--bdr-subtle); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--txt-muted); }
 
-/* ── Teleconsultation Live Chat Room Architecture ──────────────── */
+/* â”€â”€ Teleconsultation Live Chat Room Architecture â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .chat-messages {
   display: flex;
   flex-direction: column;
@@ -1010,7 +1010,7 @@ input[type=date]::-webkit-calendar-picker-indicator {
   transform: scale(0.95);
 }
 
-/* ── KoLine AI Chatbot Component Styles ───────────────── */
+/* â”€â”€ KoLine AI Chatbot Component Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .ai-chatbot-root {
   position: fixed;
   z-index: 9999;
@@ -1225,7 +1225,7 @@ input[type=date]::-webkit-calendar-picker-indicator {
   .ai-chatbot-window { width: calc(100vw - 2rem); height: 500px; }
 }
 
-/* ── Apotek Digital Product Card System ─────────────── */
+/* â”€â”€ Apotek Digital Product Card System â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .med-card {
   background: var(--bg-card);
   border: 1px solid var(--bdr-subtle);
@@ -1268,7 +1268,7 @@ input[type=date]::-webkit-calendar-picker-indicator {
   font-size: 0.85rem;
 }
 
-/* ── Pagination System ──────────────────────────────── */
+/* â”€â”€ Pagination System â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .pagination {
   display: flex;
   align-items: center;
@@ -1304,7 +1304,7 @@ input[type=date]::-webkit-calendar-picker-indicator {
   box-shadow: 0 3px 12px rgba(2, 132, 199, 0.35);
 }
 
-/* ── User Profile Avatar & Dropdown System ─────────── */
+/* â”€â”€ User Profile Avatar & Dropdown System â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .avatar {
   width: 36px;
   height: 36px;
@@ -1356,7 +1356,7 @@ input[type=date]::-webkit-calendar-picker-indicator {
   color: var(--clr-brand-light);
 }
 
-/* ── Custom Glassmorphic Aesthetic Dropdown ─────────── */
+/* â”€â”€ Custom Glassmorphic Aesthetic Dropdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .custom-dropdown-root {
   position: relative;
   width: 100%;
@@ -1423,211 +1423,279 @@ input[type=date]::-webkit-calendar-picker-indicator {
   font-weight: 700;
 }
 
-/* ── ELITE MOBILE APP-LIKE DESIGN SYSTEM (Pixel-Perfect Architecture) ── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+   MOBILE RESPONSIVE SYSTEM
+   Viewport: max-width 768px (phone)
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+/* Global: prevent horizontal scroll */
 html, body {
-  max-width: 100vw;
+  max-width: 100%;
   overflow-x: hidden;
 }
 
-@media (max-width: 768px) {
-  /* 1. Global Viewport & Container Reset */
-  html, body {
-    max-width: 100vw !important;
-    overflow-x: hidden !important;
-    -webkit-text-size-adjust: 100%;
-  }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
+@media (max-width: 768px) {
+
+  /* â”€â”€ Container â”€â”€ */
   .container {
+    width: 100% !important;
+    max-width: 100% !important;
     padding-left: 1.125rem !important;
     padding-right: 1.125rem !important;
+    box-sizing: border-box !important;
   }
 
-  /* 2. Top Header Navbar Mobile Fixed Elevation */
+  /* â”€â”€ Navbar â”€â”€ */
   .navbar {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
-    height: 64px !important;
+    height: 60px !important;
     z-index: 1100 !important;
-    background: rgba(11, 19, 43, 0.96) !important;
-    backdrop-filter: blur(16px) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(7, 12, 30, 0.97) !important;
+    backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+  }
+
+  .navbar .container {
+    height: 60px !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
   .navbar-inner {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    height: 64px !important;
+    width: 100% !important;
+    height: 60px !important;
     padding: 0 !important;
   }
 
-  .navbar-brand {
-    font-size: 1.2rem !important;
-    gap: 0.5rem !important;
+  /* Desktop nav links hidden on mobile */
+  .navbar-nav {
+    display: none !important;
   }
-
-  .navbar-actions {
+  .navbar-nav.open {
     display: flex !important;
-    align-items: center !important;
-    gap: 0.625rem !important;
-  }
-
-  .user-name-text {
-    display: none !important;
-  }
-
-  /* 3. Hero Section Mobile Proportions & Grid Fix */
-  .hero-grid-container {
-    grid-template-columns: 1fr !important;
-    gap: 2rem !important;
-    width: 100% !important;
-  }
-  .hero-grid-container > div:last-child {
-    display: none !important;
-  }
-
-  section:first-of-type, .hero-section {
-    padding-top: 5.25rem !important;
-    padding-bottom: 2.5rem !important;
-  }
-
-  .hero-section h1, h1 {
-    font-size: 1.75rem !important;
-    line-height: 1.28 !important;
-    margin-bottom: 1rem !important;
+    flex-direction: column !important;
+    position: fixed !important;
+    top: 60px !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: rgba(7, 12, 30, 0.98) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+    padding: 1.25rem !important;
+    gap: 0.5rem !important;
+    z-index: 1099 !important;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6) !important;
   }
 
   .nav-toggle {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    width: 26px !important;
+    width: 24px !important;
     height: 18px !important;
     background: none !important;
     border: none !important;
     cursor: pointer !important;
     padding: 0 !important;
     z-index: 1200 !important;
-    margin-left: 0.25rem !important;
+    flex-shrink: 0 !important;
   }
 
-  .badge-teal, .badge {
-    font-size: 0.775rem !important;
-    padding: 0.45rem 0.85rem !important;
-    max-width: 100% !important;
-    white-space: normal !important;
-    line-height: 1.4 !important;
-    text-align: center !important;
-    display: inline-block !important;
+  .nav-toggle span {
+    width: 100% !important;
+    height: 2px !important;
+    background: var(--txt-heading) !important;
+    border-radius: 2px !important;
+    transition: all 0.3s ease !important;
+    display: block !important;
   }
 
-  .hero-buttons {
+  .navbar-actions {
     display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .user-name-text {
+    display: none !important;
+  }
+
+  /* Desktop-only "Masuk / Daftar" buttons on mobile: show only icon / compact */
+  .navbar-actions .btn-outline.btn-sm,
+  .navbar-actions .btn-primary.btn-sm {
+    font-size: 0.8rem !important;
+    padding: 0.4rem 0.75rem !important;
+    height: 36px !important;
+  }
+
+  /* â”€â”€ Hero Section â”€â”€ */
+  .hero-section {
+    padding-top: 5rem !important;
+    padding-bottom: 2.5rem !important;
+  }
+
+  /* collapse 2-col hero to 1-col */
+  .hero-inner-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+
+  /* hide right preview card on mobile */
+  .hero-preview-card {
+    display: none !important;
+  }
+
+  /* Hero text */
+  .hero-section h1, .hero-inner-grid h1 {
+    font-size: 1.625rem !important;
+    line-height: 1.3 !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .hero-section p {
+    font-size: 0.925rem !important;
+    margin-bottom: 1.625rem !important;
+    max-width: 100% !important;
+  }
+
+  /* Hero CTA buttons: stack vertically full width */
+  .hero-cta-buttons {
     flex-direction: column !important;
-    gap: 0.875rem !important;
-    width: 100% !important;
-    margin-bottom: 2.25rem !important;
+    gap: 0.75rem !important;
+    margin-bottom: 2rem !important;
   }
 
-  .hero-buttons .btn {
+  .hero-cta-buttons .btn,
+  .hero-cta-buttons a {
+    max-width: 100% !important;
     width: 100% !important;
-    justify-content: center !important;
-    height: 48px !important;
-    font-size: 0.95rem !important;
+    height: 50px !important;
+    font-size: 0.975rem !important;
     border-radius: 14px !important;
+    justify-content: center !important;
   }
 
-  /* 4. Stats Bar 2x2 Glass Card */
-  .hero-stats-grid {
-    display: grid !important;
+  /* Stats: 2x2 grid */
+  .hero-stats-row {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 1rem !important;
-    padding: 1.25rem !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    background: rgba(15, 23, 42, 0.6) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 18px !important;
+    gap: 1.25rem 1rem !important;
+    padding-top: 1.5rem !important;
   }
 
-  /* 5. Doctor Cards App-Style Mobile UI */
-  .grid-4, .grid-3, .grid-2 {
+  /* â”€â”€ Section & Grid Collapse â”€â”€ */
+  .section {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+  }
+
+  .grid-2, .grid-3, .grid-4 {
     grid-template-columns: 1fr !important;
     gap: 1.25rem !important;
   }
 
-  .doctor-card {
-    background: rgba(15, 23, 42, 0.8) !important;
-    border: 1px solid rgba(2, 132, 199, 0.22) !important;
-    border-radius: 20px !important;
+  /* â”€â”€ Card â”€â”€ */
+  .card {
     padding: 1.25rem !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
   }
 
-  .doctor-card-footer {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 0.75rem !important;
-    padding-top: 1rem !important;
-    margin-top: 1rem !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-  }
-
-  .doctor-card-footer > a.btn,
-  .doctor-card-footer > button {
-    padding: 0.6rem 1.25rem !important;
-    font-size: 0.875rem !important;
-    border-radius: 12px !important;
-    font-weight: 700 !important;
-    white-space: nowrap !important;
-  }
-
-  /* 6. Section Headers Mobile Alignment */
-  .section-header-wrap {
-    display: flex !important;
+  /* â”€â”€ Section Top Bar (heading + button row) â”€â”€ */
+  .section-top-bar {
     flex-direction: column !important;
     align-items: flex-start !important;
     gap: 1rem !important;
-    margin-bottom: 2rem !important;
+    margin-bottom: 1.75rem !important;
   }
 
-  .section-header-wrap .btn {
+  .section-top-bar .btn {
     width: 100% !important;
     justify-content: center !important;
-    height: 44px !important;
+    text-align: center !important;
+  }
+
+  /* â”€â”€ Doctor Cards â”€â”€ */
+  .doctor-card {
+    border-radius: 18px !important;
+    padding: 1.125rem !important;
+  }
+
+  /* â”€â”€ Table Scrolling â”€â”€ */
+  .table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    display: block !important;
+  }
+
+  .table {
+    min-width: 580px !important;
+  }
+
+  .table th, .table td {
+    padding: 0.75rem 0.875rem !important;
+    font-size: 0.825rem !important;
+  }
+
+  /* â”€â”€ Forms: prevent iOS zoom (font-size >= 16px) â”€â”€ */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px !important;
     border-radius: 12px !important;
   }
 
-  /* 7. Floating AI Bot Touch Position */
-  .ai-chatbot-trigger {
-    bottom: 1.5rem !important;
-    right: 1.25rem !important;
-    width: 52px !important;
-    height: 52px !important;
-    border-radius: 50% !important;
-    box-shadow: 0 8px 24px rgba(2, 132, 199, 0.5) !important;
-  }
-
-  .ai-chatbot-window {
-    position: fixed !important;
-    bottom: 0 !important;
+  /* â”€â”€ Mega dropdown on mobile â”€â”€ */
+  .mega-dropdown-menu {
+    position: relative !important;
+    top: 0 !important;
     left: 0 !important;
-    right: 0 !important;
-    top: auto !important;
+    transform: none !important;
     width: 100% !important;
-    max-width: 100% !important;
-    height: 85vh !important;
-    border-radius: 24px 24px 0 0 !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    box-shadow: none !important;
+    border: 1px solid var(--bdr-subtle) !important;
+    margin-top: 0.5rem !important;
+    padding: 0.875rem !important;
   }
 
-  /* 8. Dashboard & Sidebar Mobile Responsiveness */
+  /* â”€â”€ Consultation Chat â”€â”€ */
+  .consultation-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* â”€â”€ Filter Bar â”€â”€ */
+  .filter-bar {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    align-items: stretch !important;
+    padding: 1rem !important;
+  }
+
+  .filter-bar input,
+  .filter-bar select,
+  .filter-bar button,
+  .filter-bar .btn {
+    width: 100% !important;
+  }
+
+  /* â”€â”€ Dashboard Sidebar â”€â”€ */
   .app-layout {
     display: block !important;
-    width: 100% !important;
   }
 
   .sidebar {
@@ -1638,8 +1706,8 @@ html, body {
     width: 280px !important;
     z-index: 2000 !important;
     transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8) !important;
+    transition: transform 0.3s ease !important;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8) !important;
   }
 
   .sidebar.open {
@@ -1650,7 +1718,7 @@ html, body {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0,0,0,0.6);
     backdrop-filter: blur(4px);
     z-index: 1999;
   }
@@ -1659,31 +1727,62 @@ html, body {
     display: block !important;
   }
 
+  .main-content {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
   .main-header {
     flex-direction: column !important;
     align-items: flex-start !important;
-    gap: 1rem !important;
+    gap: 0.875rem !important;
   }
 
-  .main-header > div:last-child {
-    width: 100% !important;
-    justify-content: flex-start !important;
-  }
-
-  /* 9. Table & Form Controls */
-  input[type="text"],
-  input[type="email"],
-  input[type="password"],
-  input[type="number"],
-  input[type="date"],
-  select,
-  textarea {
-    font-size: 16px !important;
-    border-radius: 12px !important;
-  }
-
+  /* â”€â”€ Footer â”€â”€ */
   .footer-grid {
     grid-template-columns: 1fr !important;
     gap: 2rem !important;
+  }
+
+  /* â”€â”€ AI Chatbot Floating Button â”€â”€ */
+  .ai-chatbot-trigger {
+    bottom: 1.25rem !important;
+    right: 1.25rem !important;
+    width: 52px !important;
+    height: 52px !important;
+    box-shadow: 0 8px 24px rgba(2,132,199,0.45) !important;
+  }
+
+  .ai-chatbot-window {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    width: 100vw !important;
+    max-width: 100% !important;
+    height: 85vh !important;
+    border-radius: 24px 24px 0 0 !important;
+  }
+
+  /* â”€â”€ Cart / Checkout â”€â”€ */
+  .cart-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.875rem !important;
+  }
+
+  /* â”€â”€ Typography Scaling â”€â”€ */
+  h2 {
+    font-size: clamp(1.2rem, 5vw, 1.625rem) !important;
+  }
+
+  h3 {
+    font-size: 1.05rem !important;
+  }
+
+  .page-wrapper {
+    padding-top: 4.5rem !important;
+    padding-bottom: 2rem !important;
   }
 }
