@@ -1478,16 +1478,39 @@ html, body {
     display: none !important;
   }
 
-  /* 3. Hero Section Mobile Proportions */
+  /* 3. Hero Section Mobile Proportions & Grid Fix */
+  .hero-grid-container {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+    width: 100% !important;
+  }
+  .hero-grid-container > div:last-child {
+    display: none !important;
+  }
+
   section:first-of-type, .hero-section {
-    padding-top: 5.5rem !important;
-    padding-bottom: 3rem !important;
+    padding-top: 5.25rem !important;
+    padding-bottom: 2.5rem !important;
   }
 
   .hero-section h1, h1 {
     font-size: 1.75rem !important;
     line-height: 1.28 !important;
     margin-bottom: 1rem !important;
+  }
+
+  .nav-toggle {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    width: 26px !important;
+    height: 18px !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    z-index: 1200 !important;
+    margin-left: 0.25rem !important;
   }
 
   .badge-teal, .badge {
@@ -1520,8 +1543,10 @@ html, body {
   .hero-stats-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 1.25rem 1rem !important;
+    gap: 1rem !important;
     padding: 1.25rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
     background: rgba(15, 23, 42, 0.6) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 18px !important;

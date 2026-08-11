@@ -34,11 +34,6 @@
                     <span>KoLine</span>
                 </a>
 
-                {{-- Mobile Nav Toggle --}}
-                <button id="nav-toggle" class="nav-toggle" aria-label="Toggle Navigation">
-                    <span></span><span></span><span></span>
-                </button>
-
                 {{-- Center: Perfectly Centered Navigation Links --}}
                 <ul id="nav-menu" class="navbar-nav">
                     <li>
@@ -150,6 +145,9 @@
 
                 {{-- Right: Action Buttons --}}
                 <div class="navbar-actions">
+                    <button id="nav-toggle" class="nav-toggle" aria-label="Toggle Navigation">
+                        <span></span><span></span><span></span>
+                    </button>
                     @guest
                         <a href="{{ route('login') }}" class="btn btn-outline btn-sm">Masuk</a>
                         <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Daftar Akun</a>

@@ -8,7 +8,7 @@
 {{-- ── 1. HERO SECTION ──────────────────────────────── --}}
 <section style="padding: 9rem 0 6.5rem; background: radial-gradient(circle at 50% 20%, rgba(2, 132, 199, 0.16) 0%, transparent 65%), var(--bg-dark); position: relative; overflow: hidden; border-bottom: 1px solid var(--bdr-subtle);">
     <div class="container">
-        <div style="display: grid; grid-template-columns: 1.15fr 460px; gap: 4.5rem; align-items: center;">
+        <div class="hero-grid-container" style="display: grid; grid-template-columns: 1.15fr 460px; gap: 4.5rem; align-items: center;">
 
             {{-- Left Column: Hero Copy --}}
             <div>
