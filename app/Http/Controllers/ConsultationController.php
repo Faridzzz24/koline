@@ -34,10 +34,16 @@ class ConsultationController extends Controller
         return view('consultations.index', compact('consultations'));
     }
 
-    public function show(Consultation $consultation)
+    public function show($consultationId)
     {
+        $consultation = Consultation::with(['patient', 'doctor.user', 'doctor.specialization', 'messages.sender'])
+            ->find($consultationId);
+
+        if (!$consultation) {
+            return redirect()->route('consultations.index')->with('error', 'Sesi konsultasi tidak ditemukan atau telah dibatalkan.');
+        }
+
         $this->authorizeConsultation($consultation);
-        $consultation->load(['patient', 'doctor.user', 'doctor.specialization', 'messages.sender']);
 
         $currentUserId = Auth::id();
         $initialMessages = $consultation->messages->map(function ($msg) use ($currentUserId) {

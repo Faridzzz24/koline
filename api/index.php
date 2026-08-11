@@ -97,6 +97,11 @@ $app->booted(function ($app) use ($tmpDb) {
                 '--seed' => true,
                 '--force' => true,
             ]);
+        } elseif (Schema::hasTable('consultations') && \App\Models\Consultation::count() === 0) {
+            Artisan::call('db:seed', [
+                '--class' => 'ConsultationSeeder',
+                '--force' => true,
+            ]);
         }
     } catch (\Throwable $e) {
         try {

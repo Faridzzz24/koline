@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             DoctorSeeder::class,
             MedicineSeeder::class,
             ArticleSeeder::class,
+            ConsultationSeeder::class,
         ]);
     }
 }
