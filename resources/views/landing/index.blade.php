@@ -7,54 +7,58 @@
 
 {{-- ── 1. HERO SECTION ──────────────────────────────── --}}
 <section class="hero-section" style="padding: 7.5rem 0 5rem; background: radial-gradient(circle at 50% 20%, rgba(2, 132, 199, 0.16) 0%, transparent 65%), var(--bg-dark); position: relative; overflow: hidden; border-bottom: 1px solid var(--bdr-subtle);">
-    <div class="container" style="max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; box-sizing: border-box;">
+    <div class="container">
 
         {{-- Desktop: 2-column, Mobile: 1-column --}}
-        <div style="display: grid; grid-template-columns: 1fr 420px; gap: 4rem; align-items: center;" class="hero-inner-grid">
+        <div class="hero-inner-grid">
 
             {{-- LEFT: Hero Copy --}}
-            <div>
-                <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(13,148,136,0.15); border: 1px solid rgba(13,148,136,0.35); border-radius: 50px; padding: 0.45rem 1rem; margin-bottom: 1.5rem; font-size: 0.8rem; font-weight: 600; color: var(--clr-teal-light);">
+            <div style="min-width: 0;">
+
+                {{-- Badge: shorter on mobile --}}
+                <div class="hero-badge">
                     <span style="width: 7px; height: 7px; background: var(--clr-teal-light); border-radius: 50%; display: inline-block; flex-shrink: 0;"></span>
-                    2.500+ Dokter Spesialis Terverifikasi STR &amp; SIP Resmi
+                    <span class="hero-badge-text">2.500+ Dokter Spesialis Terverifikasi STR &amp; SIP Resmi</span>
+                    <span class="hero-badge-short">2.500+ Dokter Terverifikasi</span>
                 </div>
 
-                <h1 style="font-size: clamp(1.75rem, 4vw, 3rem); font-weight: 800; line-height: 1.25; margin-bottom: 1.25rem; color: var(--txt-heading);">
+                <h1 class="hero-heading">
                     Layanan Kesehatan Daring<br>
                     <span class="text-gradient">Terpadu &amp; Terpercaya</span><br>
                     Untuk Keluarga Anda
                 </h1>
 
-                <p style="font-size: 1rem; color: var(--txt-body); line-height: 1.8; margin-bottom: 2rem; max-width: 520px;">
+                <p class="hero-desc">
                     Akses langsung ke tim medis profesional, analisis indikator kesehatan mandiri, serta pengadaan produk farmasi resmi dengan standar tinggi.
                 </p>
 
-                <div style="display: flex; flex-direction: column; gap: 0.875rem; margin-bottom: 2.5rem;" class="hero-cta-buttons">
-                    <a href="{{ route('doctors.index') }}" class="btn btn-primary" style="width: 100%; max-width: 380px; height: 52px; font-size: 1rem; font-weight: 700; border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+                <div class="hero-cta-buttons">
+                    <a href="{{ route('doctors.index') }}" class="btn btn-primary hero-btn-main">
                         Konsultasi Dokter Sekarang
                     </a>
-                    <a href="{{ route('health-check.index') }}" class="btn btn-outline" style="width: 100%; max-width: 380px; height: 52px; font-size: 1rem; font-weight: 600; border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+                    <a href="{{ route('health-check.index') }}" class="btn btn-outline hero-btn-sec">
                         Cek Kesehatan Mandiri
                     </a>
                 </div>
 
-                {{-- Stats Row --}}
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; padding-top: 2rem; border-top: 1px solid var(--bdr-subtle);" class="hero-stats-row">
-                    <div>
-                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--txt-heading);" data-count="2500">0</div>
-                        <div style="font-size: 0.7rem; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Dokter Medis</div>
+                {{-- Stats Row: 4 desktop / 3 mobile --}}
+                <div class="hero-stats-row">
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="2500">0</div>
+                        <div class="stat-label">Dokter Medis</div>
                     </div>
-                    <div>
-                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--txt-heading);" data-count="150000">0</div>
-                        <div style="font-size: 0.7rem; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Pasien Aktif</div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="150000">0</div>
+                        <div class="stat-label">Pasien Aktif</div>
                     </div>
-                    <div>
-                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--txt-heading);" data-count="98">0</div>
-                        <div style="font-size: 0.7rem; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">% Kepuasan</div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-count="98">0</div>
+                        <div class="stat-label">% Kepuasan</div>
                     </div>
-                    <div>
-                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--clr-teal-light);">24/7</div>
-                        <div style="font-size: 0.7rem; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.25rem;">Siaga Medis</div>
+                    {{-- 4th stat: hidden on mobile --}}
+                    <div class="stat-item stat-hide-mobile">
+                        <div class="stat-number" style="color: var(--clr-teal-light);">24/7</div>
+                        <div class="stat-label">Siaga Medis</div>
                     </div>
                 </div>
             </div>
@@ -96,32 +100,32 @@
 {{-- ── 2. FITUR UNGGULAN ───────────────────────────── --}}
 <section class="section section-surface">
     <div class="container">
-        <div style="text-align: center; max-width: 680px; margin: 0 auto 3.5rem;">
+        <div class="section-center-header">
             <div class="badge badge-primary mb-3">Layanan Terintegrasi</div>
-            <h2 style="margin-bottom: 1rem;">Platform Medis Terlengkap di Indonesia</h2>
-            <p style="color: var(--txt-muted); font-size: 1rem; line-height: 1.7;">Tiga pilar utama layanan KoLine untuk memastikan kesehatan Anda terjaga secara komprehensif.</p>
+            <h2>Platform Medis Terlengkap di Indonesia</h2>
+            <p style="color: var(--txt-muted); font-size: 1rem; line-height: 1.7; margin: 0;">Tiga pilar utama layanan KoLine untuk memastikan kesehatan Anda terjaga secara komprehensif.</p>
         </div>
         <div class="grid grid-3">
-            <a href="{{ route('doctors.index') }}" class="card" style="text-decoration: none;">
-                <div style="width: 52px; height: 52px; border-radius: var(--r-md); background: rgba(2,132,199,0.15); color: var(--clr-brand-light); display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; flex-shrink: 0;">
+            <a href="{{ route('doctors.index') }}" class="card feature-card" style="text-decoration: none;">
+                <div class="feature-icon" style="background: rgba(2,132,199,0.15); color: var(--clr-brand-light);">
                     <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 </div>
-                <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Dokter Spesialis Daring</h3>
-                <p style="font-size: 0.9rem; color: var(--txt-muted); line-height: 1.7;">Layanan telekonsultasi cepat dengan rekomendasi medis komprehensif dan resep resmi.</p>
+                <h3>Dokter Spesialis Daring</h3>
+                <p style="font-size: 0.9rem; color: var(--txt-muted); line-height: 1.7; margin: 0;">Layanan telekonsultasi cepat dengan rekomendasi medis komprehensif dan resep resmi.</p>
             </a>
-            <a href="{{ route('health-check.bmi') }}" class="card" style="text-decoration: none;">
-                <div style="width: 52px; height: 52px; border-radius: var(--r-md); background: rgba(13,148,136,0.15); color: var(--clr-teal-light); display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; flex-shrink: 0;">
+            <a href="{{ route('health-check.bmi') }}" class="card feature-card" style="text-decoration: none;">
+                <div class="feature-icon" style="background: rgba(13,148,136,0.15); color: var(--clr-teal-light);">
                     <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
-                <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Pemeriksaan Mandiri</h3>
-                <p style="font-size: 0.9rem; color: var(--txt-muted); line-height: 1.7;">Alat pengukur indikator kesehatan BMI dan analisis rujukan medis awal.</p>
+                <h3>Pemeriksaan Mandiri</h3>
+                <p style="font-size: 0.9rem; color: var(--txt-muted); line-height: 1.7; margin: 0;">Alat pengukur indikator kesehatan BMI dan analisis rujukan medis awal.</p>
             </a>
-            <a href="{{ route('medicines.index') }}" class="card" style="text-decoration: none;">
-                <div style="width: 52px; height: 52px; border-radius: var(--r-md); background: rgba(16,185,129,0.15); color: #34D399; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; flex-shrink: 0;">
+            <a href="{{ route('medicines.index') }}" class="card feature-card" style="text-decoration: none;">
+                <div class="feature-icon" style="background: rgba(16,185,129,0.15); color: #34D399;">
                     <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
                 </div>
-                <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">Apotek &amp; Suplemen</h3>
-                <p style="font-size: 0.9rem; color: var(--txt-muted); line-height: 1.7;">Pengadaan obat resmi, suplemen kesehatan, dan alat medis terverifikasi BPOM.</p>
+                <h3>Apotek &amp; Suplemen</h3>
+                <p style="font-size: 0.9rem; color: var(--txt-muted); line-height: 1.7; margin: 0;">Pengadaan obat resmi, suplemen kesehatan, dan alat medis terverifikasi BPOM.</p>
             </a>
         </div>
     </div>
@@ -130,22 +134,25 @@
 {{-- ── 3. DOKTER MEDIS TERPOPULER ────────────────────── --}}
 <section class="section" style="background: var(--bg-dark);">
     <div class="container">
-        <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap;" class="section-top-bar">
+
+        {{-- Section Header --}}
+        <div class="doctors-section-header">
             <div>
-                <div class="badge badge-teal mb-3" style="display: inline-flex;">Pilihan Spesialisasi</div>
-                <h2 style="font-size: clamp(1.375rem, 3vw, 2.25rem); margin-bottom: 0;">Dokter Medis Terpopuler</h2>
+                <div class="badge badge-teal mb-2" style="display: inline-flex;">Pilihan Spesialisasi</div>
+                <h2 style="margin-bottom: 0; font-size: clamp(1.375rem, 3vw, 2.25rem);">Dokter Medis Terpopuler</h2>
             </div>
-            <a href="{{ route('doctors.index') }}" class="btn btn-outline" style="white-space: nowrap; flex-shrink: 0;">Lihat Semua Dokter →</a>
+            {{-- "Lihat Semua" link: hidden on mobile (there's a button below on mobile) --}}
+            <a href="{{ route('doctors.index') }}" class="btn btn-outline doctors-see-all-btn">Lihat Semua Dokter →</a>
         </div>
 
-        <div class="grid grid-4">
+        <div class="grid grid-4 landing-doctors-grid">
             @foreach($doctors as $doctor)
                 @php
                     $cleanName = preg_replace('/^(drg\.|dr\.|Prof\.|Sp\.[A-Z]+)\s*/i', '', $doctor->user->name);
                     $words = explode(' ', trim($cleanName));
                     $initials = strtoupper(substr($words[0] ?? 'D', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
                 @endphp
-                <div class="doctor-card">
+                <div class="doctor-card landing-doctor-item">
                     <div>
                         <div class="flex items-center gap-3 mb-3">
                             <div class="initial-avatar" style="width: 50px; height: 50px; min-width: 50px;">{{ $initials }}</div>
@@ -166,6 +173,12 @@
                 </div>
             @endforeach
         </div>
+
+        {{-- Mobile: Show "Lihat Semua" as full-width button at bottom --}}
+        <div class="doctors-mobile-cta">
+            <a href="{{ route('doctors.index') }}" class="btn btn-outline" style="width: 100%; justify-content: center; margin-top: 1.25rem;">Lihat Semua Dokter →</a>
+        </div>
+
     </div>
 </section>
 

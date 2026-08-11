@@ -1,4 +1,4 @@
-﻿/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    KoLine (Konsultasi Online) - Enterprise Design System
    High-Precision Layout, Mega Dropdown & Absolute Centering
    â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -1784,5 +1784,247 @@ html, body {
   .page-wrapper {
     padding-top: 4.5rem !important;
     padding-bottom: 2rem !important;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   LANDING PAGE — NEW COMPONENT CLASSES
+   (desktop base + mobile overrides inside media)
+───────────────────────────────────────────── */
+
+/* Hero Inner Grid: 2-col desktop */
+.hero-inner-grid {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 4rem;
+  align-items: center;
+}
+
+/* Hero Badge */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(13,148,136,0.15);
+  border: 1px solid rgba(13,148,136,0.35);
+  border-radius: 50px;
+  padding: 0.45rem 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--clr-teal-light);
+  max-width: 100%;
+}
+.hero-badge-short { display: none; }
+.hero-badge-text  { display: inline; }
+
+/* Hero heading */
+.hero-heading {
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 1.25rem;
+  color: var(--txt-heading);
+  word-break: break-word;
+}
+
+/* Hero description */
+.hero-desc {
+  font-size: 1rem;
+  color: var(--txt-body);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  max-width: 520px;
+}
+
+/* Hero CTA buttons */
+.hero-cta-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  margin-bottom: 2.5rem;
+}
+.hero-btn-main,
+.hero-btn-sec {
+  width: 100%;
+  max-width: 380px;
+  height: 52px;
+  font-size: 1rem;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Stats Row */
+.hero-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--bdr-subtle);
+}
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--txt-heading);
+}
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--txt-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.25rem;
+}
+.stat-hide-mobile { /* hide on mobile */ }
+
+/* Feature cards */
+.section-center-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 3.5rem;
+}
+.section-center-header h2 {
+  margin-bottom: 0.875rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.feature-card { display: flex; flex-direction: column; gap: 0; text-decoration: none; }
+.feature-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  flex-shrink: 0;
+}
+.feature-card h3 { margin-bottom: 0.5rem; font-size: 1.1rem; }
+
+/* Doctors Section Header */
+.doctors-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+.doctors-see-all-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+/* Mobile CTA below doctors grid: hidden on desktop */
+.doctors-mobile-cta { display: none; }
+
+/* Doctor Filter Grid: Desktop 4-col */
+.doctor-filter-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr auto;
+  gap: 1.25rem;
+  align-items: end;
+}
+.doctor-filter-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.doctor-filter-actions .btn {
+  white-space: nowrap;
+}
+
+/* ── MOBILE OVERRIDES (≤768px) ── */
+@media (max-width: 768px) {
+
+  /* Hero: 1-col */
+  .hero-inner-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+  .hero-preview-card { display: none !important; }
+
+  /* Badge: show short version */
+  .hero-badge { max-width: 100% !important; }
+  .hero-badge-text { display: none !important; }
+  .hero-badge-short { display: inline !important; }
+
+  /* Hero heading */
+  .hero-heading {
+    font-size: 1.625rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Hero desc */
+  .hero-desc {
+    font-size: 0.925rem !important;
+    max-width: 100% !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  /* CTA buttons: full width */
+  .hero-cta-buttons { margin-bottom: 1.75rem !important; gap: 0.75rem !important; }
+  .hero-btn-main, .hero-btn-sec {
+    max-width: 100% !important;
+    height: 50px !important;
+    font-size: 0.975rem !important;
+  }
+
+  /* Stats: 3 items in a row, hide 4th */
+  .hero-stats-row {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1rem !important;
+    padding-top: 1.25rem !important;
+  }
+  .stat-hide-mobile { display: none !important; }
+  .stat-number { font-size: 1.25rem !important; }
+  .stat-label { font-size: 0.65rem !important; }
+
+  /* Section center header: fix overflow */
+  .section-center-header {
+    margin-bottom: 2rem !important;
+    text-align: left !important;
+    padding: 0 !important;
+  }
+  .section-center-header h2 {
+    font-size: clamp(1.1rem, 5vw, 1.5rem) !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Doctors section header: stack */
+  .doctors-section-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+  /* Hide "Lihat Semua" button from header on mobile */
+  .doctors-see-all-btn { display: none !important; }
+  /* Show bottom CTA on mobile */
+  .doctors-mobile-cta { display: block !important; }
+
+  /* Doctor cards: 1 col on mobile */
+  .landing-doctors-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  /* Doctor filter: stacked */
+  .doctor-filter-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.875rem !important;
+  }
+  .doctor-filter-actions {
+    flex-direction: column !important;
+    gap: 0.625rem !important;
+    width: 100% !important;
+  }
+  .doctor-filter-actions .btn {
+    width: 100% !important;
+    height: 48px !important;
+  }
+  .filter-bar {
+    padding: 1.25rem !important;
+    border-radius: 16px !important;
   }
 }

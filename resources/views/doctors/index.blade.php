@@ -17,15 +17,15 @@
 
         {{-- Filter Bar --}}
         <form method="GET" action="{{ route('doctors.index') }}" class="filter-bar">
-            <div style="display: grid; grid-template-columns: 2fr 1.5fr 1fr auto; gap: 1.5rem; align-items: end;">
+            <div class="doctor-filter-grid">
                 <div class="form-group" style="margin-bottom: 0;">
-                    <label class="form-label">🔍 Pencarian Dokter / RS</label>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Ketik nama dokter atau rumah sakit..." class="form-input">
+                    <label class="form-label">🔍 Cari Dokter / RS</label>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Nama dokter atau rumah sakit..." class="form-input">
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                     <label class="form-label">🩺 Spesialisasi</label>
                     <select name="specialization" class="form-select">
-                        <option value="">Semua Bidang Spesialisasi</option>
+                        <option value="">Semua Spesialisasi</option>
                         @foreach($specializations as $spec)
                             <option value="{{ $spec->id }}" {{ request('specialization') == $spec->id ? 'selected' : '' }}>
                                 {{ $spec->name }}
@@ -40,14 +40,15 @@
                         <option value="1" {{ request('available') ? 'selected' : '' }}>Online Sekarang</option>
                     </select>
                 </div>
-                <div class="flex gap-2" style="align-items: center;">
-                    <button type="submit" class="btn btn-primary" style="height: 48px; padding: 0 1.75rem;">Cari Dokter</button>
-                    <a href="{{ route('doctors.index') }}" class="btn btn-ghost" style="height: 48px; padding: 0 1.25rem;">Reset</a>
+                <div class="doctor-filter-actions">
+                    <button type="submit" class="btn btn-primary" style="height: 48px; width: 100%;">Cari Dokter</button>
+                    <a href="{{ route('doctors.index') }}" class="btn btn-ghost" style="height: 48px; width: 100%; text-align: center; display: flex; align-items: center; justify-content: center;">Reset</a>
                 </div>
             </div>
         </form>
 
         {{-- Doctors Grid --}}
+
         @if($doctors->isEmpty())
             <div class="card" style="text-align: center; padding: 5rem 2rem;">
                 <h3 style="color: var(--txt-heading); margin-bottom: 0.75rem;">Dokter Tidak Ditemukan</h3>
