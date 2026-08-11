@@ -29,8 +29,8 @@
                 </div>
             </div>
 
-            {{-- Category Pill Chips Bar (Instant 0ms JS Filter - No Reload) --}}
-            <div class="flex items-center gap-2 flex-wrap" style="padding-bottom: 0.5rem;" id="category-chips-container">
+            {{-- Category Pill Chips Bar (Instant 0ms JS Filter - Single Row Scroll Bar) --}}
+            <div class="category-chips-scroll-bar" id="category-chips-container">
                 <button type="button" data-cat="all" class="category-chip-btn btn btn-sm {{ !request('category') ? 'btn-primary' : 'btn-outline' }}" style="border-radius: var(--r-full); padding: 0.5rem 1.25rem;">
                     Semua Kategori
                 </button>

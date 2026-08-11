@@ -2353,7 +2353,7 @@ html, body {
     overflow-x: hidden !important;
   }
 
-  .grid, .grid-2, .grid-3, .grid-4, .grid-auto-fit {
+  .grid, .grid-2, .grid-3, .grid-4, .grid-auto-fit, .health-tools-grid {
     display: grid !important;
     grid-template-columns: 1fr !important;
     width: 100% !important;
@@ -2370,27 +2370,51 @@ html, body {
     border-radius: 20px !important;
   }
 
-  /* ── 5. Compact Footer Spacing (Dempet ke Content) ── */
+  /* Single-row horizontal scrollable category chips bar on mobile */
+  .category-chips-scroll-bar {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    padding-bottom: 0.5rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .category-chips-scroll-bar::-webkit-scrollbar {
+    display: none !important;
+  }
+  .category-chip-btn {
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    font-size: 0.8rem !important;
+    padding: 0.45rem 1rem !important;
+  }
+
+  /* ── 5. Compact Footer Spacing (Dempet Langsung ke Content) ── */
   .footer {
-    padding-top: 1.5rem !important;
-    padding-bottom: 2rem !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1.75rem !important;
     margin-top: 0 !important;
     border-top: 1px solid var(--bdr-subtle) !important;
   }
 
   .footer-grid {
-    margin-bottom: 1.75rem !important;
-    gap: 1.5rem !important;
+    margin-bottom: 1.25rem !important;
+    gap: 1.25rem !important;
   }
 
   section.section:last-of-type,
   .section:last-of-type,
   .hero-section:last-of-type {
-    padding-bottom: 1.5rem !important;
+    padding-bottom: 0.75rem !important;
     border-bottom: none !important;
   }
 
   .doctors-mobile-cta {
+    margin-top: 0.75rem !important;
     margin-bottom: 0 !important;
   }
 
@@ -2452,5 +2476,6 @@ html, body {
     z-index: 1040 !important;
   }
 }
+
 
 

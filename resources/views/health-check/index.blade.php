@@ -15,7 +15,7 @@
         </div>
 
         {{-- 10 Tools Grid --}}
-        <div class="grid grid-3" style="gap: 2rem;">
+        <div class="grid grid-3 health-tools-grid">
 
             {{-- 1. Cek Stres --}}
             <div class="card" style="justify-content: space-between; gap: 1.5rem;">
