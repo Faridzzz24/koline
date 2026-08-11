@@ -154,18 +154,26 @@
                 @endphp
                 <div class="doctor-card landing-doctor-item">
                     <div>
-                        <div class="flex items-start gap-3.5 mb-4">
-                            <div class="initial-avatar" style="width: 48px; height: 48px; min-width: 48px; min-height: 48px; font-size: 1rem;">{{ $initials }}</div>
+                        {{-- Avatar & Doctor Name Header --}}
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="initial-avatar" style="width: 50px; height: 50px; min-width: 50px; min-height: 50px; font-size: 1.05rem; flex-shrink: 0;">{{ $initials }}</div>
                             <div style="min-width: 0; flex: 1;">
-                                <div style="font-size: 0.95rem; font-weight: 700; color: var(--txt-heading); line-height: 1.3; margin-bottom: 0.2rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ $doctor->user->name }}</div>
-                                <div style="font-size: 0.8rem; color: var(--clr-teal-light); font-weight: 600; margin-bottom: 0.35rem;">{{ $doctor->specialization->name }}</div>
-                                <div style="font-size: 0.775rem; color: var(--txt-muted); line-height: 1.4;">{{ Str::limit($doctor->hospital ?? 'RS Pusat Pertamina', 24) }} · {{ $doctor->experience_years }} Thn</div>
+                                <div style="font-size: 0.975rem; font-weight: 700; color: var(--txt-heading); line-height: 1.3; margin-bottom: 0.2rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ $doctor->user->name }}</div>
+                                <div style="font-size: 0.825rem; color: var(--clr-teal-light); font-weight: 600;">{{ $doctor->specialization->name }}</div>
                             </div>
                         </div>
+
+                        {{-- Hospital & Experience Info (Spaced lower with clear margin & icon) --}}
+                        <div style="font-size: 0.8rem; color: var(--txt-muted); margin-top: 0.75rem; margin-bottom: 1.25rem; line-height: 1.5; display: flex; align-items: center; gap: 0.4rem;">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0; opacity:0.75;"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5"/></svg>
+                            <span>{{ Str::limit($doctor->hospital ?? 'RS Pusat Pertamina', 28) }} · {{ $doctor->experience_years }} Thn</span>
+                        </div>
                     </div>
+
+                    {{-- Footer Fee & Consultation CTA --}}
                     <div style="border-top: 1px solid var(--bdr-subtle); padding-top: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
                         <div>
-                            <div style="font-weight: 800; color: var(--txt-heading); font-size: 1rem;">{{ $doctor->formatted_fee }}</div>
+                            <div style="font-weight: 800; color: var(--txt-heading); font-size: 1.05rem;">{{ $doctor->formatted_fee }}</div>
                             <div style="font-size: 0.7rem; color: var(--txt-muted);">per sesi</div>
                         </div>
                         <a href="{{ route('doctors.show', $doctor) }}" class="btn btn-primary btn-sm" style="flex-shrink: 0; white-space: nowrap;">Konsultasi</a>

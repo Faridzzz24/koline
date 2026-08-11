@@ -2166,10 +2166,100 @@ html, body {
     border-radius: 10px !important;
   }
 
-  /* ── 2. Top Page Padding (Generous Breathing Room Below Navbar) ── */
+  /* ── 2. Hero Section Mobile Centering (Rata Tengah Semua) ── */
   .hero-section {
     padding-top: 6.5rem !important; /* 104px (60px nav + 44px gap) */
     padding-bottom: 3.5rem !important;
+    text-align: center !important;
+  }
+
+  .hero-inner-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    text-align: center !important;
+  }
+
+  .hero-inner-grid > div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .hero-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto 1.25rem auto !important;
+    text-align: center !important;
+  }
+
+  .hero-heading {
+    font-size: 1.625rem !important;
+    line-height: 1.3 !important;
+    margin-bottom: 1.25rem !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .hero-desc {
+    font-size: 0.925rem !important;
+    line-height: 1.75 !important;
+    margin: 0 auto 1.75rem auto !important;
+    text-align: center !important;
+    max-width: 100% !important;
+  }
+
+  .hero-cta-buttons {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin: 0 auto 2rem auto !important;
+    gap: 0.75rem !important;
+  }
+
+  .hero-btn-main, .hero-btn-sec {
+    width: 100% !important;
+    max-width: 360px !important;
+    height: 50px !important;
+    font-size: 0.975rem !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .hero-stats-row {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1rem !important;
+    padding-top: 1.5rem !important;
+    width: 100% !important;
+    text-align: center !important;
+    border-top: 1px solid var(--bdr-subtle) !important;
+  }
+
+  .stat-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .stat-number {
+    font-size: 1.35rem !important;
+    text-align: center !important;
+  }
+
+  .stat-label {
+    font-size: 0.65rem !important;
+    text-align: center !important;
   }
 
   .page-wrapper {
@@ -2177,15 +2267,15 @@ html, body {
     padding-bottom: 3rem !important;
   }
 
-  /* ── 3. Section Headers & Container Spacing ── */
+  /* ── 3. Section Headers & Container Spacing (Centered) ── */
   .section-center-header {
-    margin-bottom: 3.25rem !important; /* 52px gap above feature cards */
+    margin-bottom: 2rem !important;
     text-align: center !important;
     padding: 0 0.5rem !important;
   }
 
   .section-center-header .badge {
-    margin-bottom: 1.25rem !important;
+    margin-bottom: 0.75rem !important;
     padding: 0.45rem 1.125rem !important;
     font-size: 0.8rem !important;
   }
@@ -2193,8 +2283,8 @@ html, body {
   .section-center-header h2 {
     font-size: 1.5rem !important;
     line-height: 1.35 !important;
-    margin-top: 0.5rem !important;
-    margin-bottom: 1rem !important;
+    margin-top: 0.35rem !important;
+    margin-bottom: 0.75rem !important;
     word-break: break-word !important;
     overflow-wrap: break-word !important;
   }
@@ -2206,9 +2296,52 @@ html, body {
     margin-bottom: 0 !important;
   }
 
+  /* Dokter Medis Terpopuler Header (Centered on Mobile) */
+  .doctors-section-header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 0.5rem !important;
+    margin-bottom: 2rem !important;
+    width: 100% !important;
+  }
+
+  .doctors-section-header > div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .doctors-section-header .badge {
+    margin-bottom: 0.5rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .doctors-section-header h2 {
+    text-align: center !important;
+    font-size: 1.4rem !important;
+    width: 100% !important;
+  }
+
+  .doctors-see-all-btn {
+    display: none !important;
+  }
+
+  .doctors-mobile-cta {
+    display: block !important;
+    width: 100% !important;
+  }
+
   .section, .section-surface {
-    padding-top: 4.5rem !important;
-    padding-bottom: 4.5rem !important;
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
   }
 
   /* ── 4. Card Grids & Card Cushions ── */
@@ -2221,6 +2354,7 @@ html, body {
     padding: 1.75rem 1.5rem !important;
     border-radius: 20px !important;
   }
+
 
   /* ── 5. Mobile Bottom Tab Bar ── */
   .mobile-bottom-nav {
