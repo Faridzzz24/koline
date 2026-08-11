@@ -250,14 +250,16 @@ function doctorDashboardApp() {
         csrfToken: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
 
         initDashboard() {
-            // Start polling every 2 seconds
+            // Run immediate poll on mount
+            this.pollConsultations();
+
+            // Start real-time polling every 1 second (1000ms)
             setInterval(() => {
                 this.pollConsultations();
-            }, 2000);
+            }, 1000);
         },
 
         async confirmConsultation(item) {
-            if (!confirm('Konfirmasi konsultasi dari ' + item.patient_name + '?')) return;
             try {
                 const res = await fetch(item.confirm_url, {
                     method: 'POST',
@@ -268,7 +270,7 @@ function doctorDashboardApp() {
                     }
                 });
                 if (res.ok) {
-                    // Immediately remove from pending and redirect to consultation
+                    // Immediately move item from pending to active for 0ms glitch-free UI response
                     this.pendingList = this.pendingList.filter(p => p.id !== item.id);
                     this.pendingCount = Math.max(0, this.pendingCount - 1);
                     this.activeCount += 1;
@@ -280,7 +282,6 @@ function doctorDashboardApp() {
                 }
             } catch (e) {
                 console.error(e);
-                alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
             }
         },
 

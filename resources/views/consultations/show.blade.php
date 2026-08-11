@@ -394,7 +394,8 @@ function liveChatApp(consultationId, currentUserId) {
         initChat() {
             this.$nextTick(() => this.scrollToBottom());
             
-            // Immediate initial time sync
+            // Immediate initial fetch & time sync on mount
+            this.fetchMessages();
             this.syncTimers();
 
             // Real-time ticking interval every 1 second based on Date.now()
@@ -402,10 +403,10 @@ function liveChatApp(consultationId, currentUserId) {
                 this.syncTimers();
             }, 1000);
 
-            // Auto background polling for new messages & status sync every 1.5 seconds
+            // Auto background polling for new messages & status sync every 1 second (1000ms)
             setInterval(() => {
                 this.fetchMessages();
-            }, 1500);
+            }, 1000);
         },
 
         syncTimers() {
