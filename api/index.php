@@ -3,6 +3,8 @@
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 $tmpDir = '/tmp';
 
@@ -24,14 +26,11 @@ foreach ($storageDirs as $dir) {
 $dbSource = dirname(__DIR__) . '/database/database.sqlite';
 $dbTarget = $tmpDir . '/database.sqlite';
 
-$needsSeed = false;
-
-if (!file_exists($dbTarget) || filesize($dbTarget) < 50000) {
-    if (file_exists($dbSource) && filesize($dbSource) > 50000) {
+if (!file_exists($dbTarget) || filesize($dbTarget) < 10000) {
+    if (file_exists($dbSource) && filesize($dbSource) > 10000) {
         @copy($dbSource, $dbTarget);
     } else {
         @file_put_contents($dbTarget, '');
-        $needsSeed = true;
     }
 }
 
@@ -56,21 +55,29 @@ $_SERVER['PHP_SELF'] = '/index.php';
 require dirname(__DIR__) . '/vendor/autoload.php';
 $app = require_once dirname(__DIR__) . '/bootstrap/app.php';
 
-// Handle HTTP Request
-$kernel = $app->make(Kernel::class);
+// Explicitly set database path in Laravel config repository and purge connection cache
+config(['database.connections.sqlite.database' => $dbTarget]);
+DB::purge('sqlite');
 
-// Auto-migrate and seed database in /tmp if empty
-if ($needsSeed || filesize($dbTarget) < 50000) {
+// Check and auto-migrate if specializations or users table is missing
+try {
+    if (!Schema::hasTable('specializations') || !Schema::hasTable('users')) {
+        Artisan::call('migrate:fresh', [
+            '--seed' => true,
+            '--force' => true,
+        ]);
+    }
+} catch (\Throwable $e) {
     try {
         Artisan::call('migrate:fresh', [
             '--seed' => true,
             '--force' => true,
         ]);
-    } catch (\Throwable $e) {
-        // Fallback silently if already migrated
-    }
+    } catch (\Throwable $ex) {}
 }
 
+// Handle HTTP Request
+$kernel = $app->make(Kernel::class);
 $response = $kernel->handle(
     $request = Request::capture()
 )->send();
