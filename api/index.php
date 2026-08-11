@@ -1,6 +1,9 @@
 <?php
 
-// Ensure /tmp directory has storage subfolders and sqlite database for Vercel Serverless environment
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+
 $tmpDir = '/tmp';
 
 // Setup storage directories inside /tmp
@@ -17,23 +20,25 @@ foreach ($storageDirs as $dir) {
     }
 }
 
-// Copy seeded SQLite database to /tmp if not already present
+// Prepare SQLite database path in /tmp
 $dbSource = dirname(__DIR__) . '/database/database.sqlite';
 $dbTarget = $tmpDir . '/database.sqlite';
 
-if (!file_exists($dbTarget) || filesize($dbTarget) === 0) {
-    if (file_exists($dbSource) && filesize($dbSource) > 0) {
+$needsSeed = false;
+
+if (!file_exists($dbTarget) || filesize($dbTarget) < 50000) {
+    if (file_exists($dbSource) && filesize($dbSource) > 50000) {
         @copy($dbSource, $dbTarget);
     } else {
-        @touch($dbTarget);
+        @file_put_contents($dbTarget, '');
+        $needsSeed = true;
     }
 }
 
 // Override environment variables for Vercel Serverless runtime
-$activeDb = file_exists($dbTarget) ? $dbTarget : $dbSource;
-putenv("DB_DATABASE={$activeDb}");
-$_ENV['DB_DATABASE'] = $activeDb;
-$_SERVER['DB_DATABASE'] = $activeDb;
+putenv("DB_DATABASE={$dbTarget}");
+$_ENV['DB_DATABASE'] = $dbTarget;
+$_SERVER['DB_DATABASE'] = $dbTarget;
 
 $_ENV['APP_CONFIG_CACHE'] = $tmpDir . '/config.php';
 $_ENV['APP_EVENTS_CACHE'] = $tmpDir . '/events.php';
@@ -47,5 +52,27 @@ $_SERVER['SCRIPT_FILENAME'] = dirname(__DIR__) . '/public/index.php';
 $_SERVER['SCRIPT_NAME'] = '/index.php';
 $_SERVER['PHP_SELF'] = '/index.php';
 
-// Forward request to Laravel entrypoint
-require dirname(__DIR__) . '/public/index.php';
+// Bootstrap Laravel Application
+require dirname(__DIR__) . '/vendor/autoload.php';
+$app = require_once dirname(__DIR__) . '/bootstrap/app.php';
+
+// Handle HTTP Request
+$kernel = $app->make(Kernel::class);
+
+// Auto-migrate and seed database in /tmp if empty
+if ($needsSeed || filesize($dbTarget) < 50000) {
+    try {
+        Artisan::call('migrate:fresh', [
+            '--seed' => true,
+            '--force' => true,
+        ]);
+    } catch (\Throwable $e) {
+        // Fallback silently if already migrated
+    }
+}
+
+$response = $kernel->handle(
+    $request = Request::capture()
+)->send();
+
+$kernel->terminate($request, $response);
