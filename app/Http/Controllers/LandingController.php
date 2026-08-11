@@ -11,6 +11,15 @@ class LandingController extends Controller
 {
     public function index()
     {
+        if (auth()->check()) {
+            if (auth()->user()->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+            if (auth()->user()->isDoctor()) {
+                return redirect()->route('doctor.dashboard');
+            }
+        }
+
         $specializations = Specialization::where('is_active', true)->get();
         $doctors = Doctor::with(['user', 'specialization'])
             ->where('is_available', true)

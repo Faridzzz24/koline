@@ -26,7 +26,7 @@
         <div class="container">
             <div class="navbar-inner">
                 {{-- Left: Brand Logo --}}
-                <a href="{{ route('home') }}" class="navbar-brand">
+                <a href="{{ auth()->check() ? (auth()->user()->isAdmin() ? route('admin.dashboard') : (auth()->user()->isDoctor() ? route('doctor.dashboard') : route('home'))) : route('home') }}" class="navbar-brand">
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                         <path d="M12 9v6M9 12h6"/>
@@ -36,111 +36,140 @@
 
                 {{-- Center: Nav Links (hidden on mobile) --}}
                 <ul id="nav-menu" class="navbar-nav">
-                    <li>
-                        <a href="{{ route('doctors.index') }}" class="nav-link {{ request()->routeIs('doctors.*') ? 'active' : '' }}">
-                            Cari Dokter
-                        </a>
-                    </li>
+                    @if(auth()->check() && auth()->user()->isDoctor())
+                        <li>
+                            <a href="{{ route('doctor.dashboard') }}" class="nav-link {{ request()->routeIs('doctor.dashboard') ? 'active' : '' }}">
+                                Dashboard Dokter
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('consultations.index') }}" class="nav-link {{ request()->routeIs('consultations.*') ? 'active' : '' }}">
+                                Antrean & Riwayat Konsultasi
+                            </a>
+                        </li>
+                    @elseif(auth()->check() && auth()->user()->isAdmin())
+                        <li>
+                            <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                                Panel Admin
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.doctors.index') }}" class="nav-link {{ request()->routeIs('admin.doctors.*') ? 'active' : '' }}">
+                                Kelola Dokter
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                                Kelola Pengguna
+                            </a>
+                        </li>
+                    @else
+                        <li>
+                            <a href="{{ route('doctors.index') }}" class="nav-link {{ request()->routeIs('doctors.*') ? 'active' : '' }}">
+                                Cari Dokter
+                            </a>
+                        </li>
 
-                    {{-- Cek Kesehatan Dropdown Popover (Smooth Hover & Continuous Bridge) --}}
-                    <li class="mega-dropdown-wrapper"
-                        @mouseenter="healthOpen = true"
-                        @mouseleave.debounce.300ms="healthOpen = false"
-                        @click.outside="healthOpen = false">
-                        <a href="{{ route('health-check.index') }}" class="nav-link {{ request()->routeIs('health-check.*') ? 'active' : '' }}">
-                            Cek Kesehatan Mandiri
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;" :style="healthOpen ? 'transform: rotate(180deg)' : ''"><path d="m6 9 6 6 6-6"/></svg>
-                        </a>
-
-                        {{-- Mega Dropdown Popover Grid (10 Interactive Tools) --}}
-                        <div class="mega-dropdown-menu">
-                            {{-- 1. Cek Stres --}}
-                            <a href="{{ route('health-check.stres') }}" class="health-tool-item">
-                                <div class="health-tool-icon">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 01-2 2h-4a2 2 0 01-2-2v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                                </div>
-                                <div class="health-tool-title">Cek Stres</div>
+                        {{-- Cek Kesehatan Dropdown Popover (Smooth Hover & Continuous Bridge) --}}
+                        <li class="mega-dropdown-wrapper"
+                            @mouseenter="healthOpen = true"
+                            @mouseleave.debounce.300ms="healthOpen = false"
+                            @click.outside="healthOpen = false">
+                            <a href="{{ route('health-check.index') }}" class="nav-link {{ request()->routeIs('health-check.*') ? 'active' : '' }}">
+                                Cek Kesehatan Mandiri
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;" :style="healthOpen ? 'transform: rotate(180deg)' : ''"><path d="m6 9 6 6 6-6"/></svg>
                             </a>
 
-                            {{-- 2. Kalkulator BMI --}}
-                            <a href="{{ route('health-check.bmi') }}" class="health-tool-item">
-                                <div class="health-tool-icon">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6l3 18h12l3-18H3z"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-                                </div>
-                                <div class="health-tool-title">Kalkulator BMI</div>
-                            </a>
+                            {{-- Mega Dropdown Popover Grid (10 Interactive Tools) --}}
+                            <div class="mega-dropdown-menu">
+                                {{-- 1. Cek Stres --}}
+                                <a href="{{ route('health-check.stres') }}" class="health-tool-item">
+                                    <div class="health-tool-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 01-2 2h-4a2 2 0 01-2-2v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                                    </div>
+                                    <div class="health-tool-title">Cek Stres</div>
+                                </a>
 
-                            {{-- 3. Risiko Jantung --}}
-                            <a href="{{ route('health-check.jantung') }}" class="health-tool-item">
-                                <div class="health-tool-icon">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                                </div>
-                                <div class="health-tool-title">Risiko Jantung</div>
-                            </a>
+                                {{-- 2. Kalkulator BMI --}}
+                                <a href="{{ route('health-check.bmi') }}" class="health-tool-item">
+                                    <div class="health-tool-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6l3 18h12l3-18H3z"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                                    </div>
+                                    <div class="health-tool-title">Kalkulator BMI</div>
+                                </a>
 
-                            {{-- 4. Risiko Diabetes --}}
-                            <a href="{{ route('health-check.diabetes') }}" class="health-tool-item">
-                                <div class="health-tool-icon">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-                                </div>
-                                <div class="health-tool-title">Risiko Diabetes</div>
-                            </a>
+                                {{-- 3. Risiko Jantung --}}
+                                <a href="{{ route('health-check.jantung') }}" class="health-tool-item">
+                                    <div class="health-tool-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                    </div>
+                                    <div class="health-tool-title">Risiko Jantung</div>
+                                </a>
 
-                            {{-- 5. Tes Depresi --}}
-                            <a href="{{ route('health-check.depresi') }}" class="health-tool-item">
-                                <div class="health-tool-icon">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                </div>
-                                <div class="health-tool-title">Tes Depresi</div>
-                            </a>
+                                {{-- 4. Risiko Diabetes --}}
+                                <a href="{{ route('health-check.diabetes') }}" class="health-tool-item">
+                                    <div class="health-tool-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                                    </div>
+                                    <div class="health-tool-title">Risiko Diabetes</div>
+                                </a>
 
-                            {{-- 6. Tes Kecemasan --}}
-                            <a href="{{ route('health-check.kecemasan') }}" class="health-tool-item">
-                                <div class="health-tool-icon">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                                </div>
-                                <div class="health-tool-title">Tes Kecemasan</div>
-                            </a>
+                                {{-- 5. Tes Depresi --}}
+                                <a href="{{ route('health-check.depresi') }}" class="health-tool-item">
+                                    <div class="health-tool-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div class="health-tool-title">Tes Depresi</div>
+                                </a>
 
-                            {{-- 7. Kalender Menstruasi --}}
-                            <a href="{{ route('health-check.menstruasi') }}" class="health-tool-item">
-                                <div class="health-tool-icon">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                </div>
-                                <div class="health-tool-title">Kalender Menstruasi</div>
-                            </a>
+                                {{-- 6. Tes Kecemasan --}}
+                                <a href="{{ route('health-check.kecemasan') }}" class="health-tool-item">
+                                    <div class="health-tool-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                    </div>
+                                    <div class="health-tool-title">Tes Kecemasan</div>
+                                </a>
 
-                            {{-- 8. Pengingat Obat --}}
-                            <a href="{{ route('health-check.pengingat-obat') }}" class="health-tool-item">
-                                <div class="health-tool-icon">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                </div>
-                                <div class="health-tool-title">Pengingat Obat</div>
-                            </a>
+                                {{-- 7. Kalender Menstruasi --}}
+                                <a href="{{ route('health-check.menstruasi') }}" class="health-tool-item">
+                                    <div class="health-tool-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </div>
+                                    <div class="health-tool-title">Kalender Menstruasi</div>
+                                </a>
 
-                            {{-- 9. Kalender Kehamilan --}}
-                            <a href="{{ route('health-check.kehamilan') }}" class="health-tool-item">
-                                <div class="health-tool-icon">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                                </div>
-                                <div class="health-tool-title">Kalender Kehamilan</div>
-                            </a>
+                                {{-- 8. Pengingat Obat --}}
+                                <a href="{{ route('health-check.pengingat-obat') }}" class="health-tool-item">
+                                    <div class="health-tool-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div class="health-tool-title">Pengingat Obat</div>
+                                </a>
 
-                            {{-- 10. Donasi Medis --}}
-                            <a href="{{ route('health-check.donasi') }}" class="health-tool-item">
-                                <div class="health-tool-icon">
-                                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                </div>
-                                <div class="health-tool-title">Donasi Medis</div>
-                            </a>
-                        </div>
-                    </li>
+                                {{-- 9. Kalender Kehamilan --}}
+                                <a href="{{ route('health-check.kehamilan') }}" class="health-tool-item">
+                                    <div class="health-tool-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                    </div>
+                                    <div class="health-tool-title">Kalender Kehamilan</div>
+                                </a>
 
-                    <li>
-                        <a href="{{ route('medicines.index') }}" class="nav-link {{ request()->routeIs('medicines.*') ? 'active' : '' }}">
-                            Apotek Digital
-                        </a>
-                    </li>
+                                {{-- 10. Donasi Medis --}}
+                                <a href="{{ route('health-check.donasi') }}" class="health-tool-item">
+                                    <div class="health-tool-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                    </div>
+                                    <div class="health-tool-title">Donasi Medis</div>
+                                </a>
+                            </div>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('medicines.index') }}" class="nav-link {{ request()->routeIs('medicines.*') ? 'active' : '' }}">
+                                Apotek Digital
+                            </a>
+                        </li>
+                    @endif
                 </ul>
 
                 {{-- Right: Action Buttons --}}
@@ -187,22 +216,38 @@
 
     {{-- ── Mobile Bottom Nav Bar ──────────────────────── --}}
     <nav class="mobile-bottom-nav">
-        <a href="{{ route('home') }}" class="mobile-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <span>Beranda</span>
-        </a>
-        <a href="{{ route('doctors.index') }}" class="mobile-nav-item {{ request()->routeIs('doctors.*') ? 'active' : '' }}">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-            <span>Dokter</span>
-        </a>
-        <a href="{{ route('health-check.index') }}" class="mobile-nav-item {{ request()->routeIs('health-check.*') ? 'active' : '' }}">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span>Cek Sehat</span>
-        </a>
-        <a href="{{ route('medicines.index') }}" class="mobile-nav-item {{ request()->routeIs('medicines.*') ? 'active' : '' }}">
-            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
-            <span>Apotek</span>
-        </a>
+        @if(auth()->check() && auth()->user()->isDoctor())
+            <a href="{{ route('doctor.dashboard') }}" class="mobile-nav-item {{ request()->routeIs('doctor.dashboard') ? 'active' : '' }}">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ route('consultations.index') }}" class="mobile-nav-item {{ request()->routeIs('consultations.*') ? 'active' : '' }}">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span>Konsultasi</span>
+            </a>
+        @elseif(auth()->check() && auth()->user()->isAdmin())
+            <a href="{{ route('admin.dashboard') }}" class="mobile-nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span>Admin</span>
+            </a>
+        @else
+            <a href="{{ route('home') }}" class="mobile-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span>Beranda</span>
+            </a>
+            <a href="{{ route('doctors.index') }}" class="mobile-nav-item {{ request()->routeIs('doctors.*') ? 'active' : '' }}">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span>Dokter</span>
+            </a>
+            <a href="{{ route('health-check.index') }}" class="mobile-nav-item {{ request()->routeIs('health-check.*') ? 'active' : '' }}">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Cek Sehat</span>
+            </a>
+            <a href="{{ route('medicines.index') }}" class="mobile-nav-item {{ request()->routeIs('medicines.*') ? 'active' : '' }}">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                <span>Apotek</span>
+            </a>
+        @endif
     </nav>
 
     {{-- Flash Notifications --}}

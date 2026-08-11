@@ -12,6 +12,15 @@ class DoctorController extends Controller
 {
     public function index(Request $request)
     {
+        if (auth()->check()) {
+            if (auth()->user()->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+            if (auth()->user()->isDoctor()) {
+                return redirect()->route('doctor.dashboard');
+            }
+        }
+
         $query = Doctor::with(['user', 'specialization'])
             ->has('user')
             ->where('is_verified', true);
