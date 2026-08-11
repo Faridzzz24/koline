@@ -34,5 +34,10 @@ $_ENV['APP_SERVICES_CACHE'] = $tmpDir . '/services.php';
 $_ENV['VIEW_COMPILED_PATH'] = $tmpDir . '/storage/framework/views';
 $_ENV['DB_DATABASE'] = file_exists($dbTarget) ? $dbTarget : $dbSource;
 
+// Fix Vercel Serverless Script Name & URI mapping for Laravel routing
+$_SERVER['SCRIPT_FILENAME'] = __DIR__ . '/../public/index.php';
+$_SERVER['SCRIPT_NAME'] = '/index.php';
+$_SERVER['PHP_SELF'] = '/index.php';
+
 // Forward request to Laravel entrypoint
 require __DIR__ . '/../public/index.php';
