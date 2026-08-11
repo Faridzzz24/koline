@@ -1,6 +1,7 @@
 {
     "version": 2,
     "buildCommand": "echo 'Build complete'",
+    "outputDirectory": "public",
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.7.3"
@@ -9,23 +10,23 @@
     "routes": [
         {
             "src": "/css/(.*)",
-            "dest": "/public/css/$1"
+            "dest": "/css/$1"
         },
         {
             "src": "/js/(.*)",
-            "dest": "/public/js/$1"
+            "dest": "/js/$1"
         },
         {
             "src": "/images/(.*)",
-            "dest": "/public/images/$1"
+            "dest": "/images/$1"
         },
         {
             "src": "/favicon.ico",
-            "dest": "/public/favicon.ico"
+            "dest": "/favicon.ico"
         },
         {
             "src": "/favicon.svg",
-            "dest": "/public/favicon.svg"
+            "dest": "/favicon.svg"
         },
         {
             "src": "/(.*)",
