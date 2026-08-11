@@ -45,15 +45,15 @@ class ConsultationController extends Controller
 
         $this->authorizeConsultation($consultation);
 
-        $currentUserId = Auth::id();
+        $currentUserId = (int) Auth::id();
         $initialMessages = $consultation->messages->map(function ($msg) use ($currentUserId) {
             return [
                 'id' => $msg->id,
-                'sender_id' => $msg->sender_id,
-                'sender_name' => $msg->sender->name,
+                'sender_id' => (int) $msg->sender_id,
+                'sender_name' => $msg->sender ? $msg->sender->name : 'Pengguna',
                 'message' => $msg->message,
                 'created_at' => $msg->created_at->format('H:i'),
-                'is_sent' => $msg->sender_id === $currentUserId,
+                'is_sent' => (int) $msg->sender_id === $currentUserId,
             ];
         });
 
@@ -196,15 +196,15 @@ class ConsultationController extends Controller
         }
 
         $this->authorizeConsultation($consultation);
-        $currentUserId = Auth::id();
+        $currentUserId = (int) Auth::id();
         $messages = $consultation->messages()->with('sender')->get()->map(function ($msg) use ($currentUserId) {
             return [
                 'id' => $msg->id,
-                'sender_id' => $msg->sender_id,
+                'sender_id' => (int) $msg->sender_id,
                 'sender_name' => $msg->sender ? $msg->sender->name : 'Pengguna',
                 'message' => $msg->message,
                 'created_at' => $msg->created_at->format('H:i'),
-                'is_sent' => $msg->sender_id === $currentUserId,
+                'is_sent' => (int) $msg->sender_id === $currentUserId,
             ];
         });
 

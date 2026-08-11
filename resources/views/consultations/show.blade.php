@@ -418,6 +418,7 @@ function liveChatApp(consultationId, currentUserId) {
         messages: @json($initialMessages),
         newMessage: '',
         isSubmitting: false,
+        isFetchingMessages: false,
         consultationStatus: '{{ $consultation->status }}',
         diagnosis: @json($consultation->diagnosis),
         prescription: @json($consultation->prescription),
@@ -505,6 +506,8 @@ function liveChatApp(consultationId, currentUserId) {
         },
 
         async fetchMessages() {
+            if (this.isFetchingMessages) return;
+            this.isFetchingMessages = true;
             try {
                 const res = await fetch(`/konsultasi/${consultationId}/pesan`, {
                     headers: { 'Accept': 'application/json' }
@@ -530,26 +533,34 @@ function liveChatApp(consultationId, currentUserId) {
                     if (data.prescription) this.prescription = data.prescription;
                     if (data.notes) this.notes = data.notes;
 
-                    let hasNew = false;
-                    for (const sMsg of serverMessages) {
-                        const existing = this.messages.find(m => m.id === sMsg.id);
-                        if (!existing) {
-                            const tempIdx = this.messages.findIndex(m => m.is_pending && m.message === sMsg.message);
-                            if (tempIdx !== -1) {
-                                this.messages.splice(tempIdx, 1, sMsg);
-                            } else {
-                                this.messages.push(sMsg);
-                            }
-                            hasNew = true;
-                        }
-                    }
+                    // 1. Process server messages with accurate is_sent calculation
+                    const formattedServerMsgs = serverMessages.map(sMsg => ({
+                        ...sMsg,
+                        is_sent: Number(sMsg.sender_id) === Number(currentUserId)
+                    }));
 
-                    if (hasNew && this.isNearBottom()) {
-                        this.$nextTick(() => this.scrollToBottom());
+                    // 2. Preserve any local optimistic pending messages that server hasn't saved yet
+                    const pendingOptimistic = this.messages.filter(m => 
+                        m.is_pending && !formattedServerMsgs.some(s => s.message === m.message)
+                    );
+
+                    const merged = [...formattedServerMsgs, ...pendingOptimistic];
+
+                    // 3. Re-assign array reference to guarantee Alpine JS reactivity!
+                    const hasChanged = merged.length !== this.messages.length || 
+                        merged.some((m, idx) => !this.messages[idx] || this.messages[idx].id !== m.id);
+
+                    if (hasChanged) {
+                        this.messages = merged;
+                        if (this.isNearBottom()) {
+                            this.$nextTick(() => this.scrollToBottom());
+                        }
                     }
                 }
             } catch (e) {
                 console.error(e);
+            } finally {
+                this.isFetchingMessages = false;
             }
         },
 
@@ -559,7 +570,7 @@ function liveChatApp(consultationId, currentUserId) {
             this.newMessage = '';
             this.isSubmitting = true;
             
-            // 1. Optimistic Instant UI Insertion (0ms delay!)
+            // 1. Optimistic Instant UI Insertion (0ms delay with array re-assignment for instant Alpine reactivity)
             const tempId = 'temp_' + Date.now();
             const d = new Date();
             const clockStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
@@ -575,7 +586,7 @@ function liveChatApp(consultationId, currentUserId) {
                 is_pending: true
             };
 
-            this.messages.push(optimisticMsg);
+            this.messages = [...this.messages, optimisticMsg];
             this.$nextTick(() => this.scrollToBottom());
 
             // 2. Background Sync HTTP POST
@@ -597,12 +608,15 @@ function liveChatApp(consultationId, currentUserId) {
                         this.syncTimers();
                     }
                     if (result.data) {
+                        result.data.is_sent = true;
                         const tempIdx = this.messages.findIndex(m => m.id === tempId || (m.is_pending && m.message === text));
+                        let newArr = [...this.messages];
                         if (tempIdx !== -1) {
-                            this.messages.splice(tempIdx, 1, result.data);
-                        } else if (!this.messages.some(m => m.id === result.data.id)) {
-                            this.messages.push(result.data);
+                            newArr.splice(tempIdx, 1, result.data);
+                        } else if (!newArr.some(m => m.id === result.data.id)) {
+                            newArr.push(result.data);
                         }
+                        this.messages = newArr;
                         this.$nextTick(() => this.scrollToBottom());
                     }
                 }
@@ -610,7 +624,8 @@ function liveChatApp(consultationId, currentUserId) {
                 console.error(e);
             } finally {
                 this.isSubmitting = false;
-                this.fetchMessages();
+                this.isFetchingMessages = false;
+                await this.fetchMessages();
             }
         },
 
