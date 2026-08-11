@@ -119,21 +119,26 @@ html, body {
 
 @section('content')
 {{-- Main Header Bar --}}
-<div class="consultation-header-bar" style="display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--bdr-subtle); flex-shrink: 0; flex-wrap: wrap;">
-    <div>
-        <a href="{{ route('consultations.index') }}" class="btn btn-ghost btn-sm mb-2" style="color: var(--clr-brand-light); font-weight: 600; padding-left: 0; display: inline-flex; width: auto;">
+<div class="consultation-header-bar" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--bdr-subtle); flex-shrink: 0;">
+    {{-- Left-aligned Back Link --}}
+    <div style="display: flex; align-items: center; justify-content: flex-start;">
+        <a href="{{ route('consultations.index') }}" class="btn btn-ghost btn-sm" style="color: var(--clr-brand-light); font-weight: 600; padding-left: 0; display: inline-flex; width: auto;">
             ← Kembali ke Daftar Sesi
         </a>
-        <h1 style="font-size: clamp(1.35rem, 3.5vw, 1.65rem); font-weight: 800; color: var(--txt-heading); margin: 0 0 0.15rem; letter-spacing: -0.01em;">
+    </div>
+
+    {{-- Centered Title & ID Sesi --}}
+    <div style="text-align: center; width: 100%;">
+        <h1 style="font-size: clamp(1.3rem, 3.5vw, 1.6rem); font-weight: 800; color: var(--txt-heading); margin: 0 0 0.15rem; letter-spacing: -0.01em; text-align: center;">
             Detail Sesi Telekonsultasi
         </h1>
-        <div style="font-size: 0.8rem; color: var(--txt-muted);">
+        <div style="font-size: 0.825rem; color: var(--txt-muted); text-align: center;">
             ID Sesi: <strong style="color: var(--clr-brand-light); font-family: monospace;">#KOL-{{ str_pad($consultation->id, 5, '0', STR_PAD_LEFT) }}</strong>
         </div>
     </div>
 
-    {{-- Right Side: Inline Session Metadata & Status Badge --}}
-    <div class="consultation-meta-wrapper" style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end;" x-data="{ currentClock: '' }" x-init="setInterval(() => { const d = new Date(); currentClock = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+' WIB'; }, 1000); const d = new Date(); currentClock = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+' WIB';">
+    {{-- Centered Session Metadata & Status Badge --}}
+    <div class="consultation-meta-wrapper" style="display: flex; align-items: center; justify-content: center; gap: 0.4rem; flex-wrap: wrap; text-align: center; margin-top: 0.25rem;" x-data="{ currentClock: '' }" x-init="setInterval(() => { const d = new Date(); currentClock = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+' WIB'; }, 1000); const d = new Date(); currentClock = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+' WIB';">
         <div class="consultation-meta-item">
             <svg width="13" height="13" fill="none" stroke="#38BDF8" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 16 14"/></svg>
             <span x-text="currentClock" style="color: #38BDF8; font-weight: 700;">--:--:-- WIB</span>
