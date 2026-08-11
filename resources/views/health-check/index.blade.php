@@ -15,26 +15,40 @@
         </div>
 
 <style>
+.mobile-stack-vertical-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+@media (max-width: 900px) {
+    .mobile-stack-vertical-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
 @media (max-width: 768px) {
-    .health-tools-grid {
-        display: grid !important;
-        grid-template-columns: 1fr !important;
+    .mobile-stack-vertical-list {
+        display: flex !important;
+        flex-direction: column !important;
         width: 100% !important;
         max-width: 100% !important;
         gap: 1.25rem !important;
         box-sizing: border-box !important;
     }
-    .health-tools-grid .card {
+    .mobile-stack-vertical-list .card {
         width: 100% !important;
         max-width: 100% !important;
+        min-width: 0 !important;
         box-sizing: border-box !important;
+        margin: 0 !important;
         padding: 1.5rem 1.25rem !important;
     }
 }
 </style>
 
-        {{-- 10 Tools Grid --}}
-        <div class="grid health-tools-grid">
+        {{-- 10 Tools Vertical Stack List --}}
+        <div class="mobile-stack-vertical-list">
 
             {{-- 1. Cek Stres --}}
             <div class="card" style="justify-content: space-between; gap: 1.5rem;">

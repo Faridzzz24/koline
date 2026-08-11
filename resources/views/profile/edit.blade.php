@@ -2,11 +2,9 @@
 @section('title', 'Profil Saya')
 @section('content')
 
-<div class="main-header">
-    <div>
-        <h1 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.25rem;">Pengaturan Profil</h1>
-        <div style="font-size: 0.9rem; color: var(--txt-muted);">Kelola data pribadi, alamat, dan keamanan akun Anda</div>
-    </div>
+<div style="text-align: center; margin-bottom: 1.25rem;">
+    <h1 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 0.35rem; text-align: center;">Pengaturan Profil</h1>
+    <div style="font-size: 0.9rem; color: var(--txt-muted); text-align: center;">Kelola data pribadi, alamat, dan keamanan akun Anda</div>
 </div>
 
 <div style="max-width: 860px; margin: 0 auto;">
