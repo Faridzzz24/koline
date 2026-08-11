@@ -188,7 +188,7 @@ html, body {
                 </div>
 
                 {{-- Pending Doctor Approval Banner --}}
-                @if($consultation->status === 'pending')
+                <div x-show="consultationStatus === 'pending'" x-transition>
                     @if(auth()->user()->isDoctor())
                         <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: var(--r-lg); padding: 1.25rem; text-align: center; color: #FBBF24; margin-bottom: 0.5rem;">
                             <div style="font-weight: 800; font-size: 1.05rem; margin-bottom: 0.35rem;">⚠️ Permintaan Konsultasi Masuk</div>
@@ -211,7 +211,7 @@ html, body {
                             </div>
                         </div>
                     @endif
-                @endif
+                </div>
 
                 {{-- Patient Primary Complaint Card --}}
                 <div style="background: rgba(2, 132, 199, 0.08); border-radius: var(--r-lg); padding: 1.25rem; border: 1px solid rgba(2, 132, 199, 0.22);">
@@ -239,42 +239,36 @@ html, body {
             </div>
 
             {{-- Bottom Chat Input Bar --}}
-            @if(in_array($consultation->status, ['confirmed', 'active']))
-                <template x-if="activeStarted && !activeExpired">
-                    <form @submit.prevent="sendMessage()" class="chat-input-bar" style="flex-shrink: 0;">
-                        <input type="text" 
-                               x-model="newMessage" 
-                               class="chat-input" 
-                               placeholder="Ketik pesan konsultasi medis di sini..." 
-                               :disabled="isSubmitting" 
-                               autocomplete="off" 
-                               required>
-                        <button type="submit" 
-                                class="chat-send-btn" 
-                                :disabled="isSubmitting || !newMessage.trim()" 
-                                aria-label="Kirim Pesan" 
-                                title="Kirim Pesan (Tekan Enter)">
-                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                        </button>
-                    </form>
-                </template>
+            <template x-if="['confirmed', 'active'].includes(consultationStatus) && activeStarted && !activeExpired">
+                <form @submit.prevent="sendMessage()" class="chat-input-bar" style="flex-shrink: 0;">
+                    <input type="text" 
+                           x-model="newMessage" 
+                           class="chat-input" 
+                           placeholder="Ketik pesan konsultasi medis di sini..." 
+                           :disabled="isSubmitting" 
+                           autocomplete="off" 
+                           required>
+                    <button type="submit" 
+                            class="chat-send-btn" 
+                            :disabled="isSubmitting || !newMessage.trim()" 
+                            aria-label="Kirim Pesan" 
+                            title="Kirim Pesan (Tekan Enter)">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                    </button>
+                </form>
+            </template>
 
-                <template x-if="!activeStarted">
-                    <div style="padding: 1.125rem 1.5rem; text-align: center; background: var(--bg-surface); color: #FBBF24; font-size: 0.875rem; border-top: 1px solid var(--bdr-subtle); font-weight: 600;">
-                        🔒 Sesi belum dimulai. Fitur obrolan akan terbuka otomatis pukul <span x-text="startTimeFormatted">08:00 WIB</span>.
-                    </div>
-                </template>
-
-                <template x-if="activeExpired">
-                    <div style="padding: 1.125rem 1.5rem; text-align: center; background: var(--bg-surface); color: var(--clr-danger); font-size: 0.875rem; border-top: 1px solid var(--bdr-subtle); font-weight: 600;">
-                        ⛔ Waktu durasi sesi konsultasi telah berakhir.
-                    </div>
-                </template>
-            @else
-                <div style="padding: 1.125rem 1.5rem; text-align: center; background: var(--bg-surface); color: var(--txt-muted); font-size: 0.875rem; border-top: 1px solid var(--bdr-subtle); font-weight: 500;">
-                    Sesi konsultasi {{ $consultation->status === 'completed' ? 'telah resmi diselesaikan' : ($consultation->status === 'cancelled' ? 'telah dibatalkan' : 'menunggu konfirmasi dokter') }}.
+            <template x-if="consultationStatus === 'pending'">
+                <div style="padding: 1.125rem 1.5rem; text-align: center; background: rgba(245, 158, 11, 0.08); color: #FBBF24; font-size: 0.875rem; border-top: 1px solid var(--bdr-subtle); font-weight: 600;">
+                    🔒 Menunggu persetujuan dokter. Ruang chat medis akan otomatis terbuka di sini begitu Dokter menyetujui janji konsultasi.
                 </div>
-            @endif
+            </template>
+
+            <template x-if="['completed', 'cancelled'].includes(consultationStatus) || activeExpired">
+                <div style="padding: 1.125rem 1.5rem; text-align: center; background: var(--bg-surface); color: var(--txt-muted); font-size: 0.875rem; border-top: 1px solid var(--bdr-subtle); font-weight: 500;">
+                    Sesi konsultasi <span x-text="consultationStatus === 'completed' ? 'telah resmi diselesaikan' : (consultationStatus === 'cancelled' ? 'telah dibatalkan' : 'telah berakhir')"></span>.
+                </div>
+            </template>
         </div>
     </div>
 
