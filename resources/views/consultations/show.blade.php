@@ -414,11 +414,20 @@ html, body {
 @push('scripts')
 <script>
 function liveChatApp(consultationId, currentUserId) {
+    const initMsgs = @json($initialMessages);
+    let maxId = 0;
+    if (Array.isArray(initMsgs)) {
+        initMsgs.forEach(m => {
+            if (m.id && typeof m.id === 'number' && m.id > maxId) maxId = m.id;
+        });
+    }
+
     return {
-        messages: @json($initialMessages),
+        messages: initMsgs,
         newMessage: '',
         isSubmitting: false,
         isFetchingMessages: false,
+        lastMessageId: maxId,
         consultationStatus: '{{ $consultation->status }}',
         diagnosis: @json($consultation->diagnosis),
         prescription: @json($consultation->prescription),
@@ -452,10 +461,10 @@ function liveChatApp(consultationId, currentUserId) {
                 this.syncTimers();
             }, 1000);
 
-            // Auto background polling for new messages & status sync every 500ms for zero-delay realtime chat!
+            // Sub-second 150ms high-frequency incremental polling for true real-time instant chat (< 0.15s delay!)
             setInterval(() => {
                 this.fetchMessages();
-            }, 500);
+            }, 150);
         },
 
         syncTimers() {
@@ -509,7 +518,7 @@ function liveChatApp(consultationId, currentUserId) {
             if (this.isFetchingMessages) return;
             this.isFetchingMessages = true;
             try {
-                const res = await fetch(`/konsultasi/${consultationId}/pesan`, {
+                const res = await fetch(`/konsultasi/${consultationId}/pesan-baru?last_id=${this.lastMessageId}`, {
                     headers: { 'Accept': 'application/json' }
                 });
                 if (res.ok) {
@@ -517,13 +526,12 @@ function liveChatApp(consultationId, currentUserId) {
                     
                     const serverStatus = data.consultation_status || data.status;
                     const validStatuses = ['pending', 'confirmed', 'active', 'completed', 'cancelled'];
-                    const serverMessages = data.messages || (Array.isArray(data) ? data : []);
+                    const newMessages = data.messages || [];
 
                     if (data.end_timestamp_ms) {
                         this.endTimestampMs = data.end_timestamp_ms;
                     }
 
-                    // Real-time Status Synchronization (< 1.5s delay, 0 page refresh needed!)
                     if (serverStatus && validStatuses.includes(serverStatus) && serverStatus !== this.consultationStatus) {
                         this.consultationStatus = serverStatus;
                         this.syncTimers();
@@ -533,27 +541,36 @@ function liveChatApp(consultationId, currentUserId) {
                     if (data.prescription) this.prescription = data.prescription;
                     if (data.notes) this.notes = data.notes;
 
-                    // 1. Process server messages with accurate is_sent calculation
-                    const formattedServerMsgs = serverMessages.map(sMsg => ({
-                        ...sMsg,
-                        is_sent: Number(sMsg.sender_id) === Number(currentUserId)
-                    }));
+                    if (newMessages.length > 0) {
+                        let updatedList = [...this.messages];
+                        let hasChanges = false;
 
-                    // 2. Preserve any local optimistic pending messages that server hasn't saved yet
-                    const pendingOptimistic = this.messages.filter(m => 
-                        m.is_pending && !formattedServerMsgs.some(s => s.message === m.message)
-                    );
+                        for (const sMsg of newMessages) {
+                            sMsg.is_sent = Number(sMsg.sender_id) === Number(currentUserId);
 
-                    const merged = [...formattedServerMsgs, ...pendingOptimistic];
+                            if (sMsg.id && typeof sMsg.id === 'number' && sMsg.id > this.lastMessageId) {
+                                this.lastMessageId = sMsg.id;
+                            }
 
-                    // 3. Re-assign array reference to guarantee Alpine JS reactivity!
-                    const hasChanged = merged.length !== this.messages.length || 
-                        merged.some((m, idx) => !this.messages[idx] || this.messages[idx].id !== m.id);
+                            const existingIdx = updatedList.findIndex(m => m.id === sMsg.id);
+                            if (existingIdx !== -1) {
+                                updatedList[existingIdx] = sMsg;
+                            } else {
+                                const tempIdx = updatedList.findIndex(m => m.is_pending && m.message === sMsg.message);
+                                if (tempIdx !== -1) {
+                                    updatedList.splice(tempIdx, 1, sMsg);
+                                } else {
+                                    updatedList.push(sMsg);
+                                }
+                                hasChanges = true;
+                            }
+                        }
 
-                    if (hasChanged) {
-                        this.messages = merged;
-                        if (this.isNearBottom()) {
-                            this.$nextTick(() => this.scrollToBottom());
+                        if (hasChanges || updatedList.length !== this.messages.length) {
+                            this.messages = updatedList;
+                            if (this.isNearBottom()) {
+                                this.$nextTick(() => this.scrollToBottom());
+                            }
                         }
                     }
                 }
@@ -609,6 +626,9 @@ function liveChatApp(consultationId, currentUserId) {
                     }
                     if (result.data) {
                         result.data.is_sent = true;
+                        if (result.data.id && typeof result.data.id === 'number' && result.data.id > this.lastMessageId) {
+                            this.lastMessageId = result.data.id;
+                        }
                         const tempIdx = this.messages.findIndex(m => m.id === tempId || (m.is_pending && m.message === text));
                         let newArr = [...this.messages];
                         if (tempIdx !== -1) {

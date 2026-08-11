@@ -99,6 +99,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{consultation}', [ConsultationController::class, 'show'])->name('show');
         Route::post('/{consultation}/pesan', [ConsultationController::class, 'sendMessage'])->name('message');
         Route::get('/{consultation}/pesan', [ConsultationController::class, 'messages'])->name('messages');
+        Route::get('/{consultation}/pesan-baru', [ConsultationController::class, 'newMessages'])->name('newMessages');
         Route::match(['get', 'post'], '/{consultation}/konfirmasi', [ConsultationController::class, 'confirm'])->name('confirm');
         Route::match(['get', 'post'], '/{consultation}/selesai', [ConsultationController::class, 'complete'])->name('complete');
         Route::match(['get', 'post'], '/{consultation}/batal', [ConsultationController::class, 'cancel'])->name('cancel');

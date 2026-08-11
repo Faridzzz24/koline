@@ -219,6 +219,43 @@ class ConsultationController extends Controller
         ]);
     }
 
+    public function newMessages(Request $request, $consultationId)
+    {
+        $consultation = Consultation::find($consultationId);
+        if (!$consultation) {
+            return response()->json(['error' => 'Konsultasi tidak ditemukan.'], 404);
+        }
+
+        $this->authorizeConsultation($consultation);
+        $currentUserId = (int) Auth::id();
+        $lastId = (int) $request->query('last_id', 0);
+
+        $newMessages = $consultation->messages()
+            ->where('id', '>', $lastId)
+            ->with('sender')
+            ->get()
+            ->map(function ($msg) use ($currentUserId) {
+                return [
+                    'id' => $msg->id,
+                    'sender_id' => (int) $msg->sender_id,
+                    'sender_name' => $msg->sender ? $msg->sender->name : 'Pengguna',
+                    'message' => $msg->message,
+                    'created_at' => $msg->created_at->format('H:i'),
+                    'is_sent' => (int) $msg->sender_id === $currentUserId,
+                ];
+            });
+
+        return response()->json([
+            'consultation_status' => $consultation->status,
+            'status' => $consultation->status,
+            'end_timestamp_ms' => $consultation->end_date_time->timestamp * 1000,
+            'diagnosis' => $consultation->diagnosis,
+            'prescription' => $consultation->prescription,
+            'notes' => $consultation->notes,
+            'messages' => $newMessages,
+        ]);
+    }
+
     private function authorizeConsultation(Consultation $consultation): void
     {
         $user = Auth::user();
