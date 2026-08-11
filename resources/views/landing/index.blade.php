@@ -9,6 +9,23 @@
 <section class="hero-section" style="padding: 7.5rem 0 5rem; background: radial-gradient(circle at 50% 20%, rgba(2, 132, 199, 0.16) 0%, transparent 65%), var(--bg-dark); position: relative; overflow: hidden; border-bottom: 1px solid var(--bdr-subtle);">
     <div class="container">
 
+        @push('styles')
+        <style>
+        .hero-inner-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        @media (max-width: 991px) {
+            .hero-inner-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+        </style>
+        @endpush
+
         {{-- Desktop: 2-column, Mobile: 1-column --}}
         <div class="hero-inner-grid">
 
@@ -63,6 +80,74 @@
                 </div>
             </div>
 
+            {{-- RIGHT: Interactive Featured Doctor Teleconsultation Card Widget --}}
+            <div class="hero-right-widget" style="min-width: 0;">
+                <div class="card" style="padding: 1.75rem; background: var(--bg-card); border: 1px solid var(--bdr-subtle); border-radius: var(--r-xl); box-shadow: 0 20px 40px rgba(0,0,0,0.4); position: relative; overflow: hidden;">
+                    
+                    {{-- Top Badge Row --}}
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+                        <span style="font-size: 0.775rem; font-weight: 700; color: #34D399; background: rgba(52, 211, 153, 0.12); padding: 0.35rem 0.85rem; border-radius: var(--r-full); border: 1px solid rgba(52, 211, 153, 0.3); display: inline-flex; align-items: center; gap: 0.4rem;">
+                            <span style="width: 7px; height: 7px; background: #34D399; border-radius: 50%; display: inline-block;"></span>
+                            Siaga Sesi Online
+                        </span>
+                        <span style="font-size: 0.775rem; color: var(--txt-muted); font-weight: 600;">
+                            Respon &lt; 5 Menit
+                        </span>
+                    </div>
+
+                    {{-- Featured Doctor Info Card --}}
+                    @php
+                        $heroDoctor = $doctors->first();
+                        $heroDocName = $heroDoctor ? $heroDoctor->user->name : 'dr. Andi Wijaya, Sp.PD';
+                        $heroDocSpec = $heroDoctor ? $heroDoctor->specialization->name : 'Spesialis Penyakit Dalam';
+                        $heroDocFee = $heroDoctor ? number_format($heroDoctor->consultation_fee, 0, ',', '.') : '75.000';
+                        $heroDocHospital = $heroDoctor ? ($heroDoctor->hospital ?? 'RS Harapan Utama') : 'RS Harapan Utama';
+                        $heroDocExperience = $heroDoctor ? ($heroDoctor->experience_years ?? 8) : 8;
+                        $heroDocRating = $heroDoctor ? number_format($heroDoctor->rating, 1) : '4.9';
+                        $heroDocReviews = $heroDoctor ? ($heroDoctor->total_reviews ?? 340) : 340;
+
+                        $cleanDocName = preg_replace('/^(drg\.|dr\.|Prof\.|Sp\.[A-Z]+)\s*/i', '', $heroDocName);
+                        $cleanDocName = preg_replace('/,?\s*Sp\.[A-Z]+.*$/i', '', $cleanDocName);
+                        $words = explode(' ', trim($cleanDocName));
+                        $heroInitials = strtoupper(substr($words[0] ?? 'A', 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : 'W'));
+                    @endphp
+
+                    <div style="display: flex; align-items: center; gap: 1rem; background: var(--bg-surface); padding: 1.25rem; border-radius: var(--r-lg); border: 1px solid var(--bdr-subtle); margin-bottom: 1.25rem;">
+                        <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), rgba(13, 148, 136, 0.25)); border: 2px solid var(--clr-brand); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--clr-brand-light); font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 0 15px rgba(2, 132, 199, 0.3);">
+                            {{ $heroInitials }}
+                        </div>
+                        <div style="min-width: 0; flex: 1;">
+                            <div style="font-weight: 800; color: var(--txt-heading); font-size: 1.05rem; line-height: 1.25; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                {{ $heroDocName }}
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--clr-teal-light); font-weight: 600; margin-bottom: 0.15rem;">
+                                {{ $heroDocSpec }}
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--txt-muted);">
+                                {{ $heroDocHospital }} · {{ $heroDocExperience }} Thn Pengalaman
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Fee & Rating Summary --}}
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.875rem 0; border-top: 1px solid var(--bdr-subtle); border-bottom: 1px solid var(--bdr-subtle); margin-bottom: 1.25rem;">
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--txt-muted); margin-bottom: 0.1rem;">Biaya Sesi Konsultasi</div>
+                            <div style="font-size: 1.15rem; font-weight: 800; color: var(--txt-heading);">Rp {{ $heroDocFee }}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.75rem; color: var(--txt-muted); margin-bottom: 0.1rem;">Tingkat Ulasan Medis</div>
+                            <div style="font-size: 0.925rem; font-weight: 700; color: #F59E0B; display: flex; align-items: center; gap: 0.25rem; justify-content: flex-end;">
+                                ★ {{ $heroDocRating }} <span style="font-size: 0.75rem; color: var(--txt-muted); font-weight: 400;">({{ $heroDocReviews }} ulasan)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Direct CTA --}}
+                    <a href="{{ route('doctors.index') }}" class="btn btn-primary btn-block btn-lg" style="font-weight: 800; letter-spacing: 0.01em; box-shadow: 0 8px 25px rgba(2, 132, 199, 0.35);">
+                        Mulai Konsultasi Daring →
+                    </a>
+                </div>
             </div>
 
         </div>
