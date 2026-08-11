@@ -159,20 +159,13 @@
                             @endif
                         </a>
 
-                        <div class="dropdown" x-data="{ userMenuOpen: false }" @click.outside="userMenuOpen = false">
-                            <button @click="userMenuOpen = !userMenuOpen" class="user-avatar-btn">
+                        <div class="dropdown" id="user-dropdown-container">
+                            <button type="button" id="user-profile-toggle-btn" class="user-avatar-btn">
                                 <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="avatar">
                                 <span class="user-name-text">{{ explode(' ', auth()->user()->name)[0] }}</span>
-                                <svg class="mobile-hide-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;" :style="userMenuOpen ? 'transform: rotate(180deg)' : ''"><path d="m6 9 6 6 6-6"/></svg>
+                                <svg class="mobile-hide-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
-                            <div class="dropdown-menu" x-show="userMenuOpen"
-                                 x-transition:enter="transition ease-out duration-150"
-                                 x-transition:enter-start="opacity-0 scale-95 translate-y-1"
-                                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                                 x-transition:leave="transition ease-in duration-100"
-                                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                                 x-transition:leave-end="opacity-0 scale-95 translate-y-1"
-                                 style="display: none;" x-cloak>
+                            <div class="dropdown-menu" id="user-profile-menu-box">
                                 @if(auth()->user()->isAdmin())
                                     <a href="{{ route('admin.dashboard') }}" class="dropdown-item">Panel Admin</a>
                                 @endif
@@ -283,6 +276,24 @@
     <x-ai-chatbot />
 
     <script src="{{ asset('js/app.js') }}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userBtn = document.getElementById('user-profile-toggle-btn');
+        const userMenu = document.getElementById('user-profile-menu-box');
+        if (userBtn && userMenu) {
+            userBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                userMenu.classList.toggle('active');
+            });
+            document.addEventListener('click', function(e) {
+                if (!userBtn.contains(e.target) && !userMenu.contains(e.target)) {
+                    userMenu.classList.remove('active');
+                }
+            });
+        }
+    });
+    </script>
     @stack('scripts')
 </body>
 </html>

@@ -1361,9 +1361,18 @@ input[type=date]::-webkit-calendar-picker-indicator {
   padding: 0.5rem;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
   z-index: 2500;
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: 0.25rem;
+}
+
+.dropdown-menu.active {
+  display: flex !important;
+  flex-direction: column !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 999999 !important;
 }
 
 .dropdown-item {
@@ -2474,6 +2483,21 @@ html, body {
     width: 48px !important;
     height: 48px !important;
     z-index: 1040 !important;
+  }
+
+  /* ── 8. Mobile User Profile Dropdown Popup ── */
+  .dropdown-menu.active {
+    position: fixed !important;
+    top: 64px !important;
+    right: 12px !important;
+    left: auto !important;
+    width: 220px !important;
+    background: #0F172A !important;
+    border: 1px solid rgba(2, 132, 199, 0.5) !important;
+    border-radius: 16px !important;
+    padding: 0.625rem !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(2, 132, 199, 0.25) !important;
+    z-index: 999999 !important;
   }
 }
 

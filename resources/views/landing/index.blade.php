@@ -63,34 +63,6 @@
                 </div>
             </div>
 
-            {{-- RIGHT: Preview Card (Desktop only) --}}
-            <div class="hero-preview-card">
-                <div class="card" style="box-shadow: var(--shadow-lg), var(--shadow-glow); background: var(--bg-card); border-color: rgba(2, 132, 199, 0.25); padding: 2rem; gap: 0;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-                        <span class="badge badge-success" style="padding: 0.4rem 0.85rem;">● Siaga Sesi Online</span>
-                        <span style="font-size: 0.8rem; color: var(--txt-muted); font-weight: 500;">Respon &lt; 5 Menit</span>
-                    </div>
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="initial-avatar" style="width: 54px; height: 54px; min-width: 54px;">AW</div>
-                        <div style="min-width: 0; flex: 1;">
-                            <div style="font-weight: 700; color: var(--txt-heading); font-size: 1rem; line-height: 1.4;">dr. Andi Wijaya, Sp.PD</div>
-                            <div style="font-size: 0.825rem; color: var(--clr-teal-light); font-weight: 600; margin-top: 0.1rem;">Spesialis Penyakit Dalam</div>
-                            <div style="font-size: 0.75rem; color: var(--txt-muted); margin-top: 0.2rem;">RS Harapan Utama · 8 Thn Pengalaman</div>
-                        </div>
-                    </div>
-                    <div class="divider"></div>
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
-                        <div class="flex-between" style="font-size: 0.875rem;">
-                            <span style="color: var(--txt-muted);">Biaya Sesi Konsultasi</span>
-                            <span style="font-weight: 800; color: var(--txt-heading); font-size: 1.05rem;">Rp 75.000</span>
-                        </div>
-                        <div class="flex-between" style="font-size: 0.875rem;">
-                            <span style="color: var(--txt-muted);">Tingkat Ulasan Medis</span>
-                            <span style="font-weight: 700; color: #F59E0B;">★ 4.9 <small style="color: var(--txt-muted);">(340 ulasan)</small></span>
-                        </div>
-                    </div>
-                    <a href="{{ route('doctors.index') }}" class="btn btn-primary btn-block btn-lg">Mulai Konsultasi Daring →</a>
-                </div>
             </div>
 
         </div>
