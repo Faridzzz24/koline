@@ -6,6 +6,31 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
+// Fail-safe static asset handler for Vercel Serverless
+$uri = urldecode(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH));
+$publicFile = __DIR__ . '/../public' . $uri;
+
+if ($uri !== '/' && !empty($uri) && file_exists($publicFile) && !is_dir($publicFile)) {
+    $ext = strtolower(pathinfo($publicFile, PATHINFO_EXTENSION));
+    $mimeTypes = [
+        'css'   => 'text/css; charset=utf-8',
+        'js'    => 'application/javascript; charset=utf-8',
+        'svg'   => 'image/svg+xml',
+        'ico'   => 'image/x-icon',
+        'png'   => 'image/png',
+        'jpg'   => 'image/jpeg',
+        'jpeg'  => 'image/jpeg',
+        'webp'  => 'image/webp',
+        'woff'  => 'font/woff',
+        'woff2' => 'font/woff2',
+    ];
+    if (isset($mimeTypes[$ext])) {
+        header('Content-Type: ' . $mimeTypes[$ext]);
+    }
+    readfile($publicFile);
+    exit;
+}
+
 $tmpDir = '/tmp';
 $tmpDb = $tmpDir . '/database.sqlite';
 

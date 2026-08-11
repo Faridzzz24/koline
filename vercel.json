@@ -1,7 +1,6 @@
 {
     "version": 2,
     "buildCommand": "echo 'Build complete'",
-    "outputDirectory": "public",
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.7.3",
@@ -28,10 +27,6 @@
         {
             "src": "/favicon.svg",
             "dest": "/public/favicon.svg"
-        },
-        {
-            "src": "/(.*?\\.(js|css|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot))",
-            "dest": "/public/$1"
         },
         {
             "src": "/(.*)",
