@@ -48,13 +48,15 @@ class DashboardController extends Controller
             ->get();
 
         $pendingList = $pendingConsultations->map(function ($c) {
+            $patientName = $c->patient ? $c->patient->name : 'Pasien';
+            $dateStr = $c->consultation_date ? $c->consultation_date->format('d M Y') : date('d M Y');
             return [
                 'id' => $c->id,
-                'patient_name' => $c->patient->name,
-                'patient_initial' => strtoupper(substr($c->patient->name, 0, 1)),
-                'date' => $c->consultation_date->format('d M Y'),
-                'time' => substr($c->consultation_time, 0, 5) . ' WIB',
-                'complaint' => \Illuminate\Support\Str::limit($c->complaint, 80),
+                'patient_name' => $patientName,
+                'patient_initial' => strtoupper(substr($patientName, 0, 1)),
+                'date' => $dateStr,
+                'time' => substr($c->consultation_time ?? '00:00', 0, 5) . ' WIB',
+                'complaint' => \Illuminate\Support\Str::limit($c->complaint ?? '', 80),
                 'confirm_url' => route('consultations.confirm', $c),
                 'show_url' => route('consultations.show', $c),
             ];
@@ -72,13 +74,19 @@ class DashboardController extends Controller
     public function poll()
     {
         $user = Auth::user();
-        if (!$user->isDoctor()) {
+        if (!$user || !$user->isDoctor()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
         $doctor = $user->doctor ?: Doctor::where('user_id', $user->id)->first();
         if (!$doctor) {
-            return response()->json(['pending_count' => 0, 'active_count' => 0, 'completed_count' => 0, 'pending_consultations' => []]);
+            return response()->json([
+                'pending_count' => 0,
+                'active_count' => 0,
+                'completed_count' => 0,
+                'pending_consultations' => [],
+                'active_consultations' => []
+            ]);
         }
 
         $pendingConsultations = Consultation::with('patient')
@@ -87,26 +95,46 @@ class DashboardController extends Controller
             ->orderByDesc('created_at')
             ->get()
             ->map(function ($c) {
+                $patientName = $c->patient ? $c->patient->name : 'Pasien';
+                $dateStr = $c->consultation_date ? $c->consultation_date->format('d M Y') : date('d M Y');
                 return [
                     'id' => $c->id,
-                    'patient_name' => $c->patient->name,
-                    'patient_initial' => strtoupper(substr($c->patient->name, 0, 1)),
-                    'date' => $c->consultation_date->format('d M Y'),
-                    'time' => substr($c->consultation_time, 0, 5) . ' WIB',
-                    'complaint' => \Illuminate\Support\Str::limit($c->complaint, 80),
+                    'patient_name' => $patientName,
+                    'patient_initial' => strtoupper(substr($patientName, 0, 1)),
+                    'date' => $dateStr,
+                    'time' => substr($c->consultation_time ?? '00:00', 0, 5) . ' WIB',
+                    'complaint' => \Illuminate\Support\Str::limit($c->complaint ?? '', 80),
                     'confirm_url' => route('consultations.confirm', $c),
                     'show_url' => route('consultations.show', $c),
                 ];
             });
 
-        $activeCount = Consultation::where('doctor_id', $doctor->id)->whereIn('status', ['confirmed', 'active'])->count();
+        $activeConsultations = Consultation::with('patient')
+            ->where('doctor_id', $doctor->id)
+            ->whereIn('status', ['confirmed', 'active'])
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(function ($c) {
+                $patientName = $c->patient ? $c->patient->name : 'Pasien';
+                $dateStr = $c->consultation_date ? $c->consultation_date->format('d M Y') : date('d M Y');
+                return [
+                    'id' => $c->id,
+                    'patient_name' => $patientName,
+                    'patient_initial' => strtoupper(substr($patientName, 0, 1)),
+                    'date' => $dateStr,
+                    'time' => substr($c->consultation_time ?? '00:00', 0, 5) . ' WIB',
+                    'show_url' => route('consultations.show', $c),
+                ];
+            });
+
         $completedCount = Consultation::where('doctor_id', $doctor->id)->where('status', 'completed')->count();
 
         return response()->json([
             'pending_count' => $pendingConsultations->count(),
-            'active_count' => $activeCount,
+            'active_count' => $activeConsultations->count(),
             'completed_count' => $completedCount,
             'pending_consultations' => $pendingConsultations,
+            'active_consultations' => $activeConsultations,
         ]);
     }
 }

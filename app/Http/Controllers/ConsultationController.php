@@ -174,7 +174,7 @@ class ConsultationController extends Controller
             return [
                 'id' => $msg->id,
                 'sender_id' => $msg->sender_id,
-                'sender_name' => $msg->sender->name,
+                'sender_name' => $msg->sender ? $msg->sender->name : 'Pengguna',
                 'message' => $msg->message,
                 'created_at' => $msg->created_at->format('H:i'),
                 'is_sent' => $msg->sender_id === $currentUserId,
@@ -183,6 +183,7 @@ class ConsultationController extends Controller
 
         return response()->json([
             'status' => $consultation->status,
+            'end_timestamp_ms' => $consultation->end_date_time->timestamp * 1000,
             'diagnosis' => $consultation->diagnosis,
             'prescription' => $consultation->prescription,
             'notes' => $consultation->notes,

@@ -197,40 +197,37 @@
                         <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--txt-heading); margin: 0;">Sesi Konsultasi Aktif</h3>
                     </div>
                     <span style="font-size: 0.775rem; font-weight: 600; color: var(--txt-muted); background: var(--bg-surface); padding: 0.25rem 0.625rem; border-radius: var(--r-sm); border: 1px solid var(--bdr-subtle);">
-                        {{ count($activeConsultations) }} Ruang Praktek
+                        <span x-text="activeList.length"></span> Ruang Praktek
                     </span>
                 </div>
 
-                @if($activeConsultations->isEmpty())
-                    <div style="text-align: center; padding: 2.75rem 1rem; color: var(--txt-muted);">
-                        <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin: 0 auto 0.75rem; opacity: 0.4;"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                        <div style="font-weight: 600; color: var(--txt-body); font-size: 0.9rem; margin-bottom: 0.25rem;">Tidak Ada Chat Berlangsung</div>
-                        <div style="font-size: 0.8rem;">Sesi aktif dengan pasien akan muncul di sini.</div>
-                    </div>
-                @else
-                    <div style="display: flex; flex-direction: column; gap: 1rem;">
-                        @foreach($activeConsultations as $c)
-                            <div style="padding: 1rem; background: var(--bg-surface); border: 1px solid var(--bdr-subtle); border-radius: var(--r-md);">
-                                <div class="flex-between items-center">
-                                    <div class="flex items-center gap-3">
-                                        <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(16, 185, 129, 0.15); color: #10B981; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem;">
-                                            {{ substr($c->patient->name, 0, 1) }}
-                                        </div>
-                                        <div>
-                                            <div style="font-weight: 700; font-size: 0.925rem; color: var(--txt-heading);">{{ $c->patient->name }}</div>
-                                            <div style="font-size: 0.775rem; color: #10B981; font-weight: 600;">
-                                                ● Sesi Chat Berlangsung
-                                            </div>
+                <div x-show="activeList.length === 0" style="text-align: center; padding: 2.75rem 1rem; color: var(--txt-muted);">
+                    <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin: 0 auto 0.75rem; opacity: 0.4;"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                    <div style="font-weight: 600; color: var(--txt-body); font-size: 0.9rem; margin-bottom: 0.25rem;">Tidak Ada Chat Berlangsung</div>
+                    <div style="font-size: 0.8rem;">Sesi aktif dengan pasien akan muncul di sini.</div>
+                </div>
+
+                <div x-show="activeList.length > 0" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <template x-for="item in activeList" :key="item.id">
+                        <div style="padding: 1rem; background: var(--bg-surface); border: 1px solid var(--bdr-subtle); border-radius: var(--r-md);">
+                            <div class="flex-between items-center">
+                                <div class="flex items-center gap-3">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(16, 185, 129, 0.15); color: #10B981; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem;" x-text="item.patient_initial">
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 700; font-size: 0.925rem; color: var(--txt-heading);" x-text="item.patient_name"></div>
+                                        <div style="font-size: 0.775rem; color: #10B981; font-weight: 600;">
+                                            ● Sesi Chat Berlangsung
                                         </div>
                                     </div>
-                                    <a href="{{ route('consultations.show', $c) }}" class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.875rem;">
-                                        Masuk Chat →
-                                    </a>
                                 </div>
+                                <a :href="item.show_url" class="btn btn-primary btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.875rem;">
+                                    Masuk Chat →
+                                </a>
                             </div>
-                        @endforeach
-                    </div>
-                @endif
+                        </div>
+                    </template>
+                </div>
             </div>
 
             <div style="margin-top: 1.5rem; border-top: 1px solid var(--bdr-subtle); padding-top: 1rem;">
@@ -252,6 +249,18 @@ function doctorDashboardApp() {
         activeCount: {{ $stats['active'] }},
         completedCount: {{ $stats['completed'] }},
         pendingList: @json($pendingList),
+        activeList: @json($activeConsultations->map(function($c) {
+            $patientName = $c->patient ? $c->patient->name : 'Pasien';
+            $dateStr = $c->consultation_date ? $c->consultation_date->format('d M Y') : date('d M Y');
+            return [
+                'id' => $c->id,
+                'patient_name' => $patientName,
+                'patient_initial' => strtoupper(substr($patientName, 0, 1)),
+                'date' => $dateStr,
+                'time' => substr($c->consultation_time ?? '00:00', 0, 5) . ' WIB',
+                'show_url' => route('consultations.show', $c),
+            ];
+        })),
 
         initDashboard() {
             setInterval(() => {
@@ -270,7 +279,8 @@ function doctorDashboardApp() {
                         this.pendingCount = data.pending_count;
                         this.activeCount = data.active_count;
                         this.completedCount = data.completed_count;
-                        this.pendingList = data.pending_consultations;
+                        if (data.pending_consultations) this.pendingList = data.pending_consultations;
+                        if (data.active_consultations) this.activeList = data.active_consultations;
                     }
                 }
             } catch (e) {

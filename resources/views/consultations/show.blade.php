@@ -466,6 +466,10 @@ function liveChatApp(consultationId, currentUserId) {
                     const serverStatus = data.status || this.consultationStatus;
                     const serverMessages = data.messages || data;
 
+                    if (data.end_timestamp_ms) {
+                        this.endTimestampMs = data.end_timestamp_ms;
+                    }
+
                     // Real-time Status Synchronization (< 1.5s delay, 0 page refresh needed!)
                     if (serverStatus && serverStatus !== this.consultationStatus) {
                         this.consultationStatus = serverStatus;
