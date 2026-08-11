@@ -2344,19 +2344,57 @@ html, body {
     padding-bottom: 4rem !important;
   }
 
-  /* ── 4. Card Grids & Card Cushions ── */
-  .grid-3, .grid-4, .grid-2 {
+  /* ── 4. Card Grids & Container Containment (Fix Mobile Cut-Off) ── */
+  .container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  .grid, .grid-2, .grid-3, .grid-4, .grid-auto-fit {
+    display: grid !important;
     grid-template-columns: 1fr !important;
-    gap: 1.5rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 1.25rem !important;
+    box-sizing: border-box !important;
   }
 
   .card, .feature-card, .doctor-card, .med-card {
-    padding: 1.75rem 1.5rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 1.5rem 1.25rem !important;
     border-radius: 20px !important;
   }
 
+  /* ── 5. Compact Footer Spacing (Dempet ke Content) ── */
+  .footer {
+    padding-top: 1.5rem !important;
+    padding-bottom: 2rem !important;
+    margin-top: 0 !important;
+    border-top: 1px solid var(--bdr-subtle) !important;
+  }
 
-  /* ── 5. Mobile Bottom Tab Bar ── */
+  .footer-grid {
+    margin-bottom: 1.75rem !important;
+    gap: 1.5rem !important;
+  }
+
+  section.section:last-of-type,
+  .section:last-of-type,
+  .hero-section:last-of-type {
+    padding-bottom: 1.5rem !important;
+    border-bottom: none !important;
+  }
+
+  .doctors-mobile-cta {
+    margin-bottom: 0 !important;
+  }
+
+  /* ── 6. Mobile Bottom Tab Bar ── */
   .mobile-bottom-nav {
     display: flex !important;
     position: fixed !important;
@@ -2405,7 +2443,7 @@ html, body {
     padding-bottom: 60px !important;
   }
 
-  /* ── 6. AI Chatbot Trigger (Positioned safely above bottom tab bar) ── */
+  /* ── 7. AI Chatbot Trigger (Positioned safely above bottom tab bar) ── */
   .ai-chatbot-trigger {
     bottom: 74px !important;
     right: 1.25rem !important;
@@ -2414,4 +2452,5 @@ html, body {
     z-index: 1040 !important;
   }
 }
+
 

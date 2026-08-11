@@ -24,7 +24,7 @@ class MedicineController extends Controller
             $query->where('requires_prescription', $request->prescription === 'yes');
         }
 
-        $medicines = $query->orderBy('name')->paginate(30);
+        $medicines = $query->orderBy('name')->get();
         $categories = ['obat_bebas', 'obat_keras', 'suplemen', 'vitamin', 'herbal', 'alat_kesehatan'];
 
         return view('medicines.index', compact('medicines', 'categories'));
