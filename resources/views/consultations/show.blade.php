@@ -171,19 +171,31 @@ html, body {
                     </span>
                 </div>
 
-                {{-- Banner if session not started yet --}}
-                <template x-if="!activeStarted">
-                    <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--r-lg); padding: 1.125rem; text-align: center; color: #FBBF24;">
-                        <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.25rem;">🔒 Sesi Konsultasi Belum Dimulai</div>
-                        <div style="font-size: 0.85rem; color: var(--txt-body); line-height: 1.6;">
-                            Sesi medis ini dijadwalkan berlangsung pada pukul <strong style="color: #FBBF24;" x-text="startTimeFormatted">08:00 WIB</strong>.<br>
-                            Ruang chat dan fitur pengiriman pesan akan otomatis terbuka tepat pada jam tersebut.
+                {{-- Pending Doctor Approval Banner --}}
+                @if($consultation->status === 'pending')
+                    @if(auth()->user()->isDoctor())
+                        <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: var(--r-lg); padding: 1.25rem; text-align: center; color: #FBBF24; margin-bottom: 0.5rem;">
+                            <div style="font-weight: 800; font-size: 1.05rem; margin-bottom: 0.35rem;">⚠️ Permintaan Konsultasi Masuk</div>
+                            <div style="font-size: 0.875rem; color: var(--txt-body); line-height: 1.6; max-width: 520px; margin: 0 auto 1rem;">
+                                Pasien <strong>{{ $consultation->patient->name }}</strong> mengajukan janji konsultasi pada <strong>{{ $consultation->consultation_date->format('d M Y') }}</strong> jam <strong>{{ substr($consultation->consultation_time, 0, 5) }} WIB</strong>. Setujui permintaan ini untuk membuka ruang chat medis.
+                            </div>
+                            <form action="{{ route('consultations.confirm', $consultation) }}" method="POST" style="margin: 0; display: inline-block;">
+                                @csrf
+                                <button type="submit" class="btn btn-primary" style="font-weight: 700; padding: 0.65rem 1.75rem;">
+                                    ✓ Setujui & Terima Sesi Konsultasi
+                                </button>
+                            </form>
                         </div>
-                        <div style="margin-top: 0.75rem; font-family: monospace; font-size: 1.05rem; font-weight: 800; color: #38BDF8; background: rgba(56, 189, 248, 0.1); padding: 0.5rem 1rem; border-radius: var(--r-md); display: inline-block;">
-                            ⏳ Dimulai Dalam: <span x-text="formatTime(startTimer)">00:00:00</span>
+                    @else
+                        <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: var(--r-lg); padding: 1.25rem; text-align: center; color: #FBBF24; margin-bottom: 0.5rem;">
+                            <div style="font-weight: 800; font-size: 1.05rem; margin-bottom: 0.35rem;">🔒 Menunggu Persetujuan Dokter</div>
+                            <div style="font-size: 0.875rem; color: var(--txt-body); line-height: 1.6; max-width: 520px; margin: 0 auto;">
+                                Janji konsultasi Anda telah berhasil dikirim ke <strong>{{ $consultation->doctor->user->name }}</strong>.<br>
+                                Fitur chat medis akan otomatis terbuka segera setelah Dokter menyetujui sesi konsultasi ini.
+                            </div>
                         </div>
-                    </div>
-                </template>
+                    @endif
+                @endif
 
                 {{-- Patient Primary Complaint Card --}}
                 <div style="background: rgba(2, 132, 199, 0.08); border-radius: var(--r-lg); padding: 1.25rem; border: 1px solid rgba(2, 132, 199, 0.22);">
@@ -386,13 +398,23 @@ function liveChatApp(consultationId, currentUserId) {
 
         syncTimers() {
             const now = Date.now();
-            this.activeStarted = true;
-            this.activeExpired = false;
+            const isConfirmedOrActive = {{ in_array($consultation->status, ['confirmed', 'active']) ? 'true' : 'false' }};
 
-            if (this.endTimestampMs > now) {
-                this.sessionTimer = Math.max(0, Math.floor((this.endTimestampMs - now) / 1000));
+            if (!isConfirmedOrActive) {
+                this.activeStarted = false;
+                this.activeExpired = false;
+                this.sessionTimer = 0;
+                return;
+            }
+
+            if (now >= this.endTimestampMs) {
+                this.activeStarted = true;
+                this.activeExpired = true;
+                this.sessionTimer = 0;
             } else {
-                this.sessionTimer = (this.durationHours || 1) * 3600;
+                this.activeStarted = true;
+                this.activeExpired = false;
+                this.sessionTimer = Math.max(0, Math.floor((this.endTimestampMs - now) / 1000));
             }
         },
 

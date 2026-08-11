@@ -139,11 +139,12 @@ class ConsultationController extends Controller
     public function confirm(Consultation $consultation)
     {
         $user = Auth::user();
-        if (!$user->isDoctor() || !$user->doctor || $user->doctor->id !== $consultation->doctor_id) {
+        $doctor = $user->doctor ?: \App\Models\Doctor::where('user_id', $user->id)->first();
+        if (!$user->isDoctor() || !$doctor || $doctor->id !== $consultation->doctor_id) {
             abort(403);
         }
         $consultation->update(['status' => 'confirmed']);
-        return back()->with('success', 'Konsultasi berhasil dikonfirmasi.');
+        return back()->with('success', 'Konsultasi berhasil disetujui & dikonfirmasi! Ruang chat medis telah terbuka.');
     }
 
     public function cancel(Consultation $consultation)

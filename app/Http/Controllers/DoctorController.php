@@ -69,7 +69,7 @@ class DoctorController extends Controller
             'duration_hours' => $duration,
             'complaint' => $request->complaint,
             'fee' => $calculatedFee,
-            'status' => 'confirmed',
+            'status' => 'pending',
         ]);
 
         $doctor->increment('total_patients');
