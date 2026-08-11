@@ -47,13 +47,26 @@ class DashboardController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
+        $pendingList = $pendingConsultations->map(function ($c) {
+            return [
+                'id' => $c->id,
+                'patient_name' => $c->patient->name,
+                'patient_initial' => strtoupper(substr($c->patient->name, 0, 1)),
+                'date' => $c->consultation_date->format('d M Y'),
+                'time' => substr($c->consultation_time, 0, 5) . ' WIB',
+                'complaint' => \Illuminate\Support\Str::limit($c->complaint, 80),
+                'confirm_url' => route('consultations.confirm', $c),
+                'show_url' => route('consultations.show', $c),
+            ];
+        });
+
         $activeConsultations = Consultation::with('patient')
             ->where('doctor_id', $doctor->id)
             ->whereIn('status', ['confirmed', 'active'])
             ->orderByDesc('created_at')
             ->get();
 
-        return view('doctor.dashboard', compact('doctor', 'stats', 'pendingConsultations', 'activeConsultations'));
+        return view('doctor.dashboard', compact('doctor', 'stats', 'pendingConsultations', 'activeConsultations', 'pendingList'));
     }
 
     public function poll()

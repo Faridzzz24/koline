@@ -251,18 +251,7 @@ function doctorDashboardApp() {
         pendingCount: {{ $stats['pending'] }},
         activeCount: {{ $stats['active'] }},
         completedCount: {{ $stats['completed'] }},
-        pendingList: @json($pendingConsultations->map(function($c) {
-            return [
-                'id' => $c->id,
-                'patient_name' => $c->patient->name,
-                'patient_initial' => strtoupper(substr($c->patient->name, 0, 1)),
-                'date' => $c->consultation_date->format('d M Y'),
-                'time' => substr($c->consultation_time, 0, 5) . ' WIB',
-                'complaint' => \Illuminate\Support\Str::limit($c->complaint, 80),
-                'confirm_url' => route('consultations.confirm', $c),
-                'show_url' => route('consultations.show', $c),
-            ];
-        })),
+        pendingList: @json($pendingList),
 
         initDashboard() {
             setInterval(() => {
