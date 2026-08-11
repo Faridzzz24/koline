@@ -26,7 +26,7 @@
         <div class="container">
             <div class="navbar-inner">
                 {{-- Left: Brand Logo --}}
-                <a href="{{ route('home') }}" class="navbar-brand">
+                <a href="{{ auth()->check() ? (auth()->user()->isAdmin() ? route('admin.dashboard') : (auth()->user()->isDoctor() ? route('doctor.dashboard') : route('doctors.index'))) : route('home') }}" class="navbar-brand">
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                         <path d="M12 9v6M9 12h6"/>
@@ -187,7 +187,7 @@
 
     {{-- ── Mobile Bottom Nav Bar ──────────────────────── --}}
     <nav class="mobile-bottom-nav">
-        <a href="{{ route('home') }}" class="mobile-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
+        <a href="{{ auth()->check() ? (auth()->user()->isAdmin() ? route('admin.dashboard') : (auth()->user()->isDoctor() ? route('doctor.dashboard') : route('doctors.index'))) : route('home') }}" class="mobile-nav-item {{ request()->routeIs('home') || request()->routeIs('doctors.index') ? 'active' : '' }}">
             <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             <span>Beranda</span>
         </a>

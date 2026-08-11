@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
         if ($user->isDoctor()) {
             return redirect()->route('doctor.dashboard');
         }
-        return redirect()->route('home');
+        return redirect()->route('doctors.index');
     }
 
     /**
