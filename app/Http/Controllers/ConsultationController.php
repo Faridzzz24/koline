@@ -177,6 +177,9 @@ class ConsultationController extends Controller
 
         return response()->json([
             'status' => $consultation->status,
+            'diagnosis' => $consultation->diagnosis,
+            'prescription' => $consultation->prescription,
+            'notes' => $consultation->notes,
             'messages' => $messages,
         ]);
     }

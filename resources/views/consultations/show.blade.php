@@ -323,37 +323,29 @@ html, body {
             </div>
         @endif
 
-        {{-- Completed Medical Record Display --}}
-        @if($consultation->diagnosis)
-            <div class="card card-sm" style="border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.04);">
-                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-                    <svg width="18" height="18" fill="none" stroke="#34D399" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <h3 style="font-size: 1.05rem; font-weight: 700; color: #34D399; margin: 0;">Resume Rekam Medis</h3>
-                </div>
-                
-                <div style="margin-bottom: 1rem;">
-                    <div style="font-size: 0.75rem; color: var(--txt-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem;">Diagnosis Dokter:</div>
-                    <p style="font-size: 0.9rem; color: var(--txt-heading); line-height: 1.65; margin: 0; font-weight: 500;">
-                        {{ $consultation->diagnosis }}
-                    </p>
-                </div>
-
-                @if($consultation->prescription)
-                    <div style="background: rgba(13, 148, 136, 0.12); border-radius: var(--r-md); padding: 0.875rem 1rem; border: 1px solid rgba(13, 148, 136, 0.3);">
-                        <div style="font-size: 0.725rem; color: var(--clr-teal-light); font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem;">Resep Obat Resmi:</div>
-                        <p style="font-size: 0.875rem; color: var(--txt-heading); margin: 0; line-height: 1.6; font-weight: 600;">
-                            {{ $consultation->prescription }}
-                        </p>
-                    </div>
-                @endif
-
-                @if($consultation->notes)
-                    <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--txt-muted);">
-                        <strong>Catatan:</strong> {{ $consultation->notes }}
-                    </div>
-                @endif
+        {{-- Completed Medical Record Display (Reactive Real-Time) --}}
+        <div x-show="diagnosis" x-transition class="card card-sm" style="border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.04);">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                <svg width="18" height="18" fill="none" stroke="#34D399" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <h3 style="font-size: 1.05rem; font-weight: 700; color: #34D399; margin: 0;">Resume Rekam Medis</h3>
             </div>
-        @endif
+            
+            <div style="margin-bottom: 1rem;">
+                <div style="font-size: 0.75rem; color: var(--txt-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem;">Diagnosis Dokter:</div>
+                <p style="font-size: 0.9rem; color: var(--txt-heading); line-height: 1.65; margin: 0; font-weight: 500;" x-text="diagnosis">
+                </p>
+            </div>
+
+            <div x-show="prescription" style="background: rgba(13, 148, 136, 0.12); border-radius: var(--r-md); padding: 0.875rem 1rem; border: 1px solid rgba(13, 148, 136, 0.3); margin-bottom: 0.875rem;">
+                <div style="font-size: 0.725rem; color: var(--clr-teal-light); font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem;">Resep Obat Resmi:</div>
+                <p style="font-size: 0.875rem; color: var(--txt-heading); margin: 0; line-height: 1.6; font-weight: 600;" x-text="prescription">
+                </p>
+            </div>
+
+            <div x-show="notes" style="font-size: 0.85rem; color: var(--txt-muted);">
+                <strong>Catatan Dokter:</strong> <span x-text="notes"></span>
+            </div>
+        </div>
 
         {{-- Patient Action: Cancel --}}
         @if($consultation->status === 'pending' && auth()->user()->isPatient())
@@ -377,6 +369,9 @@ function liveChatApp(consultationId, currentUserId) {
         newMessage: '',
         isSubmitting: false,
         consultationStatus: '{{ $consultation->status }}',
+        diagnosis: @json($consultation->diagnosis),
+        prescription: @json($consultation->prescription),
+        notes: @json($consultation->notes),
 
         startTimestampMs: {{ $consultation->start_date_time->timestamp * 1000 }},
         endTimestampMs: {{ $consultation->end_date_time->timestamp * 1000 }},
@@ -470,6 +465,10 @@ function liveChatApp(consultationId, currentUserId) {
                         this.consultationStatus = serverStatus;
                         this.syncTimers();
                     }
+
+                    if (data.diagnosis) this.diagnosis = data.diagnosis;
+                    if (data.prescription) this.prescription = data.prescription;
+                    if (data.notes) this.notes = data.notes;
 
                     let hasNew = false;
                     for (const sMsg of serverMessages) {
