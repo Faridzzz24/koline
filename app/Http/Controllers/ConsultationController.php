@@ -171,7 +171,11 @@ class ConsultationController extends Controller
                 'is_sent' => $msg->sender_id === $currentUserId,
             ];
         });
-        return response()->json($messages);
+
+        return response()->json([
+            'status' => $consultation->status,
+            'messages' => $messages,
+        ]);
     }
 
     private function authorizeConsultation(Consultation $consultation): void

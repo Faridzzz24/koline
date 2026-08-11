@@ -39,8 +39,24 @@ html, body {
     color: var(--txt-muted);
 }
 @media (max-width: 1024px) {
-    html, body, .main-content { overflow: auto !important; height: auto; }
+    html, body { overflow: auto !important; height: auto; }
+    .main-content { overflow: visible !important; height: auto; padding-bottom: 5rem !important; }
     .consultation-grid { grid-template-columns: 1fr !important; }
+    .chat-card-container {
+        height: min(72vh, 600px) !important;
+        min-height: 480px !important;
+        max-height: 650px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+    }
+    .chat-messages {
+        flex: 1 1 0% !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain !important;
+    }
 }
 @media (max-width: 768px) {
     .consultation-header-bar {
@@ -110,7 +126,7 @@ html, body {
 
     {{-- Left Area: Live Teleconsultation Chat Room --}}
     <div style="height: 100%; min-height: 0;">
-        <div class="card" style="padding: 0; overflow: hidden; border-radius: var(--r-xl); box-shadow: 0 10px 30px rgba(0,0,0,0.25); height: 100%; min-height: 480px; display: flex; flex-direction: column;" x-data="liveChatApp({{ $consultation->id }}, {{ auth()->id() }})" x-init="initChat()">
+        <div class="card chat-card-container" style="padding: 0; overflow: hidden; border-radius: var(--r-xl); box-shadow: 0 10px 30px rgba(0,0,0,0.25); height: 100%; min-height: 480px; display: flex; flex-direction: column;" x-data="liveChatApp({{ $consultation->id }}, {{ auth()->id() }})" x-init="initChat()">
             
             {{-- Chat Room Top Header --}}
             <div style="padding: 0.875rem 1.25rem; border-bottom: 1px solid var(--bdr-subtle); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; background: var(--bg-surface); flex-shrink: 0; flex-wrap: wrap;">
@@ -366,14 +382,15 @@ function liveChatApp(consultationId, currentUserId) {
         messages: @json($initialMessages),
         newMessage: '',
         isSubmitting: false,
+        consultationStatus: '{{ $consultation->status }}',
 
         startTimestampMs: {{ $consultation->start_date_time->timestamp * 1000 }},
         endTimestampMs: {{ $consultation->end_date_time->timestamp * 1000 }},
         
         startTimer: 0,
         sessionTimer: 0,
-        activeStarted: false,
-        activeExpired: false,
+        activeStarted: {{ in_array($consultation->status, ['confirmed', 'active']) ? 'true' : 'false' }},
+        activeExpired: {{ in_array($consultation->status, ['completed', 'cancelled']) ? 'true' : 'false' }},
 
         startTimeFormatted: '{{ substr($consultation->consultation_time, 0, 5) }} WIB',
         durationHours: {{ $consultation->duration_hours ?? 1 }},
@@ -390,7 +407,7 @@ function liveChatApp(consultationId, currentUserId) {
                 this.syncTimers();
             }, 1000);
 
-            // Auto background polling for new messages every 1.5 seconds
+            // Auto background polling for new messages & status sync every 1.5 seconds
             setInterval(() => {
                 this.fetchMessages();
             }, 1500);
@@ -398,7 +415,15 @@ function liveChatApp(consultationId, currentUserId) {
 
         syncTimers() {
             const now = Date.now();
-            const isConfirmedOrActive = {{ in_array($consultation->status, ['confirmed', 'active']) ? 'true' : 'false' }};
+            const isConfirmedOrActive = ['confirmed', 'active'].includes(this.consultationStatus);
+            const isCompletedOrCancelled = ['completed', 'cancelled'].includes(this.consultationStatus);
+
+            if (isCompletedOrCancelled) {
+                this.activeStarted = true;
+                this.activeExpired = true;
+                this.sessionTimer = 0;
+                return;
+            }
 
             if (!isConfirmedOrActive) {
                 this.activeStarted = false;
@@ -441,14 +466,21 @@ function liveChatApp(consultationId, currentUserId) {
                     headers: { 'Accept': 'application/json' }
                 });
                 if (res.ok) {
-                    const serverMessages = await res.json();
-                    let hasNew = false;
+                    const data = await res.json();
                     
-                    // Incremental sync without replacing entire array to prevent DOM flicker/glitch
+                    const serverStatus = data.status || this.consultationStatus;
+                    const serverMessages = data.messages || data;
+
+                    // Real-time Status Synchronization (< 1.5s delay, 0 page refresh needed!)
+                    if (serverStatus && serverStatus !== this.consultationStatus) {
+                        this.consultationStatus = serverStatus;
+                        this.syncTimers();
+                    }
+
+                    let hasNew = false;
                     for (const sMsg of serverMessages) {
                         const existing = this.messages.find(m => m.id === sMsg.id);
                         if (!existing) {
-                            // Match and replace any pending optimistic message
                             const tempIdx = this.messages.findIndex(m => m.is_pending && m.message === sMsg.message);
                             if (tempIdx !== -1) {
                                 this.messages.splice(tempIdx, 1, sMsg);
