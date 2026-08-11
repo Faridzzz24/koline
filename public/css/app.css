@@ -1553,6 +1553,56 @@ html, body {
     padding: 1.25rem !important;
   }
 
+  /* Hero & Section Header Mobile Optimization */
+  .hero-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.25rem 0.75rem !important;
+    padding-top: 1.5rem !important;
+  }
+  .section-header-wrap {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+    margin-bottom: 2rem !important;
+  }
+  .section-header-wrap .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Doctor Card Mobile Stacking */
+  .doctor-card-footer {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.875rem !important;
+  }
+  .doctor-card-footer > a.btn,
+  .doctor-card-footer > button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Floating AI Chatbot Mobile Trigger Positioning */
+  .ai-chatbot-trigger {
+    bottom: 4.5rem !important;
+    right: 1rem !important;
+    width: 48px !important;
+    height: 48px !important;
+  }
+  .ai-chatbot-window {
+    right: 0.75rem !important;
+    left: 0.75rem !important;
+    bottom: 0.75rem !important;
+    width: auto !important;
+    max-width: 100% !important;
+    height: 82vh !important;
+  }
+
+  /* Navbar Mobile Alignment */
+  .user-name-text {
+    display: none !important;
+  }
+
   /* Footer Links Stacking */
   .footer-grid {
     grid-template-columns: 1fr !important;

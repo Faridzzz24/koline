@@ -167,7 +167,7 @@
                         <div class="dropdown" x-data="{ userMenuOpen: false }" @click.outside="userMenuOpen = false">
                             <button @click="userMenuOpen = !userMenuOpen" style="background:none;border:none;display:flex;align-items:center;gap:0.625rem;cursor:pointer;padding:0.25rem 0.5rem;border-radius:var(--r-md);transition:background 0.2s;">
                                 <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="avatar">
-                                <span style="font-size:0.875rem;font-weight:600;color:var(--txt-heading);">{{ explode(' ', auth()->user()->name)[0] }}</span>
+                                <span class="user-name-text" style="font-size:0.875rem;font-weight:600;color:var(--txt-heading);">{{ explode(' ', auth()->user()->name)[0] }}</span>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s;" :style="userMenuOpen ? 'transform: rotate(180deg)' : ''"><path d="m6 9 6 6 6-6"/></svg>
                             </button>
                             <div class="dropdown-menu" x-show="userMenuOpen"

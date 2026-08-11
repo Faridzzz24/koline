@@ -12,7 +12,7 @@
 
             {{-- Left Column: Hero Copy --}}
             <div>
-                <div class="badge badge-teal mb-4 animate-fade-up" style="padding: 0.5rem 1rem; font-size: 0.825rem;">
+                <div class="badge badge-teal mb-4 animate-fade-up" style="padding: 0.5rem 1rem; font-size: 0.825rem; max-width: 100%; white-space: normal; text-align: center;">
                     <span style="width: 7px; height: 7px; background: var(--clr-teal-light); border-radius: 50%; display: inline-block;"></span>
                     2.500+ Dokter Spesialis Terverifikasi STR & SIP Resmi
                 </div>
@@ -27,7 +27,7 @@
                     Akses langsung ke tim medis profesional, analisis indikator kesehatan mandiri, serta pengadaan produk farmasi resmi dengan standar tinggi.
                 </p>
 
-                <div class="flex gap-4 flex-wrap mb-12 animate-fade-up">
+                <div class="hero-buttons flex gap-4 flex-wrap mb-12 animate-fade-up">
                     <a href="{{ route('doctors.index') }}" class="btn btn-primary btn-xl">
                         Konsultasi Dokter Sekarang
                     </a>
@@ -37,7 +37,7 @@
                 </div>
 
                 {{-- Stats Grid --}}
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.75rem; padding-top: 2.5rem; border-top: 1px solid var(--bdr-subtle);" class="animate-fade-up">
+                <div class="hero-stats-grid animate-fade-up" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.75rem; padding-top: 2.5rem; border-top: 1px solid var(--bdr-subtle);">
                     <div>
                         <div style="font-size: 1.625rem; font-weight: 800; color: var(--txt-heading);" data-count="2500">0</div>
                         <div style="font-size: 0.775rem; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.375rem;">Dokter Medis</div>
@@ -153,7 +153,7 @@
 {{-- ── 3. DOKTER MEDIS TERPOPULER ────────────────────── --}}
 <section class="section" style="padding-top: 6rem; padding-bottom: 6rem; background: var(--bg-dark);">
     <div class="container">
-        <div class="flex-between mb-10" style="align-items: flex-end; gap: 1.5rem; flex-wrap: wrap;">
+        <div class="flex-between section-header-wrap mb-10" style="align-items: flex-end; gap: 1.5rem; flex-wrap: wrap;">
             <div>
                 <div class="badge badge-teal mb-3" style="display: inline-flex;">Pilihan Spesialisasi</div>
                 <h2 style="font-size: 2.25rem; margin-bottom: 0;">Dokter Medis Terpopuler</h2>
@@ -188,7 +188,7 @@
                         </div>
                     </div>
 
-                    <div style="border-top: 1px solid var(--bdr-subtle); padding-top: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div class="doctor-card-footer" style="border-top: 1px solid var(--bdr-subtle); padding-top: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
                         <div>
                             <div style="font-weight: 800; color: var(--txt-heading); font-size: 1.05rem;">{{ $doctor->formatted_fee }}</div>
                             <div style="font-size: 0.75rem; color: var(--txt-muted);">per sesi</div>
