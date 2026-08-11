@@ -98,8 +98,8 @@
                     {{-- Featured Doctor Info Card --}}
                     @php
                         $heroDoctor = $doctors->first();
-                        $heroDocName = $heroDoctor ? $heroDoctor->user->name : 'dr. Andi Wijaya, Sp.PD';
-                        $heroDocSpec = $heroDoctor ? $heroDoctor->specialization->name : 'Spesialis Penyakit Dalam';
+                        $heroDocName = ($heroDoctor && $heroDoctor->user) ? $heroDoctor->user->name : 'dr. Andi Wijaya, Sp.PD';
+                        $heroDocSpec = ($heroDoctor && $heroDoctor->specialization) ? $heroDoctor->specialization->name : 'Spesialis Penyakit Dalam';
                         $heroDocFee = $heroDoctor ? number_format($heroDoctor->consultation_fee, 0, ',', '.') : '75.000';
                         $heroDocHospital = $heroDoctor ? ($heroDoctor->hospital ?? 'RS Harapan Utama') : 'RS Harapan Utama';
                         $heroDocExperience = $heroDoctor ? ($heroDoctor->experience_years ?? 8) : 8;

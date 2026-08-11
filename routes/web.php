@@ -72,7 +72,7 @@ Route::prefix('cek-kesehatan')->name('health-check.')->group(function () {
 });
 
 // ─── Authenticated Routes ──────────────────────────────────────────────────
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     // Dashboard Dispatcher
     Route::get('/dashboard', function () {

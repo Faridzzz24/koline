@@ -16,11 +16,14 @@ class DashboardController extends Controller
         $doctor = $user->doctor ?: Doctor::where('user_id', $user->id)->first();
 
         if (!$doctor) {
-            $specializationId = \App\Models\Specialization::first()?->id ?? 1;
+            $specialization = \App\Models\Specialization::firstOrCreate(
+                ['name' => 'Spesialis Penyakit Dalam'],
+                ['slug' => 'spesialis-penyakit-dalam', 'description' => 'Spesialis Penyakit Dalam', 'icon' => 'stethoscope', 'is_active' => true]
+            );
             $doctor = Doctor::create([
                 'user_id' => $user->id,
-                'specialization_id' => $specializationId,
-                'str_number' => 'STR-' . $user->id . '-2024',
+                'specialization_id' => $specialization->id,
+                'str_number' => 'STR-' . $user->id . '-' . time(),
                 'experience_years' => 5,
                 'consultation_fee' => 75000,
                 'bio' => 'Dokter spesialis berpengalaman di KoLine.',
