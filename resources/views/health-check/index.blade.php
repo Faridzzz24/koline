@@ -14,8 +14,27 @@
             </p>
         </div>
 
+<style>
+@media (max-width: 768px) {
+    .health-tools-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        gap: 1.25rem !important;
+        box-sizing: border-box !important;
+    }
+    .health-tools-grid .card {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 1.5rem 1.25rem !important;
+    }
+}
+</style>
+
         {{-- 10 Tools Grid --}}
-        <div class="grid grid-3 health-tools-grid">
+        <div class="grid health-tools-grid">
 
             {{-- 1. Cek Stres --}}
             <div class="card" style="justify-content: space-between; gap: 1.5rem;">

@@ -18,24 +18,26 @@
 
         {{-- Filter Bar & Category Pill Chips --}}
         <div style="margin-bottom: 2.5rem;">
-            <div style="margin-bottom: 1.5rem;">
-                <div style="display: flex; gap: 1rem; align-items: center;">
-                    <div style="position: relative; flex: 1;">
-                        <input type="text" id="medicine-search-input" value="{{ request('search') }}" placeholder="Cari nama obat, suplemen, atau merek (contoh: Paracetamol, Vitamin C)..." class="form-input" style="height: 50px; padding-left: 2.75rem;">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--txt-muted);">
+            {{-- Search Bar with dedicated 'Cari' Button --}}
+            <div style="margin-bottom: 1.25rem;">
+                <div style="display: flex; gap: 0.625rem; align-items: center; width: 100%;">
+                    <div style="position: relative; flex: 1; min-width: 0;">
+                        <input type="text" id="medicine-search-input" value="{{ request('search') }}" placeholder="Cari nama obat, suplemen, atau merek..." class="form-input" style="height: 48px; padding-left: 2.5rem; width: 100%;">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%); color: var(--txt-muted);">
                             <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
+                    <button type="button" id="medicine-search-btn" class="btn btn-primary" style="height: 48px; padding: 0 1.25rem; font-weight: 700; flex-shrink: 0; white-space: nowrap;">Cari</button>
                 </div>
             </div>
 
-            {{-- Category Pill Chips Bar (Instant 0ms JS Filter - Single Row Scroll Bar) --}}
-            <div class="category-chips-scroll-bar" id="category-chips-container">
-                <button type="button" data-cat="all" class="category-chip-btn btn btn-sm {{ !request('category') ? 'btn-primary' : 'btn-outline' }}" style="border-radius: var(--r-full); padding: 0.5rem 1.25rem;">
+            {{-- Category Pill Chips (All Visible, Neat Multi-Row Grid on Mobile - Instant 0ms Filter) --}}
+            <div class="category-chips-wrapper" id="category-chips-container" style="display: flex; flex-wrap: wrap; gap: 0.5rem; width: 100%;">
+                <button type="button" data-cat="all" class="category-chip-btn btn btn-sm {{ !request('category') ? 'btn-primary' : 'btn-outline' }}" style="border-radius: 50px; padding: 0.45rem 1rem; font-size: 0.825rem; font-weight: 600;">
                     Semua Kategori
                 </button>
                 @foreach($categories as $cat)
-                    <button type="button" data-cat="{{ $cat }}" class="category-chip-btn btn btn-sm {{ request('category') === $cat ? 'btn-primary' : 'btn-outline' }}" style="border-radius: var(--r-full); padding: 0.5rem 1.25rem;">
+                    <button type="button" data-cat="{{ $cat }}" class="category-chip-btn btn btn-sm {{ request('category') === $cat ? 'btn-primary' : 'btn-outline' }}" style="border-radius: 50px; padding: 0.45rem 1rem; font-size: 0.825rem; font-weight: 600;">
                         {{ match($cat) {
                             'obat_bebas' => 'Obat Bebas', 'obat_keras' => 'Obat Keras',
                             'suplemen' => 'Suplemen', 'vitamin' => 'Vitamin',
@@ -117,6 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const chipBtns = document.querySelectorAll('.category-chip-btn');
     const productCards = document.querySelectorAll('.product-item-card');
     const searchInput = document.getElementById('medicine-search-input');
+    const searchBtn = document.getElementById('medicine-search-btn');
     const noProductsMsg = document.getElementById('no-products-msg');
     const resetBtn = document.getElementById('reset-filter-btn');
 
@@ -165,8 +168,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    if (searchBtn) {
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            filterProducts();
+        });
+    }
+
     if (searchInput) {
         searchInput.addEventListener('input', filterProducts);
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                filterProducts();
+            }
+        });
     }
 
     if (resetBtn) {
