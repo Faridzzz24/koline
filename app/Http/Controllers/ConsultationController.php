@@ -307,15 +307,16 @@ class ConsultationController extends Controller
 
     private function findOrCreateConsultation($consultationId): ?Consultation
     {
-        $consultation = Consultation::find($consultationId);
+        $targetId = is_numeric($consultationId) ? (int) $consultationId : 1;
+        $consultation = Consultation::find($targetId);
         if ($consultation) {
             return $consultation;
         }
 
         $user = Auth::user();
         if ($user) {
-            $patientId = null;
-            $doctorId = null;
+            $patientId = 1;
+            $doctorId = 1;
 
             if ($user->isPatient()) {
                 $patientId = $user->id;
@@ -333,30 +334,17 @@ class ConsultationController extends Controller
                 $doctorId = $doctor ? $doctor->id : 1;
             }
 
-            if ($user->isPatient()) {
-                $consultation = Consultation::where('patient_id', $user->id)->orderByDesc('id')->first();
-            } elseif ($user->isDoctor()) {
-                $doctor = $user->doctor ?: \App\Models\Doctor::where('user_id', $user->id)->first();
-                if ($doctor) {
-                    $consultation = Consultation::where('doctor_id', $doctor->id)->orderByDesc('id')->first();
-                }
-            }
-
-            if ($consultation) {
-                return $consultation;
-            }
-
             try {
                 return Consultation::forceCreate([
-                    'id' => is_numeric($consultationId) ? (int) $consultationId : 1,
+                    'id' => $targetId,
                     'patient_id' => $patientId,
                     'doctor_id' => $doctorId,
                     'consultation_date' => date('Y-m-d'),
                     'consultation_time' => date('H:i'),
-                    'duration_hours' => 1,
+                    'duration_hours' => 2,
                     'status' => 'confirmed',
                     'total_price' => 50000,
-                    'end_date_time' => now()->addHours(2),
+                    'end_date_time' => now()->addHours(24),
                     'complaint' => 'Konsultasi kesehatan online',
                 ]);
             } catch (\Throwable $e) {
@@ -366,10 +354,10 @@ class ConsultationController extends Controller
                         'doctor_id' => $doctorId,
                         'consultation_date' => date('Y-m-d'),
                         'consultation_time' => date('H:i'),
-                        'duration_hours' => 1,
+                        'duration_hours' => 2,
                         'status' => 'confirmed',
                         'total_price' => 50000,
-                        'end_date_time' => now()->addHours(2),
+                        'end_date_time' => now()->addHours(24),
                         'complaint' => 'Konsultasi kesehatan online',
                     ]);
                 } catch (\Throwable $ex) {}
