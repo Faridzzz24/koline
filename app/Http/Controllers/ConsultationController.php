@@ -246,7 +246,9 @@ class ConsultationController extends Controller
 
     public function newMessages(Request $request, $consultationId)
     {
-        $consultation = Consultation::find($consultationId);
+        $consultation = Consultation::select(['id', 'patient_id', 'doctor_id', 'status', 'consultation_date', 'consultation_time', 'duration_hours', 'diagnosis', 'prescription', 'notes', 'updated_at', 'created_at'])
+            ->find($consultationId);
+
         if (!$consultation) {
             return response()->json(['error' => 'Konsultasi tidak ditemukan.'], 404);
         }
@@ -255,10 +257,11 @@ class ConsultationController extends Controller
         $currentUserId = (int) Auth::id();
         $lastId = (int) $request->query('last_id', 0);
 
-        $newMessages = $consultation->messages()
+        $newMessages = ConsultationMessage::where('consultation_id', $consultation->id)
             ->where('id', '>', $lastId)
-            ->with('sender')
-            ->get()
+            ->with('sender:id,name')
+            ->orderBy('id', 'asc')
+            ->get(['id', 'consultation_id', 'sender_id', 'message', 'created_at'])
             ->map(function ($msg) use ($currentUserId) {
                 return [
                     'id' => $msg->id,

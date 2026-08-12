@@ -10,6 +10,7 @@ window.doctorDashboardApp = function() {
         completedCount: {{ $stats['completed'] }},
         pendingList: @json($pendingList),
         activeList: @json($activeList),
+        confirmedIds: [],
         isActionPending: false,
         isPolling: false,
         csrfToken: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
@@ -18,7 +19,7 @@ window.doctorDashboardApp = function() {
             this.pollConsultations();
             setInterval(() => {
                 this.pollConsultations();
-            }, 1500);
+            }, 800);
         },
 
         areIdsSame(listA, listB) {
@@ -32,6 +33,11 @@ window.doctorDashboardApp = function() {
         async confirmConsultation(item) {
             if (this.isActionPending) return;
             this.isActionPending = true;
+
+            // Lock this item ID so polling never reverts it back to pending
+            if (!this.confirmedIds.includes(item.id)) {
+                this.confirmedIds.push(item.id);
+            }
 
             // Optimistic local update to prevent flicker
             const prevPendingList = [...this.pendingList];
@@ -67,6 +73,7 @@ window.doctorDashboardApp = function() {
                     this.activeList = prevActiveList;
                     this.pendingCount = prevPendingCount;
                     this.activeCount = prevActiveCount;
+                    this.confirmedIds = this.confirmedIds.filter(id => id !== item.id);
                     this.isActionPending = false;
                 }
             } catch (e) {
@@ -75,6 +82,7 @@ window.doctorDashboardApp = function() {
                 this.activeList = prevActiveList;
                 this.pendingCount = prevPendingCount;
                 this.activeCount = prevActiveCount;
+                this.confirmedIds = this.confirmedIds.filter(id => id !== item.id);
                 this.isActionPending = false;
             }
         },
@@ -91,15 +99,18 @@ window.doctorDashboardApp = function() {
                     if (this.isActionPending) return;
                     
                     if (data.pending_count !== undefined) {
-                        this.pendingCount = data.pending_count;
+                        const freshPending = (data.pending_consultations || []).filter(p => !this.confirmedIds.includes(p.id));
+                        const freshActive = data.active_consultations || [];
+
+                        this.pendingCount = freshPending.length;
                         this.activeCount = data.active_count;
                         this.completedCount = data.completed_count;
 
-                        if (data.pending_consultations && !this.areIdsSame(this.pendingList, data.pending_consultations)) {
-                            this.pendingList = data.pending_consultations;
+                        if (!this.areIdsSame(this.pendingList, freshPending)) {
+                            this.pendingList = freshPending;
                         }
-                        if (data.active_consultations && !this.areIdsSame(this.activeList, data.active_consultations)) {
-                            this.activeList = data.active_consultations;
+                        if (!this.areIdsSame(this.activeList, freshActive)) {
+                            this.activeList = freshActive;
                         }
                     }
                 }

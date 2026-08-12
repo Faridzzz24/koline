@@ -102,11 +102,11 @@ class DashboardController extends Controller
             ]);
         }
 
-        $pendingConsultations = Consultation::with('patient')
+        $pendingConsultations = Consultation::with('patient:id,name')
             ->where('doctor_id', $doctor->id)
             ->where('status', 'pending')
             ->orderByDesc('created_at')
-            ->get()
+            ->get(['id', 'patient_id', 'consultation_date', 'consultation_time', 'complaint', 'status', 'created_at'])
             ->map(function ($c) {
                 $patientName = $c->patient ? $c->patient->name : 'Pasien';
                 $dateStr = $c->consultation_date ? $c->consultation_date->format('d M Y') : date('d M Y');
@@ -122,11 +122,11 @@ class DashboardController extends Controller
                 ];
             });
 
-        $activeConsultations = Consultation::with('patient')
+        $activeConsultations = Consultation::with('patient:id,name')
             ->where('doctor_id', $doctor->id)
             ->whereIn('status', ['confirmed', 'active'])
             ->orderByDesc('created_at')
-            ->get()
+            ->get(['id', 'patient_id', 'consultation_date', 'consultation_time', 'status', 'created_at'])
             ->map(function ($c) {
                 $patientName = $c->patient ? $c->patient->name : 'Pasien';
                 $dateStr = $c->consultation_date ? $c->consultation_date->format('d M Y') : date('d M Y');

@@ -297,12 +297,11 @@ html, body {
                            x-model="newMessage" 
                            class="chat-input" 
                            placeholder="Ketik pesan..." 
-                           :disabled="isSubmitting" 
                            autocomplete="off" 
                            required>
                     <button type="submit" 
                             class="chat-send-btn" 
-                            :disabled="isSubmitting || !newMessage.trim()" 
+                            :disabled="!newMessage.trim()" 
                             aria-label="Kirim Pesan" 
                             title="Kirim Pesan (Tekan Enter)">
                         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
@@ -462,10 +461,10 @@ function liveChatApp(consultationId, currentUserId) {
                 this.syncTimers();
             }, 1000);
 
-            // Sub-second 120ms high-frequency polling for real-time chat (<0.12s latency)
+            // Lightweight 350ms high-frequency polling for instant real-time chat
             this.pollInterval = setInterval(() => {
                 this.fetchMessages();
-            }, 120);
+            }, 350);
 
             // Foreground tab re-sync for Mobile/Desktop app switching
             window.addEventListener('focus', () => {
@@ -603,7 +602,7 @@ function liveChatApp(consultationId, currentUserId) {
         },
 
         async sendMessage() {
-            if (!this.newMessage.trim() || !this.activeStarted || this.activeExpired || this.isSubmitting) return;
+            if (!this.newMessage.trim() || !this.activeStarted || this.activeExpired) return;
             const text = this.newMessage.trim();
             this.newMessage = '';
             this.isSubmitting = true;
