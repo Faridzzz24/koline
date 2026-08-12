@@ -44,9 +44,10 @@ class ConsultationController extends Controller
         }
 
         $this->authorizeConsultation($consultation);
+        \App\Services\MessageRegistry::syncMessages((int) $consultation->id);
 
         $currentUserId = (int) Auth::id();
-        $initialMessages = $consultation->messages->map(function ($msg) use ($currentUserId) {
+        $initialMessages = $consultation->messages()->with('sender')->get()->map(function ($msg) use ($currentUserId) {
             return [
                 'id' => $msg->id,
                 'sender_id' => (int) $msg->sender_id,
@@ -90,6 +91,8 @@ class ConsultationController extends Controller
             'message' => $request->message,
             'type' => 'text',
         ]);
+
+        \App\Services\MessageRegistry::recordMessage((int) $consultation->id, $message);
 
         if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
             $message->load('sender');
@@ -229,6 +232,8 @@ class ConsultationController extends Controller
         }
 
         $this->authorizeConsultation($consultation);
+        \App\Services\MessageRegistry::syncMessages((int) $consultation->id);
+
         $currentUserId = (int) Auth::id();
         $messages = $consultation->messages()->with('sender')->get()->map(function ($msg) use ($currentUserId) {
             return [
@@ -262,12 +267,20 @@ class ConsultationController extends Controller
         }
 
         $this->authorizeConsultation($consultation);
+        \App\Services\MessageRegistry::syncMessages((int) $consultation->id);
+
         $currentUserId = (int) Auth::id();
         $lastId = (int) $request->query('last_id', 0);
 
-        $newMessages = ConsultationMessage::where('consultation_id', $consultation->id)
-            ->where('id', '>', $lastId)
-            ->with('sender:id,name')
+        $query = ConsultationMessage::where('consultation_id', $consultation->id);
+        if ($lastId > 0) {
+            $hasNewer = (clone $query)->where('id', '>', $lastId)->exists();
+            if ($hasNewer) {
+                $query->where('id', '>', $lastId);
+            }
+        }
+
+        $newMessages = $query->with('sender:id,name')
             ->orderBy('id', 'asc')
             ->get(['id', 'consultation_id', 'sender_id', 'message', 'created_at'])
             ->map(function ($msg) use ($currentUserId) {
