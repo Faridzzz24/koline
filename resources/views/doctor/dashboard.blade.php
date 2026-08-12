@@ -19,7 +19,7 @@ window.doctorDashboardApp = function() {
             this.pollConsultations();
             setInterval(() => {
                 this.pollConsultations();
-            }, 800);
+            }, 2000);
         },
 
         areIdsSame(listA, listB) {

@@ -443,6 +443,7 @@ function liveChatApp(consultationId, currentUserId) {
         sessionTimer: 0,
         activeStarted: {{ in_array($consultation->status, ['confirmed', 'active']) ? 'true' : 'false' }},
         activeExpired: {{ in_array($consultation->status, ['completed', 'cancelled']) ? 'true' : 'false' }},
+        authFailureCount: 0,
 
         startTimeFormatted: '{{ substr($consultation->consultation_time, 0, 5) }} WIB',
         durationHours: {{ $consultation->duration_hours ?? 1 }},
@@ -461,10 +462,10 @@ function liveChatApp(consultationId, currentUserId) {
                 this.syncTimers();
             }, 1000);
 
-            // Sub-second 150ms high-speed polling for real-time chat & status sync
+            // Smooth 1.2s polling for real-time chat & status sync
             this.pollInterval = setInterval(() => {
                 this.fetchMessages();
-            }, 150);
+            }, 1200);
 
             // Foreground tab re-sync for Mobile/Desktop app switching
             window.addEventListener('focus', () => {
@@ -533,14 +534,15 @@ function liveChatApp(consultationId, currentUserId) {
                 const res = await fetch(`/konsultasi/${consultationId}/pesan-baru?last_id=${this.lastMessageId}`, {
                     headers: { 'Accept': 'application/json' }
                 });
-                if (res.status === 401) {
-                    window.location.href = '/login';
+                if (res.status === 401 || res.status === 419) {
+                    this.authFailureCount = (this.authFailureCount || 0) + 1;
+                    if (this.authFailureCount >= 5) {
+                        if (res.status === 401) window.location.href = '/login';
+                        if (res.status === 419) window.location.reload();
+                    }
                     return;
                 }
-                if (res.status === 419) {
-                    window.location.reload();
-                    return;
-                }
+                this.authFailureCount = 0;
                 if (res.ok) {
                     const data = await res.json();
                     

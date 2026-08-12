@@ -64,9 +64,9 @@ putenv("DB_DATABASE={$tmpDb}");
 $_ENV['DB_DATABASE'] = $tmpDb;
 $_SERVER['DB_DATABASE'] = $tmpDb;
 
-putenv("SESSION_DRIVER=cookie");
-$_ENV['SESSION_DRIVER'] = 'cookie';
-$_SERVER['SESSION_DRIVER'] = 'cookie';
+putenv("SESSION_DRIVER=file");
+$_ENV['SESSION_DRIVER'] = 'file';
+$_SERVER['SESSION_DRIVER'] = 'file';
 
 $_ENV['APP_CONFIG_CACHE'] = $tmpDir . '/config.php';
 $_ENV['APP_EVENTS_CACHE'] = $tmpDir . '/events.php';
@@ -89,9 +89,11 @@ $_SERVER['REQUEST_SCHEME'] = 'https';
 require __DIR__ . '/../vendor/autoload.php';
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 
-// 5. Register booted hook to override database config in memory before any query executes
-$app->booted(function ($app) use ($tmpDb) {
+// 5. Register booted hook to override database & session config in memory before any query executes
+$app->booted(function ($app) use ($tmpDb, $tmpDir) {
     config(['database.connections.sqlite.database' => $tmpDb]);
+    config(['session.driver' => 'file']);
+    config(['session.files' => $tmpDir . '/storage/framework/sessions']);
     DB::purge('sqlite');
 
     // Auto-migrate if tables are missing
@@ -111,3 +113,8 @@ $response = $kernel->handle(
 )->send();
 
 $kernel->terminate($request, $response);
+
+// 7. Sync database changes back to database/database.sqlite if writable
+if (file_exists($tmpDb) && (is_writable($dbSource) || (!file_exists($dbSource) && is_writable(dirname($dbSource))))) {
+    @copy($tmpDb, $dbSource);
+}
