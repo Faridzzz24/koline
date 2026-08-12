@@ -462,10 +462,23 @@ function liveChatApp(consultationId, currentUserId) {
                 this.syncTimers();
             }, 1000);
 
-            // Sub-second 100ms high-frequency polling for social-media-grade real-time chat (<0.1s latency)
+            // Sub-second 120ms high-frequency polling for real-time chat (<0.12s latency)
             this.pollInterval = setInterval(() => {
                 this.fetchMessages();
-            }, 100);
+            }, 120);
+
+            // Foreground tab re-sync for Mobile/Desktop app switching
+            window.addEventListener('focus', () => {
+                this.fetchMessages();
+                this.syncTimers();
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    this.fetchMessages();
+                    this.syncTimers();
+                }
+            });
         },
 
         syncTimers() {
@@ -521,6 +534,14 @@ function liveChatApp(consultationId, currentUserId) {
                 const res = await fetch(`/konsultasi/${consultationId}/pesan-baru?last_id=${this.lastMessageId}`, {
                     headers: { 'Accept': 'application/json' }
                 });
+                if (res.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                if (res.status === 419) {
+                    window.location.reload();
+                    return;
+                }
                 if (res.ok) {
                     const data = await res.json();
                     
@@ -624,6 +645,9 @@ function liveChatApp(consultationId, currentUserId) {
                         this.consultationStatus = result.consultation_status;
                         this.syncTimers();
                     }
+                    if (result.end_timestamp_ms) {
+                        this.endTimestampMs = result.end_timestamp_ms;
+                    }
                     if (result.data) {
                         result.data.is_sent = true;
                         if (result.data.id && typeof result.data.id === 'number' && result.data.id > this.lastMessageId) {
@@ -639,9 +663,27 @@ function liveChatApp(consultationId, currentUserId) {
                         this.messages = newArr;
                         this.$nextTick(() => this.scrollToBottom());
                     }
+                } else {
+                    if (res.status === 401) {
+                        alert('Sesi Anda telah berakhir. Silakan login kembali.');
+                        window.location.href = '/login';
+                        return;
+                    }
+                    if (res.status === 419) {
+                        alert('Sesi telah kedaluwarsa. Halaman akan diperbarui.');
+                        window.location.reload();
+                        return;
+                    }
+                    const errData = await res.json().catch(() => ({}));
+                    alert('Gagal mengirim pesan: ' + (errData.error || errData.message || 'Silakan coba lagi.'));
+                    this.messages = this.messages.filter(m => m.id !== tempId);
+                    this.newMessage = text;
                 }
             } catch (e) {
                 console.error(e);
+                alert('Terjadi kesalahan jaringan. Gagal mengirim pesan.');
+                this.messages = this.messages.filter(m => m.id !== tempId);
+                this.newMessage = text;
             } finally {
                 this.isSubmitting = false;
                 this.isFetchingMessages = false;

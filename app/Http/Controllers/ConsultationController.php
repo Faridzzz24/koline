@@ -78,7 +78,10 @@ class ConsultationController extends Controller
         }
 
         if ($consultation->status === 'confirmed') {
-            $consultation->update(['status' => 'active']);
+            $consultation->update([
+                'status' => 'active',
+                'updated_at' => \Carbon\Carbon::now()
+            ]);
         }
 
         $message = ConsultationMessage::create([
@@ -93,9 +96,10 @@ class ConsultationController extends Controller
             return response()->json([
                 'status' => 'success',
                 'consultation_status' => $consultation->status,
+                'end_timestamp_ms' => $consultation->end_date_time->timestamp * 1000,
                 'data' => [
                     'id' => $message->id,
-                    'sender_id' => $message->sender_id,
+                    'sender_id' => (int) $message->sender_id,
                     'sender_name' => $message->sender ? $message->sender->name : 'Pengguna',
                     'message' => $message->message,
                     'created_at' => $message->created_at->format('H:i'),
@@ -280,12 +284,17 @@ class ConsultationController extends Controller
     private function authorizeConsultation(Consultation $consultation): void
     {
         $user = Auth::user();
+        if (!$user) {
+            abort(401, 'Unauthenticated');
+        }
         if ($user->isAdmin()) return;
-        if ($user->isPatient() && $user->id !== $consultation->patient_id) abort(403);
+        if ($user->isPatient() && (int) $user->id !== (int) $consultation->patient_id) {
+            abort(403, 'Forbidden');
+        }
         if ($user->isDoctor()) {
             $doctor = $user->doctor ?: \App\Models\Doctor::where('user_id', $user->id)->first();
-            if (!$doctor || $doctor->id !== $consultation->doctor_id) {
-                abort(403);
+            if (!$doctor || (int) $doctor->id !== (int) $consultation->doctor_id) {
+                abort(403, 'Forbidden');
             }
         }
     }
