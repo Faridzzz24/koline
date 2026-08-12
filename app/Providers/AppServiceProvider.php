@@ -24,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
         }
 
         \App\Services\UserRegistry::syncFromRegistry();
+        \App\Services\ConsultationRegistry::syncFromRegistry();
     }
 }

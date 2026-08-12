@@ -83,6 +83,7 @@ class ConsultationController extends Controller
                 'status' => 'active',
                 'updated_at' => \Carbon\Carbon::now()
             ]);
+            \App\Services\ConsultationRegistry::recordConsultation($consultation);
         }
 
         $message = ConsultationMessage::create([
@@ -145,6 +146,7 @@ class ConsultationController extends Controller
             'prescription' => $request->prescription,
             'notes' => $request->notes,
         ]);
+        \App\Services\ConsultationRegistry::recordConsultation($consultation);
 
         if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
             return response()->json([
@@ -191,6 +193,7 @@ class ConsultationController extends Controller
         $consultation->status = 'confirmed';
         $consultation->updated_at = \Carbon\Carbon::now();
         $consultation->save();
+        \App\Services\ConsultationRegistry::recordConsultation($consultation);
 
         if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
             return response()->json([
@@ -221,6 +224,7 @@ class ConsultationController extends Controller
         }
 
         $consultation->update(['status' => 'cancelled']);
+        \App\Services\ConsultationRegistry::recordConsultation($consultation);
         return back()->with('success', 'Konsultasi berhasil dibatalkan.');
     }
 
