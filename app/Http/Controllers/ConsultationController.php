@@ -111,12 +111,18 @@ class ConsultationController extends Controller
     {
         $consultation = Consultation::find($consultationId);
         if (!$consultation) {
+            if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Konsultasi tidak ditemukan.'], 404);
+            }
             return redirect()->route('doctor.dashboard')->with('error', 'Konsultasi tidak ditemukan.');
         }
 
         $user = Auth::user();
         $doctor = $user->doctor ?: \App\Models\Doctor::where('user_id', $user->id)->first();
         if (!$user->isDoctor() || !$doctor || $doctor->id !== $consultation->doctor_id) {
+            if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
+                return response()->json(['error' => 'Forbidden'], 403);
+            }
             abort(403);
         }
 
@@ -133,6 +139,18 @@ class ConsultationController extends Controller
             'notes' => $request->notes,
         ]);
 
+        if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'status' => 'success',
+                'consultation_status' => 'completed',
+                'end_timestamp_ms' => $consultation->end_date_time->timestamp * 1000,
+                'diagnosis' => $consultation->diagnosis,
+                'prescription' => $consultation->prescription,
+                'notes' => $consultation->notes,
+                'message' => 'Konsultasi berhasil diselesaikan.'
+            ]);
+        }
+
         return back()->with('success', 'Konsultasi berhasil diselesaikan.');
     }
 
@@ -140,7 +158,7 @@ class ConsultationController extends Controller
     {
         $consultation = Consultation::find($consultationId);
         if (!$consultation) {
-            if ($request->expectsJson() || $request->wantsJson()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['error' => 'Konsultasi tidak ditemukan.'], 404);
             }
             return redirect()->route('doctor.dashboard')->with('error', 'Konsultasi tidak ditemukan.');
@@ -149,7 +167,7 @@ class ConsultationController extends Controller
         $user = Auth::user();
         $doctor = $user->doctor ?: \App\Models\Doctor::where('user_id', $user->id)->first();
         if (!$user->isDoctor() || !$doctor || $doctor->id !== $consultation->doctor_id) {
-            if ($request->expectsJson() || $request->wantsJson()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['error' => 'Forbidden'], 403);
             }
             abort(403);
@@ -159,9 +177,12 @@ class ConsultationController extends Controller
         $consultation->updated_at = \Carbon\Carbon::now();
         $consultation->save();
 
-        if ($request->expectsJson() || $request->wantsJson()) {
+        if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
+                'status' => 'confirmed',
+                'consultation_status' => 'confirmed',
+                'end_timestamp_ms' => $consultation->end_date_time->timestamp * 1000,
                 'message' => 'Konsultasi berhasil dikonfirmasi!',
                 'show_url' => route('consultations.show', $consultation),
             ]);

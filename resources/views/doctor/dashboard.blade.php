@@ -11,28 +11,42 @@ window.doctorDashboardApp = function() {
         pendingList: @json($pendingList),
         activeList: @json($activeList),
         isActionPending: false,
+        isPolling: false,
         csrfToken: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
 
         initDashboard() {
             this.pollConsultations();
             setInterval(() => {
                 this.pollConsultations();
-            }, 1000);
+            }, 1500);
         },
 
-        isListSame(listA, listB) {
+        areIdsSame(listA, listB) {
             if (!listA || !listB) return false;
             if (listA.length !== listB.length) return false;
-            for (let i = 0; i < listA.length; i++) {
-                if (listA[i].id !== listB[i].id || listA[i].patient_name !== listB[i].patient_name) {
-                    return false;
-                }
-            }
-            return true;
+            const idsA = listA.map(x => x.id).join(',');
+            const idsB = listB.map(x => x.id).join(',');
+            return idsA === idsB;
         },
 
         async confirmConsultation(item) {
+            if (this.isActionPending) return;
             this.isActionPending = true;
+
+            // Optimistic local update to prevent flicker
+            const prevPendingList = [...this.pendingList];
+            const prevActiveList = [...this.activeList];
+            const prevPendingCount = this.pendingCount;
+            const prevActiveCount = this.activeCount;
+
+            this.pendingList = this.pendingList.filter(p => p.id !== item.id);
+            this.pendingCount = Math.max(0, this.pendingCount - 1);
+            this.activeCount += 1;
+            
+            if (!this.activeList.some(a => a.id === item.id)) {
+                this.activeList.unshift(item);
+            }
+
             try {
                 const res = await fetch(item.confirm_url, {
                     method: 'POST',
@@ -42,24 +56,32 @@ window.doctorDashboardApp = function() {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
                     }
                 });
+                
                 if (res.ok) {
-                    this.pendingList = this.pendingList.filter(p => p.id !== item.id);
-                    this.pendingCount = Math.max(0, this.pendingCount - 1);
-                    this.activeCount += 1;
-                    window.location.href = item.show_url;
+                    const data = await res.json().catch(() => ({}));
+                    window.location.href = data.show_url || item.show_url;
                 } else {
                     const data = await res.json().catch(() => ({}));
                     alert('Gagal konfirmasi: ' + (data.message || 'Silakan coba lagi.'));
+                    this.pendingList = prevPendingList;
+                    this.activeList = prevActiveList;
+                    this.pendingCount = prevPendingCount;
+                    this.activeCount = prevActiveCount;
                     this.isActionPending = false;
                 }
             } catch (e) {
                 console.error(e);
+                this.pendingList = prevPendingList;
+                this.activeList = prevActiveList;
+                this.pendingCount = prevPendingCount;
+                this.activeCount = prevActiveCount;
                 this.isActionPending = false;
             }
         },
 
         async pollConsultations() {
-            if (this.isActionPending) return;
+            if (this.isActionPending || this.isPolling) return;
+            this.isPolling = true;
             try {
                 const res = await fetch('{{ route('doctor.consultations.poll') }}', {
                     headers: { 'Accept': 'application/json' }
@@ -67,21 +89,24 @@ window.doctorDashboardApp = function() {
                 if (res.ok) {
                     const data = await res.json();
                     if (this.isActionPending) return;
+                    
                     if (data.pending_count !== undefined) {
-                        if (this.pendingCount !== data.pending_count) this.pendingCount = data.pending_count;
-                        if (this.activeCount !== data.active_count) this.activeCount = data.active_count;
-                        if (this.completedCount !== data.completed_count) this.completedCount = data.completed_count;
+                        this.pendingCount = data.pending_count;
+                        this.activeCount = data.active_count;
+                        this.completedCount = data.completed_count;
 
-                        if (data.pending_consultations && !this.isListSame(this.pendingList, data.pending_consultations)) {
+                        if (data.pending_consultations && !this.areIdsSame(this.pendingList, data.pending_consultations)) {
                             this.pendingList = data.pending_consultations;
                         }
-                        if (data.active_consultations && !this.isListSame(this.activeList, data.active_consultations)) {
+                        if (data.active_consultations && !this.areIdsSame(this.activeList, data.active_consultations)) {
                             this.activeList = data.active_consultations;
                         }
                     }
                 }
             } catch (e) {
                 console.error(e);
+            } finally {
+                this.isPolling = false;
             }
         }
     };

@@ -247,9 +247,9 @@ html, body {
                             <div style="font-size: 0.875rem; color: var(--txt-body); line-height: 1.6; max-width: 520px; margin: 0 auto 1rem;">
                                 Pasien <strong>{{ $consultation->patient->name }}</strong> mengajukan janji konsultasi pada <strong>{{ $consultation->consultation_date->format('d M Y') }}</strong> jam <strong>{{ substr($consultation->consultation_time, 0, 5) }} WIB</strong>. Setujui permintaan ini untuk membuka ruang chat medis.
                             </div>
-                            <form action="{{ route('consultations.confirm', $consultation) }}" method="POST" style="margin: 0; display: inline-block;">
+                            <form @submit.prevent="confirmConsultation()" action="{{ route('consultations.confirm', $consultation) }}" method="POST" style="margin: 0; display: inline-block;">
                                 @csrf
-                                <button type="submit" class="btn btn-primary" style="font-weight: 700; padding: 0.65rem 1.75rem;">
+                                <button type="submit" class="btn btn-primary" :disabled="isSubmitting" style="font-weight: 700; padding: 0.65rem 1.75rem;">
                                     ✓ Setujui & Terima Sesi Konsultasi
                                 </button>
                             </form>
@@ -336,9 +336,9 @@ html, body {
                         Pasien ini telah memesan sesi konsultasi. Klik konfirmasi untuk membuka ruang percakapan medis.
                     </p>
                 </div>
-                <form action="{{ route('consultations.confirm', $consultation) }}" method="POST">
+                <form @submit.prevent="confirmConsultation()" action="{{ route('consultations.confirm', $consultation) }}" method="POST">
                     @csrf
-                    <button type="submit" class="btn btn-primary btn-block btn-lg" style="background: linear-gradient(135deg, #0284C7 0%, #0D9488 100%);">
+                    <button type="submit" class="btn btn-primary btn-block btn-lg" :disabled="isSubmitting" style="background: linear-gradient(135deg, #0284C7 0%, #0D9488 100%);">
                         Konfirmasi Sesi Konsultasi
                     </button>
                 </form>
@@ -351,7 +351,7 @@ html, body {
                 <h3 style="margin-bottom: 1rem; font-size: 1.05rem; font-weight: 700; color: var(--txt-heading); border-bottom: 1px solid var(--bdr-subtle); padding-bottom: 0.75rem;">
                     Diagnosis & Selesaikan Sesi
                 </h3>
-                <form action="{{ route('consultations.complete', $consultation) }}" method="POST" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                <form @submit.prevent="completeConsultation($event)" action="{{ route('consultations.complete', $consultation) }}" method="POST" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
                     @csrf
                     <div style="display: flex; flex-direction: column; gap: 0.875rem;">
                         <div class="form-group" style="margin-bottom: 0;">
@@ -367,7 +367,7 @@ html, body {
                             <textarea name="notes" class="form-input" rows="2" placeholder="Anjuran istirahat atau instruksi pendukung..." style="font-size: 0.875rem;"></textarea>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary btn-block btn-lg" :disabled="isSubmitting" style="margin-top: 1rem;">
                         Selesaikan Konsultasi Medis
                     </button>
                 </form>
@@ -448,6 +448,7 @@ function liveChatApp(consultationId, currentUserId) {
         startTimeFormatted: '{{ substr($consultation->consultation_time, 0, 5) }} WIB',
         durationHours: {{ $consultation->duration_hours ?? 1 }},
         timerInterval: null,
+        pollInterval: null,
 
         initChat() {
             this.$nextTick(() => this.scrollToBottom());
@@ -456,15 +457,15 @@ function liveChatApp(consultationId, currentUserId) {
             this.fetchMessages();
             this.syncTimers();
 
-            // Real-time ticking interval every 1 second based on Date.now()
+            // Real-time ticking interval every 1 second
             this.timerInterval = setInterval(() => {
                 this.syncTimers();
             }, 1000);
 
-            // Sub-second 150ms high-frequency incremental polling for true real-time instant chat (< 0.15s delay!)
-            setInterval(() => {
+            // Sub-second 100ms high-frequency polling for social-media-grade real-time chat (<0.1s latency)
+            this.pollInterval = setInterval(() => {
                 this.fetchMessages();
-            }, 150);
+            }, 100);
         },
 
         syncTimers() {
@@ -486,14 +487,13 @@ function liveChatApp(consultationId, currentUserId) {
                 return;
             }
 
-            if (now >= this.endTimestampMs) {
-                this.activeStarted = true;
+            this.activeStarted = true;
+            if (this.endTimestampMs > 0 && now >= this.endTimestampMs) {
                 this.activeExpired = true;
                 this.sessionTimer = 0;
             } else {
-                this.activeStarted = true;
                 this.activeExpired = false;
-                this.sessionTimer = Math.max(0, Math.floor((this.endTimestampMs - now) / 1000));
+                this.sessionTimer = this.endTimestampMs > 0 ? Math.max(0, Math.floor((this.endTimestampMs - now) / 1000)) : 3600;
             }
         },
 
@@ -587,7 +587,7 @@ function liveChatApp(consultationId, currentUserId) {
             this.newMessage = '';
             this.isSubmitting = true;
             
-            // 1. Optimistic Instant UI Insertion (0ms delay with array re-assignment for instant Alpine reactivity)
+            // 1. Optimistic Instant UI Insertion (0ms local delay)
             const tempId = 'temp_' + Date.now();
             const d = new Date();
             const clockStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
@@ -646,6 +646,89 @@ function liveChatApp(consultationId, currentUserId) {
                 this.isSubmitting = false;
                 this.isFetchingMessages = false;
                 await this.fetchMessages();
+            }
+        },
+
+        async confirmConsultation() {
+            if (this.isSubmitting) return;
+            this.isSubmitting = true;
+
+            // Instant UI update
+            this.consultationStatus = 'confirmed';
+            this.activeStarted = true;
+            this.activeExpired = false;
+            this.syncTimers();
+
+            try {
+                const res = await fetch(`/konsultasi/${consultationId}/konfirmasi`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.end_timestamp_ms) {
+                        this.endTimestampMs = data.end_timestamp_ms;
+                    }
+                    this.consultationStatus = 'confirmed';
+                    this.syncTimers();
+                    await this.fetchMessages();
+                } else {
+                    alert('Gagal menyetujui sesi. Silakan coba lagi.');
+                    this.consultationStatus = 'pending';
+                    this.syncTimers();
+                }
+            } catch (e) {
+                console.error(e);
+                this.consultationStatus = 'pending';
+                this.syncTimers();
+            } finally {
+                this.isSubmitting = false;
+            }
+        },
+
+        async completeConsultation(e) {
+            if (this.isSubmitting) return;
+            const form = e.target;
+            const formData = new FormData(form);
+            const diag = formData.get('diagnosis');
+            if (!diag || !diag.toString().trim()) {
+                alert('Diagnosis medis wajib diisi.');
+                return;
+            }
+
+            this.isSubmitting = true;
+            try {
+                const res = await fetch(`/konsultasi/${consultationId}/selesai`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    },
+                    body: formData
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    this.diagnosis = data.diagnosis || diag;
+                    this.prescription = data.prescription || formData.get('prescription') || '';
+                    this.notes = data.notes || formData.get('notes') || '';
+                    this.consultationStatus = 'completed';
+                    this.activeExpired = true;
+                    this.syncTimers();
+                    await this.fetchMessages();
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    alert('Gagal menyelesaikan konsultasi: ' + (data.error || data.message || 'Periksa input Anda.'));
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Terjadi kesalahan jaringan.');
+            } finally {
+                this.isSubmitting = false;
             }
         },
 
