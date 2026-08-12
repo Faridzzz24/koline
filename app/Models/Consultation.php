@@ -33,16 +33,11 @@ class Consultation extends Model
 
     public function getEndDateTimeAttribute(): \Carbon\Carbon
     {
-        $duration = $this->duration_hours ?? 1;
-        $scheduledEnd = $this->start_date_time->copy()->addHours($duration);
-        if (in_array($this->status, ['confirmed', 'active'])) {
-            $baseTime = $this->updated_at ?: $this->created_at;
-            if ($baseTime) {
-                $activeEnd = $baseTime->copy()->addHours($duration);
-                return $activeEnd->gt($scheduledEnd) ? $activeEnd : $scheduledEnd;
-            }
-        }
-        return $scheduledEnd;
+        $durationHours = max(12, (int) ($this->duration_hours ?? 1) * 12);
+        $baseTime = $this->updated_at ?: ($this->created_at ?: \Carbon\Carbon::now());
+        $activeEnd = $baseTime->copy()->addHours($durationHours);
+        $scheduledEnd = $this->start_date_time->copy()->addHours($durationHours);
+        return $activeEnd->gt($scheduledEnd) ? $activeEnd : $scheduledEnd;
     }
 
     public function getRemainingSecondsAttribute(): int

@@ -483,8 +483,8 @@ function liveChatApp(consultationId, currentUserId) {
 
         syncTimers() {
             const now = Date.now();
-            const isConfirmedOrActive = ['confirmed', 'active'].includes(this.consultationStatus);
             const isCompletedOrCancelled = ['completed', 'cancelled'].includes(this.consultationStatus);
+            const isConfirmedOrActive = ['confirmed', 'active'].includes(this.consultationStatus);
 
             if (isCompletedOrCancelled) {
                 this.activeStarted = true;
@@ -493,21 +493,20 @@ function liveChatApp(consultationId, currentUserId) {
                 return;
             }
 
-            if (!isConfirmedOrActive) {
-                this.activeStarted = false;
+            if (isConfirmedOrActive || !this.consultationStatus) {
+                this.activeStarted = true;
                 this.activeExpired = false;
-                this.sessionTimer = 0;
+                if (this.endTimestampMs > 0 && now < this.endTimestampMs) {
+                    this.sessionTimer = Math.max(0, Math.floor((this.endTimestampMs - now) / 1000));
+                } else {
+                    this.sessionTimer = 7200;
+                }
                 return;
             }
 
-            this.activeStarted = true;
-            if (this.endTimestampMs > 0 && now >= this.endTimestampMs) {
-                this.activeExpired = true;
-                this.sessionTimer = 0;
-            } else {
-                this.activeExpired = false;
-                this.sessionTimer = this.endTimestampMs > 0 ? Math.max(0, Math.floor((this.endTimestampMs - now) / 1000)) : 3600;
-            }
+            this.activeStarted = false;
+            this.activeExpired = false;
+            this.sessionTimer = 0;
         },
 
         formatTime(seconds) {
