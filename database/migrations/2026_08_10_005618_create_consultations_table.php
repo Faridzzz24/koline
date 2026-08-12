@@ -20,6 +20,8 @@ return new class extends Migration
             $table->text('prescription')->nullable(); // Resep
             $table->text('notes')->nullable();
             $table->decimal('fee', 10, 2)->default(0);
+            $table->string('payment_status')->default('paid')->nullable();
+            $table->string('payment_method')->nullable();
             $table->integer('rating')->nullable(); // 1-5
             $table->text('review')->nullable();
             $table->timestamps();
