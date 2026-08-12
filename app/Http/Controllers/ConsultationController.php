@@ -306,28 +306,6 @@ class ConsultationController extends Controller
             }
         }
 
-        $doctor = \App\Models\Doctor::first();
-        $patientUser = \App\Models\User::where('role', 'patient')->first() ?: ($user ?: \App\Models\User::first());
-
-        if ($doctor && $patientUser) {
-            try {
-                return Consultation::create([
-                    'id' => (int) $consultationId,
-                    'patient_id' => $patientUser->id,
-                    'doctor_id' => $doctor->id,
-                    'consultation_date' => date('Y-m-d'),
-                    'consultation_time' => '08:00',
-                    'duration_hours' => 1,
-                    'complaint' => 'Keluhan medis pasien',
-                    'fee' => $doctor->consultation_fee ?? 75000,
-                    'status' => 'confirmed',
-                    'updated_at' => \Carbon\Carbon::now(),
-                ]);
-            } catch (\Throwable $e) {
-                return Consultation::orderByDesc('id')->first();
-            }
-        }
-
         return null;
     }
 

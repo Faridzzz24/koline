@@ -96,24 +96,8 @@ $app->booted(function ($app) use ($tmpDb) {
             Artisan::call('migrate', [
                 '--force' => true,
             ]);
-            if (\App\Models\User::count() === 0) {
-                Artisan::call('db:seed', [
-                    '--force' => true,
-                ]);
-            }
-        } elseif (Schema::hasTable('consultations') && \App\Models\Consultation::count() === 0) {
-            Artisan::call('db:seed', [
-                '--class' => 'ConsultationSeeder',
-                '--force' => true,
-            ]);
         }
-    } catch (\Throwable $e) {
-        try {
-            Artisan::call('migrate', [
-                '--force' => true,
-            ]);
-        } catch (\Throwable $ex) {}
-    }
+    } catch (\Throwable $e) {}
 });
 
 // 6. Handle HTTP Request
