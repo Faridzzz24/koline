@@ -31,49 +31,57 @@ if ($uri !== '/' && !empty($uri) && file_exists($publicFile) && !is_dir($publicF
     exit;
 }
 
-$tmpDir = '/tmp';
-$tmpDb = $tmpDir . '/database.sqlite';
-
-// 1. Setup storage directories inside /tmp
-$storageDirs = [
-    $tmpDir . '/storage/framework/views',
-    $tmpDir . '/storage/framework/sessions',
-    $tmpDir . '/storage/framework/cache',
-    $tmpDir . '/storage/logs',
-];
-
-foreach ($storageDirs as $dir) {
-    if (!file_exists($dir)) {
-        @mkdir($dir, 0777, true);
-    }
-}
-
-// 2. Prepare SQLite database in /tmp (ALWAYS target /tmp/database.sqlite)
+$isVercel = isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || getenv('VERCEL');
 $dbSource = __DIR__ . '/../database/database.sqlite';
 
-if (!file_exists($tmpDb) || filesize($tmpDb) < 1000) {
-    if (file_exists($dbSource) && filesize($dbSource) > 1000) {
-        @copy($dbSource, $tmpDb);
-    } else {
-        @file_put_contents($tmpDb, '');
+if ($isVercel) {
+    $tmpDir = '/tmp';
+    $tmpDb = $tmpDir . '/database.sqlite';
+
+    // 1. Setup storage directories inside /tmp for Vercel
+    $storageDirs = [
+        $tmpDir . '/storage/framework/views',
+        $tmpDir . '/storage/framework/sessions',
+        $tmpDir . '/storage/framework/cache',
+        $tmpDir . '/storage/logs',
+    ];
+
+    foreach ($storageDirs as $dir) {
+        if (!file_exists($dir)) {
+            @mkdir($dir, 0777, true);
+        }
     }
+
+    // 2. Prepare SQLite database in /tmp for Vercel
+    if (!file_exists($tmpDb) || filesize($tmpDb) < 1000) {
+        if (file_exists($dbSource) && filesize($dbSource) > 1000) {
+            @copy($dbSource, $tmpDb);
+        } else {
+            @file_put_contents($tmpDb, '');
+        }
+    }
+
+    $targetDb = $tmpDb;
+
+    $_ENV['APP_CONFIG_CACHE'] = $tmpDir . '/config.php';
+    $_ENV['APP_EVENTS_CACHE'] = $tmpDir . '/events.php';
+    $_ENV['APP_PACKAGES_CACHE'] = $tmpDir . '/packages.php';
+    $_ENV['APP_ROUTES_CACHE'] = $tmpDir . '/routes.php';
+    $_ENV['APP_SERVICES_CACHE'] = $tmpDir . '/services.php';
+    $_ENV['VIEW_COMPILED_PATH'] = $tmpDir . '/storage/framework/views';
+} else {
+    // Local development: Target real database/database.sqlite directly!
+    $targetDb = $dbSource;
 }
 
-// 3. Force environment variables to ALWAYS point to /tmp/database.sqlite
-putenv("DB_DATABASE={$tmpDb}");
-$_ENV['DB_DATABASE'] = $tmpDb;
-$_SERVER['DB_DATABASE'] = $tmpDb;
+// 3. Set database path
+putenv("DB_DATABASE={$targetDb}");
+$_ENV['DB_DATABASE'] = $targetDb;
+$_SERVER['DB_DATABASE'] = $targetDb;
 
 putenv("SESSION_DRIVER=cookie");
 $_ENV['SESSION_DRIVER'] = 'cookie';
 $_SERVER['SESSION_DRIVER'] = 'cookie';
-
-$_ENV['APP_CONFIG_CACHE'] = $tmpDir . '/config.php';
-$_ENV['APP_EVENTS_CACHE'] = $tmpDir . '/events.php';
-$_ENV['APP_PACKAGES_CACHE'] = $tmpDir . '/packages.php';
-$_ENV['APP_ROUTES_CACHE'] = $tmpDir . '/routes.php';
-$_ENV['APP_SERVICES_CACHE'] = $tmpDir . '/services.php';
-$_ENV['VIEW_COMPILED_PATH'] = $tmpDir . '/storage/framework/views';
 
 // Fix Vercel Serverless Script Name & URI mapping for Laravel routing
 $_SERVER['SCRIPT_FILENAME'] = __DIR__ . '/../public/index.php';
@@ -90,8 +98,8 @@ require __DIR__ . '/../vendor/autoload.php';
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 
 // 5. Register booted hook to override database config in memory before any query executes
-$app->booted(function ($app) use ($tmpDb) {
-    config(['database.connections.sqlite.database' => $tmpDb]);
+$app->booted(function ($app) use ($targetDb) {
+    config(['database.connections.sqlite.database' => $targetDb]);
     DB::purge('sqlite');
 
     // Auto-migrate if tables are missing
@@ -112,7 +120,7 @@ $response = $kernel->handle(
 
 $kernel->terminate($request, $response);
 
-// 7. Sync database changes back to database/database.sqlite if writable
-if (file_exists($tmpDb) && (is_writable($dbSource) || (!file_exists($dbSource) && is_writable(dirname($dbSource))))) {
+// 7. Sync database changes back to database/database.sqlite if running in Vercel with write access
+if (isset($tmpDb) && file_exists($tmpDb) && (is_writable($dbSource) || (!file_exists($dbSource) && is_writable(dirname($dbSource))))) {
     @copy($tmpDb, $dbSource);
 }
