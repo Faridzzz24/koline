@@ -36,6 +36,7 @@ class ConsultationController extends Controller
 
     public function show($consultationId)
     {
+        \App\Services\ConsultationRegistry::syncFromRegistry();
         $consultation = Consultation::with(['patient', 'doctor.user', 'doctor.specialization', 'messages.sender'])
             ->find($consultationId) ?: $this->findOrCreateConsultation($consultationId);
 
@@ -263,6 +264,7 @@ class ConsultationController extends Controller
 
     public function newMessages(Request $request, $consultationId)
     {
+        \App\Services\ConsultationRegistry::syncFromRegistry();
         $consultation = Consultation::select(['id', 'patient_id', 'doctor_id', 'status', 'consultation_date', 'consultation_time', 'duration_hours', 'diagnosis', 'prescription', 'notes', 'updated_at', 'created_at'])
             ->find($consultationId) ?: $this->findOrCreateConsultation($consultationId);
 
@@ -270,6 +272,7 @@ class ConsultationController extends Controller
             return response()->json(['error' => 'Konsultasi tidak ditemukan.'], 404);
         }
 
+        $consultation->refresh();
         $this->authorizeConsultation($consultation);
         \App\Services\MessageRegistry::syncMessages((int) $consultation->id);
 
