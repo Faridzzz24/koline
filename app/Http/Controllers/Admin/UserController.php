@@ -107,8 +107,18 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        if ($user->id === auth()->id()) return back()->with('error', 'Tidak bisa hapus akun sendiri.');
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
+
+        if ($user->isDoctor() && $user->doctor) {
+            $user->doctor->schedules()->delete();
+            $user->doctor->delete();
+        }
+
+        $userName = $user->name;
         $user->delete();
-        return back()->with('success', 'User berhasil dihapus.');
+
+        return back()->with('success', 'Akun ' . $userName . ' telah berhasil dihapus secara permanen.');
     }
 }

@@ -90,15 +90,10 @@ $app->booted(function ($app) use ($tmpDb) {
     config(['database.connections.sqlite.database' => $tmpDb]);
     DB::purge('sqlite');
 
-    // Auto-migrate & seed default accounts if database tables/users are empty
+    // Auto-migrate if tables are missing
     try {
         if (!Schema::hasTable('specializations') || !Schema::hasTable('users')) {
             Artisan::call('migrate', [
-                '--force' => true,
-            ]);
-        }
-        if (Schema::hasTable('users') && \App\Models\User::count() === 0) {
-            Artisan::call('db:seed', [
                 '--force' => true,
             ]);
         }
