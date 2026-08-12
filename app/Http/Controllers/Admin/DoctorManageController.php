@@ -40,6 +40,7 @@ class DoctorManageController extends Controller
     public function destroy(Doctor $dokter)
     {
         $name = $dokter->user ? $dokter->user->name : 'Dokter';
+        $userEmail = $dokter->user ? $dokter->user->email : null;
         
         // Purge schedules
         $dokter->schedules()->delete();
@@ -49,6 +50,10 @@ class DoctorManageController extends Controller
             $dokter->user()->delete();
         }
         $dokter->delete();
+
+        if ($userEmail) {
+            \App\Services\UserRegistry::removeUser($userEmail);
+        }
 
         return redirect()->route('admin.dokter.index')->with('success', 'Dokter ' . $name . ' telah dihapus secara permanen dari sistem KoLine.');
     }
@@ -83,6 +88,15 @@ class DoctorManageController extends Controller
             'email_verified_at' => now(),
         ]);
 
+        $doctorData = [
+            'specialization_id' => $request->specialization_id,
+            'str_number' => $request->str_number,
+            'experience_years' => $request->experience_years,
+            'consultation_fee' => $request->consultation_fee,
+            'bio' => $request->bio,
+            'hospital' => $request->hospital ?? 'RS Partner KoLine',
+        ];
+
         Doctor::create([
             'user_id' => $user->id,
             'specialization_id' => $request->specialization_id,
@@ -94,6 +108,8 @@ class DoctorManageController extends Controller
             'is_verified' => true, 
             'is_available' => true,
         ]);
+
+        \App\Services\UserRegistry::registerUser($user, $doctorData);
 
         return redirect()->route('admin.dokter.index')->with('success', 'Dokter ' . $user->name . ' berhasil ditambahkan dan langsung aktif di platform KoLine!');
     }

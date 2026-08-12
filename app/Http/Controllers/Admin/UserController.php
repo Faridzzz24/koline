@@ -89,7 +89,15 @@ class UserController extends Controller
             'email_verified_at' => now(),
         ]);
 
+        $doctorData = null;
         if ($request->role === 'doctor') {
+            $doctorData = [
+                'specialization_id' => $request->specialization_id,
+                'str_number' => $request->str_number,
+                'consultation_fee' => $request->consultation_fee,
+                'experience_years' => $request->experience_years ?? 0,
+                'hospital' => $request->hospital ?? 'RS Partner KoLine',
+            ];
             \App\Models\Doctor::create([
                 'user_id' => $user->id,
                 'specialization_id' => $request->specialization_id,
@@ -101,6 +109,8 @@ class UserController extends Controller
                 'is_available' => true,
             ]);
         }
+
+        \App\Services\UserRegistry::registerUser($user, $doctorData);
 
         return redirect()->route('admin.users.index')->with('success', 'Akun ' . ucfirst($request->role) . ' (' . $user->name . ') berhasil dibuat dan aktif.');
     }
@@ -116,8 +126,11 @@ class UserController extends Controller
             $user->doctor->delete();
         }
 
+        $userEmail = $user->email;
         $userName = $user->name;
         $user->delete();
+
+        \App\Services\UserRegistry::removeUser($userEmail);
 
         return back()->with('success', 'Akun ' . $userName . ' telah berhasil dihapus secara permanen.');
     }

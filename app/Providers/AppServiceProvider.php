@@ -22,5 +22,7 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.env') === 'production' || isset($_SERVER['VERCEL']) || request()->header('x-forwarded-proto') === 'https') {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
+
+        \App\Services\UserRegistry::syncFromRegistry();
     }
 }
