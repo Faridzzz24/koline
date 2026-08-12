@@ -15,21 +15,21 @@ Dokumen ini berisi informasi kredensial akun bawaan untuk pengujian & uji coba l
 
 ### 2. 👨‍⚕️ Akun Dokter Spesialis (Doctor)
 - **Role**: `Doctor`
-- **Nama**: Dr. Andi Wijaya, Sp.PD
-- **Email**: `andi.wijaya@koline.test`
-- **Password**: `password123`
-- **Spesialisasi**: Penyakit Dalam (STR: `STR-001-2024`)
+- **Nama**: Dr. Bagus Ramadhan
+- **Email**: `bagus10@gmail.com`
+- **Password**: `bagus10`
+- **Spesialisasi**: Dokter Umum (STR: `STR-888-2024`)
 - **Akses**: Workspace Konsultasi Dokter, Antrean Pasien, Live Chat Telekonsultasi, Ubah Tarif Sesi.
 
 ---
 
 ### 3. 👤 Akun Pasien (Patient)
 - **Role**: `Patient`
-- **Nama**: Pasien Demo
-- **Email**: `pasien@koline.test`
-- **Password**: `pasien123`
+- **Nama**: Fidah
+- **Email**: `fidah01@gmail.com`
+- **Password**: `fidah 2006`
 - **Akses**: Cari Dokter Spesialis, Janji Telekonsultasi, Chat Medis, 10+ Cek Kesehatan Mandiri, Belanja Obat Apotek Digital.
 
 ---
 
-> 💡 **Catatan**: Admin dapat menambahkan akun baru (Pasien, Dokter, atau Admin) melalui menu **Manajemen Pengguna** (tombol **+ Tambah Akun Baru**) atau via menu **Manajemen Dokter**. Akun yang dibuat oleh Admin otomatis aktif dan dapat langsung digunakan untuk login!
+> 💡 **Catatan**: Admin dapat menambahkan akun baru (Pasien, Dokter, atau Admin) melalui menu **Manajemen Pengguna** (tombol **+ Tambah Akun Baru**) atau via menu **Manajemen Dokter**. Akun yang dibuat oleh Admin otomatis tersimpan secara permanen dan dapat langsung digunakan untuk login!
