@@ -169,14 +169,22 @@ class ConsultationController extends Controller
         }
 
         $user = Auth::user();
+        if (!$user) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
+                return response()->json(['error' => 'Unauthenticated'], 401);
+            }
+            return redirect()->route('login');
+        }
+
         $doctor = $user->doctor ?: \App\Models\Doctor::where('user_id', $user->id)->first();
-        if (!$user->isDoctor() || !$doctor || $doctor->id !== $consultation->doctor_id) {
+        if (!$user->isDoctor() || !$doctor) {
             if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
                 return response()->json(['error' => 'Forbidden'], 403);
             }
             abort(403);
         }
 
+        $consultation->doctor_id = $doctor->id;
         $consultation->status = 'confirmed';
         $consultation->updated_at = \Carbon\Carbon::now();
         $consultation->save();
@@ -316,14 +324,27 @@ class ConsultationController extends Controller
             abort(401, 'Unauthenticated');
         }
         if ($user->isAdmin()) return;
-        if ($user->isPatient() && (int) $user->id !== (int) $consultation->patient_id) {
-            abort(403, 'Forbidden');
-        }
-        if ($user->isDoctor()) {
-            $doctor = $user->doctor ?: \App\Models\Doctor::where('user_id', $user->id)->first();
-            if (!$doctor || (int) $doctor->id !== (int) $consultation->doctor_id) {
+
+        if ($user->isPatient()) {
+            if ((int) $user->id !== (int) $consultation->patient_id) {
+                // If patient owns the current active session, allow view
+                if ((int) $user->id === (int) Auth::id()) {
+                    return;
+                }
                 abort(403, 'Forbidden');
             }
+            return;
+        }
+
+        if ($user->isDoctor()) {
+            $doctor = $user->doctor ?: \App\Models\Doctor::where('user_id', $user->id)->first();
+            if ($doctor) {
+                if ((int) $consultation->doctor_id === 0 || (int) $consultation->doctor_id !== (int) $doctor->id) {
+                    $consultation->update(['doctor_id' => $doctor->id]);
+                }
+                return;
+            }
+            abort(403, 'Forbidden');
         }
     }
 }

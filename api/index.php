@@ -64,6 +64,10 @@ putenv("DB_DATABASE={$tmpDb}");
 $_ENV['DB_DATABASE'] = $tmpDb;
 $_SERVER['DB_DATABASE'] = $tmpDb;
 
+putenv("SESSION_DRIVER=cookie");
+$_ENV['SESSION_DRIVER'] = 'cookie';
+$_SERVER['SESSION_DRIVER'] = 'cookie';
+
 $_ENV['APP_CONFIG_CACHE'] = $tmpDir . '/config.php';
 $_ENV['APP_EVENTS_CACHE'] = $tmpDir . '/events.php';
 $_ENV['APP_PACKAGES_CACHE'] = $tmpDir . '/packages.php';
