@@ -90,13 +90,17 @@ $app->booted(function ($app) use ($tmpDb) {
     config(['database.connections.sqlite.database' => $tmpDb]);
     DB::purge('sqlite');
 
-    // Auto-migrate and seed if tables are missing or empty
+    // Auto-migrate if tables are missing
     try {
         if (!Schema::hasTable('specializations') || !Schema::hasTable('users')) {
-            Artisan::call('migrate:fresh', [
-                '--seed' => true,
+            Artisan::call('migrate', [
                 '--force' => true,
             ]);
+            if (\App\Models\User::count() === 0) {
+                Artisan::call('db:seed', [
+                    '--force' => true,
+                ]);
+            }
         } elseif (Schema::hasTable('consultations') && \App\Models\Consultation::count() === 0) {
             Artisan::call('db:seed', [
                 '--class' => 'ConsultationSeeder',
@@ -105,8 +109,7 @@ $app->booted(function ($app) use ($tmpDb) {
         }
     } catch (\Throwable $e) {
         try {
-            Artisan::call('migrate:fresh', [
-                '--seed' => true,
+            Artisan::call('migrate', [
                 '--force' => true,
             ]);
         } catch (\Throwable $ex) {}
