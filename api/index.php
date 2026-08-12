@@ -31,8 +31,13 @@ if ($uri !== '/' && !empty($uri) && file_exists($publicFile) && !is_dir($publicF
     exit;
 }
 
-$isVercel = isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || getenv('VERCEL');
 $dbSource = __DIR__ . '/../database/database.sqlite';
+$isVercel = isset($_ENV['VERCEL'])
+    || isset($_SERVER['VERCEL'])
+    || getenv('VERCEL')
+    || (isset($_SERVER['HTTP_HOST']) && str_contains($_SERVER['HTTP_HOST'], 'vercel.app'))
+    || (file_exists($dbSource) && !is_writable($dbSource))
+    || !is_writable(dirname($dbSource));
 
 if ($isVercel) {
     $tmpDir = '/tmp';
