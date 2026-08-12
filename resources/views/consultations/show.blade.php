@@ -461,10 +461,10 @@ function liveChatApp(consultationId, currentUserId) {
                 this.syncTimers();
             }, 1000);
 
-            // Lightweight 350ms high-frequency polling for instant real-time chat
+            // High-speed adaptive polling: 150ms when pending (instant ACC detection), 250ms when active
             this.pollInterval = setInterval(() => {
                 this.fetchMessages();
-            }, 350);
+            }, this.consultationStatus === 'pending' ? 150 : 250);
 
             // Foreground tab re-sync for Mobile/Desktop app switching
             window.addEventListener('focus', () => {
@@ -552,9 +552,11 @@ function liveChatApp(consultationId, currentUserId) {
                         this.endTimestampMs = data.end_timestamp_ms;
                     }
 
-                    if (serverStatus && validStatuses.includes(serverStatus) && serverStatus !== this.consultationStatus) {
-                        this.consultationStatus = serverStatus;
-                        this.syncTimers();
+                    if (serverStatus && validStatuses.includes(serverStatus)) {
+                        if (this.consultationStatus !== serverStatus) {
+                            this.consultationStatus = serverStatus;
+                        }
+                        this.syncTimers(); // Always execute syncTimers on payload to ensure immediate UI unlock!
                     }
 
                     if (data.diagnosis) this.diagnosis = data.diagnosis;
