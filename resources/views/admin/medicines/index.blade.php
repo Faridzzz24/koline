@@ -19,7 +19,7 @@
                 <th style="text-align: center;">Harga</th>
                 <th style="text-align: center;">Stok</th>
                 <th style="text-align: center;">Resep</th>
-                <th style="text-align: right; padding-right: 1.5rem;">Aksi</th>
+                <th style="text-align: center;">Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -45,8 +45,8 @@
                             <span style="color: #34D399; font-weight: 500; font-size: 0.85rem;">Tidak</span>
                         @endif
                     </td>
-                    <td style="text-align: right; padding-right: 1.5rem;">
-                        <div class="flex items-center gap-2" style="justify-content: flex-end;">
+                    <td style="text-align: center;">
+                        <div class="flex items-center gap-2" style="justify-content: center;">
                             <a href="{{ route('admin.apotek.edit', $m) }}" class="btn btn-outline btn-sm" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;">Edit</a>
                             <form action="{{ route('admin.apotek.destroy', $m) }}" method="POST" onsubmit="return confirmDelete(event, 'Apakah Anda yakin ingin menghapus produk obat ini?')">
                                 @csrf @method('DELETE')

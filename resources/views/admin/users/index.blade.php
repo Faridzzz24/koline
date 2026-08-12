@@ -53,7 +53,7 @@
                     <th style="text-align: left;">Email</th>
                     <th style="text-align: center;">Role</th>
                     <th style="text-align: center;">Bergabung</th>
-                    <th style="text-align: right; padding-right: 1.5rem;">Aksi</th>
+                    <th style="text-align: center;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -83,8 +83,8 @@
                             @endif
                         </td>
                         <td style="color: #CBD5E1; font-size: 0.875rem; text-align: center;">{{ $user->created_at->format('d M Y') }}</td>
-                        <td style="text-align: right; padding-right: 1.5rem;">
-                            <div class="flex items-center gap-2" style="justify-content: flex-end;">
+                        <td style="text-align: center;">
+                            <div class="flex items-center gap-2" style="justify-content: center;">
                                 <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-outline btn-sm" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;">Edit</a>
                                 @if($user->id !== auth()->id())
                                     <form action="{{ route('admin.users.destroy', $user) }}" method="POST" style="display:inline" onsubmit="return confirmDelete(event, 'Apakah Anda yakin ingin menghapus pengguna ini?')">

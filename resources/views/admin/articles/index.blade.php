@@ -8,7 +8,7 @@
 <div class="table-wrapper">
     <table class="table">
         <thead>
-            <tr><th>Judul</th><th>Kategori</th><th>Penulis</th><th>Status</th><th>Views</th><th>Aksi</th></tr>
+            <tr><th>Judul</th><th>Kategori</th><th>Penulis</th><th>Status</th><th>Views</th><th style="text-align: center;">Aksi</th></tr>
         </thead>
         <tbody>
             @foreach($articles as $a)
@@ -18,8 +18,8 @@
                     <td>{{ $a->author->name }}</td>
                     <td><span class="badge {{ $a->is_published ? 'badge-success' : 'badge-warning' }}">{{ $a->is_published ? 'Terbit' : 'Draft' }}</span></td>
                     <td>{{ number_format($a->views) }}</td>
-                    <td>
-                        <div class="flex gap-2">
+                    <td style="text-align: center;">
+                        <div class="flex gap-2" style="justify-content: center;">
                             <a href="{{ route('admin.artikel.edit', $a) }}" class="btn btn-outline btn-sm">Edit</a>
                             <form action="{{ route('admin.artikel.destroy', $a) }}" method="POST" onsubmit="return confirmDelete(event, 'Apakah Anda yakin ingin menghapus artikel ini?')">
                                 @csrf @method('DELETE')

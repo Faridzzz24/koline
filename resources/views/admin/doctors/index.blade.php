@@ -21,7 +21,7 @@
                     <th style="text-align: center;">No. STR</th>
                     <th style="text-align: center;">Tarif Sesi</th>
                     <th style="text-align: center;">Status Sesi</th>
-                    <th style="text-align: right; padding-right: 1.5rem;">Aksi</th>
+                    <th style="text-align: center;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,8 +58,8 @@
                                 </span>
                             </div>
                         </td>
-                        <td style="text-align: right; padding-right: 1.5rem;">
-                            <div class="flex items-center gap-2" style="justify-content: flex-end; white-space: nowrap;">
+                        <td style="text-align: center;">
+                            <div class="flex items-center gap-2" style="justify-content: center; white-space: nowrap;">
                                 <a href="{{ route('admin.dokter.edit', $d) }}" class="btn btn-outline btn-sm" style="font-size: 0.775rem;">Edit</a>
                                 <form action="{{ route('admin.dokter.update', $d) }}" method="POST" style="margin: 0;">
                                     @csrf @method('PATCH')
