@@ -46,8 +46,8 @@ class LoginRequest extends FormRequest
         $email = strtolower(trim($credentials['email'] ?? ''));
 
         if (! Auth::attempt($credentials, $this->boolean('remember'))) {
-            // Auto-recovery for default accounts on empty or recycled Vercel DB instances
-            $defaultAccounts = ['admin@koline.test', 'andi.wijaya@koline.test', 'pasien@koline.test', 'sari@koline.test'];
+            // Auto-recovery for Admin account on empty or recycled Vercel DB instances
+            $defaultAccounts = ['admin@koline.test'];
             if (in_array($email, $defaultAccounts) && \App\Models\User::where('email', $email)->doesntExist()) {
                 try {
                     \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
