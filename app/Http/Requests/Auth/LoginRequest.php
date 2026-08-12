@@ -42,7 +42,24 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $credentials = $this->only('email', 'password');
+        $email = strtolower(trim($credentials['email'] ?? ''));
+
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
+            // Auto-recovery for default accounts on empty or recycled Vercel DB instances
+            $defaultAccounts = ['admin@koline.test', 'andi.wijaya@koline.test', 'pasien@koline.test', 'sari@koline.test'];
+            if (in_array($email, $defaultAccounts) && \App\Models\User::where('email', $email)->doesntExist()) {
+                try {
+                    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+                } catch (\Throwable $e) {}
+
+                // Retry authentication after seeding default accounts
+                if (Auth::attempt($credentials, $this->boolean('remember'))) {
+                    RateLimiter::clear($this->throttleKey());
+                    return;
+                }
+            }
+
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
