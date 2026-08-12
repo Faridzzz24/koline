@@ -35,7 +35,7 @@ class DoctorController extends Controller
             $query->where('is_available', true);
         }
 
-        $doctors = $query->orderByDesc('rating')->paginate(12);
+        $doctors = $query->latest('id')->paginate(12);
         $specializations = Specialization::where('is_active', true)->get();
 
         return view('doctors.index', compact('doctors', 'specializations'));
